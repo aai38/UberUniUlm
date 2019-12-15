@@ -20,6 +20,7 @@ public class Datenbank {
     private Connection conn;
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
+
     static String template = "jdbc:mysql://localhost/%s?useEncoding=true&characterEncoding=UTF-8&user=%s&password=%s";
 
     public Datenbank(){
