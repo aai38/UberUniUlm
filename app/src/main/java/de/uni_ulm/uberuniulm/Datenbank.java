@@ -8,7 +8,6 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.util.Timer;
 
 public class Datenbank {
 
@@ -20,10 +19,16 @@ public class Datenbank {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             //TODO: find out password and user and right url
             conn = DriverManager.getConnection("jdbc:mysql://localhost:8080/uberUniUlm" +
-                            "user=minty&password=greatsqldb");
-        } catch (Exception ex) {
+                            "user=uberuser&password=2@iv,q=UD(jF");
+        } catch (SQLException ex) {
             System.out.println(ex.getMessage());
             System.out.println("cant establish connection");
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
