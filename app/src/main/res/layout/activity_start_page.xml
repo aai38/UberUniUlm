@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/startActivityBackgroundContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/start_background">
+
+    <LinearLayout
+        android:id="@+id/startActivityLoginContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorSemiTransparentBlack"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/startActivityLoginAppIcon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_app_logo_market" />
+
+        <LinearLayout
+            android:id="@+id/startActivityLoginInputContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="40dp"
+            android:layout_weight="0"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/startActivityLoginNameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start_login_username_title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/startActivityLoginNameTextInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/start_login_name_value_example"
+                android:backgroundTint="@color/colorPrimary"
+                android:ems="10"
+                android:hint="@string/start_login_name_value_example"
+                android:inputType="textPersonName"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/startActivityLoginPasswordText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/start_login_password_title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/startActivityLoginPasswordTextInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/start_login_password_value_example"
+                android:backgroundTint="@color/colorPrimary"
+                android:ems="10"
+                android:hint="@string/start_login_password_value_example"
+                android:inputType="textPassword"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/startActivityLoginBttn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_weight="0"
+            android:background="@drawable/button_style"
+            android:onClick="onStartActivityLoginBttn"
+            android:paddingStart="20dp"
+            android:paddingLeft="20dp"
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:text="@string/start_login_button_login_text"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="40dp"
+            android:layout_weight="0"
+            android:gravity="center|center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/startActivityLoginForgotPasswordBttn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="0"
+                android:onClick="onStartActivityLoginForgotPasswordBttn"
+                android:text="@string/start_login_button_forgotpassword_text"
+                android:textAlignment="textEnd"
+                android:textColor="@android:color/background_light"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/startActivityLoginRegisterBttn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:onClick="onStartActivityLoginRegisterBttn"
+                android:text="@string/start_login_button_register_text"
+                android:textAlignment="textStart"
+                android:textColor="@android:color/background_light"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/startActivityRegisterContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorSemiTransparentBlack"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/startActivityRegisterPhotoContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/startActivityRegisterProfileImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/start_register_profile_photo" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/startActivityRegisterCameraBttn"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:clickable="true"
+                android:onClick="onStartActivityRegisterCameraBttn"
+                app:backgroundTint="@color/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+        </android.support.constraint.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/startActivityRegisterInputContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="0"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/startActivityRegisterNameContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/startActivityRegisterNameText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/start_register_name_title"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/startActivityRegisterNameTextInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:ems="10"
+                        android:hint="@string/start_register_name_value_example"
+                        android:inputType="textPersonName"
+                        android:textColor="@android:color/background_light"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/startActivityRegisterFemaleGenderBttn"
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="0"
+                    android:background="@android:color/transparent"
+                    android:onClick="onStartActivityRegisterGenderBttn"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_female_selected" />
+
+                <ImageButton
+                    android:id="@+id/startActivityRegisterMaleGenderBttn"
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="0"
+                    android:background="@android:color/transparent"
+                    android:onClick="onStartActivityRegisterGenderBttn"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_male" />
+
+                <ImageButton
+                    android:id="@+id/startActivityRegisterTransGenderBttn"
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:background="@android:color/transparent"
+                    android:onClick="onStartActivityRegisterGenderBttn"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_transgender" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/startActivityRegisterMailText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start_register_mail_title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/startActivityRegisterMailTextInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorPrimary"
+                android:ems="10"
+                android:hint="@string/start_login_name_value_example"
+                android:inputType="textPersonName"
+                android:textColor="@android:color/background_light"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/startActivityRegisterPasswordText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/start_login_password_title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/startActivityRegisterPasswordTextInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorPrimary"
+                android:ems="10"
+                android:hint="@string/start_login_password_value_example"
+                android:inputType="textPassword"
+                android:textColor="@android:color/background_light"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/startActivityRegisterBttn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="50dp"
+            android:layout_weight="0"
+            android:background="@drawable/button_style"
+            android:onClick="onStartActivityRegisterBttn"
+            android:paddingStart="20dp"
+            android:paddingLeft="20dp"
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:text="@string/start_register_button_register"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
