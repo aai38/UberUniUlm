@@ -166,7 +166,7 @@ public class MainPage extends AppCompatActivity
         tomtomMap.addOnMapLongClickListener(this);
         tomtomMap.getMarkerSettings().setMarkersClustering(true);
         tomtomMap.removeMarkers();
-        tomtomMap.getMarkerSettings().setMarkerBalloonViewAdapter(new TextBalloonViewAdapter());
+        tomtomMap.getMarkerSettings().setMarkerBalloonViewAdapter(new TypedBallonViewAdapter());
         ArrayList<ParkingSpot> parkingSpots=parkings.getAll();
         for(ParkingSpot spot: parkingSpots){
             SimpleMarkerBalloon balloon = new SimpleMarkerBalloon(spot.getName());

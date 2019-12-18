@@ -4,7 +4,7 @@ import com.tomtom.online.sdk.common.location.LatLng;
 
 public class ParkingSpot {
     LatLng position;
-    int capacity;
+    int capacity=80, fill=60;
     String name;
 
     public ParkingSpot(String name, LatLng pos){
@@ -26,5 +26,21 @@ public class ParkingSpot {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getFill() {
+        return fill;
+    }
+
+    public void setFill(int fill) {
+        this.fill = fill;
     }
 }
