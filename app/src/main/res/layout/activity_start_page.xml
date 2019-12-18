@@ -178,16 +178,18 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/startActivityRegisterCameraBttn"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginEnd="32dp"
-                android:layout_marginBottom="32dp"
+                android:adjustViewBounds="true"
                 android:clickable="true"
+                android:foreground="@android:drawable/ic_menu_camera"
                 android:onClick="onStartActivityRegisterCameraBttn"
+                android:padding="3dp"
+                android:scaleType="fitXY"
                 app:backgroundTint="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
+                app:layout_constraintEnd_toEndOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
         <LinearLayout
