@@ -14,6 +14,9 @@
     <string name="start_register_name_title">Username</string>
     <string name="start_register_mail_title">E-Mail</string>
 
+    <string name="geocode_no_results">No geocoder results. Choose different location and try again.</string>
+    <string name="api_response_error">API response error: \'%1$s\'.</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
