@@ -5,25 +5,32 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:title="Home" />
+            android:title="Home"
+            android:id="@+id/home"/>
         <item
-            android:title="Profile" />
+            android:title="Profile"
+            android:id="@+id/profile"/>
         <item
-            android:title="My Offers" />
+            android:title="My Offers"
+            android:id="@+id/offers"/>
         <item
-            android:title="Booked Rides" />
+            android:title="Booked Rides"
+            android:id="@+id/booked"/>
         <item
-            android:title="Ratings" />
+            android:title="Ratings"
+            android:id="@+id/ratings"/>
     </group>
 
 
     <group android:checkableBehavior="single">
         <item
 
-                android:title="Settings" />
+                android:title="Settings"
+                android:id="@+id/settings"/>
         <item
 
-                android:title="Log out" />
+                android:title="Log out"
+                android:id="@+id/logout"/>
     </group>
 
 

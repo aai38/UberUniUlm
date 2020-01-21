@@ -139,19 +139,23 @@ public class MainPage extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        /*if (id == R.id.nav_camera) {
+        if (id == R.id.home) {
+            LinearLayout mapFragment=(LinearLayout) findViewById(R.id.mainPageMapContainer);
+            mapFragment.setVisibility(View.INVISIBLE);
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.booked) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.offers) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.settings) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.logout) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.profile) {
 
-        }*/
+        } else if (id == R.id.ratings) {
+
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
