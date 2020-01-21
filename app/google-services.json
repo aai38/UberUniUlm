@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "617457019252",
+    "firebase_url": "https://uberuniulm.firebaseio.com",
+    "project_id": "uberuniulm",
+    "storage_bucket": "uberuniulm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:617457019252:android:bd2527d460d216b3632421",
+        "android_client_info": {
+          "package_name": "de.uni_ulm.uberuniulm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "617457019252-js1c6s6shbkm4g19g19rkkuge86rdndo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO6AXtp6HSmF-SqZ-m8ucauTUrIlJztLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "617457019252-js1c6s6shbkm4g19g19rkkuge86rdndo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
