@@ -1,5 +1,6 @@
 package de.uni_ulm.uberuniulm;
 
+import android.content.Intent;
 import android.location.Location;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.support.v4.content.ContextCompat;
@@ -40,6 +43,7 @@ import com.tomtom.online.sdk.search.SearchApi;
 
 import java.util.ArrayList;
 
+import de.uni_ulm.uberuniulm.model.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
 
@@ -53,6 +57,8 @@ public class MainPage extends AppCompatActivity
     private TomtomMap tomtomMap;
     private SearchApi searchApi;
     private Fragment mapFragment;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
     private Boolean parkingMode=false;
     private FusedLocationProviderClient fusedLocationClient;
     private Location lastLocation;
@@ -64,6 +70,8 @@ public class MainPage extends AppCompatActivity
         setContentView(R.layout.activity_main_page);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        fragmentManager=getSupportFragmentManager();
 
 
         Window window = getWindow();
@@ -146,6 +154,9 @@ public class MainPage extends AppCompatActivity
         } else if (id == R.id.booked) {
 
         } else if (id == R.id.offers) {
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.mainPageContentContainer, new MyOffersFragment());
+            fragmentTransaction.commit();
 
         } else if (id == R.id.settings) {
 
@@ -209,5 +220,10 @@ public class MainPage extends AppCompatActivity
 
     private void handleApiError(Throwable e) {
         Toast.makeText(MainPage.this, getString(R.string.api_response_error, e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+    }
+
+    public void onMyRidesNewRideBttn(View view){
+        Intent intent = new Intent(MainPage.this, NewOfferPage.class);
+        startActivity(intent);
     }
 }

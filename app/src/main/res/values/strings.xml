@@ -20,5 +20,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="newOffer_title">Create ride</string>
+    <string name="newOffer_date_title">Date</string>
+    <string name="newOffer_time_title">Time</string>
+    <string name="newOffer_start_title">Start location</string>
+    <string name="newOffer_destination_title">Destination</string>
+
     <string name="action_settings">Settings</string>
 </resources>

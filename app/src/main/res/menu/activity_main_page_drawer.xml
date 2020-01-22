@@ -11,8 +11,8 @@
             android:title="Profile"
             android:id="@+id/profile"/>
         <item
-            android:title="My Offers"
-            android:id="@+id/offers"/>
+            android:id="@+id/offers"
+            android:title="My Offers" />
         <item
             android:title="Booked Rides"
             android:id="@+id/booked"/>

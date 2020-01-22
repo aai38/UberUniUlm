@@ -23,6 +23,11 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
+            android:name=".NewOfferPage"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
             android:name=".StartPage"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">

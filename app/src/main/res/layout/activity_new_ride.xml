@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/newOfferActivitySettingsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/backgroundgradient"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp">
+
+        <LinearLayout
+            android:id="@+id/newOfferActivityHeaderContainer"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/newRideActivityTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/newOffer_title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp" />
+
+            <ImageButton
+                android:id="@+id/newOfferActivityConfirmBttn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="0"
+                android:adjustViewBounds="true"
+                android:background="@color/transparent"
+                android:onClick="onNewOfferActivityConfirmBttn"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_confirm" />
+
+            <ImageButton
+                android:id="@+id/newOfferActivityCancelBttn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0"
+                android:adjustViewBounds="true"
+                android:background="@color/transparent"
+                android:onClick="onNewOfferActivityCancelBttn"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_cancel" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/newOfferActivityDateTimeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/newOfferActivityDateContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/newOfferActivityDateTitleText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/newOffer_date_title"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/editText3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Today"
+                    android:inputType="date" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newOfferActivityTimeContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/newOfferActivityTimeTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/newOffer_time_title"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/editText4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="08:30"
+                    android:inputType="time" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/newOfferActivityStartContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/newOffer_start_title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/newOfferActivityStartEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="AutoCompleteTextView" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/newOfferActivityGoalContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/newOffer_destination_title"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/newOfferActivityDestinationEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="AutoCompleteTextView" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/newOfferActivityMapContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <fragment
+            android:id="@+id/mapFragment"
+            android:name="com.tomtom.online.sdk.map.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>
