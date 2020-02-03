@@ -161,6 +161,8 @@ public class MainPage extends AppCompatActivity
         } else if (id == R.id.settings) {
 
         } else if (id == R.id.logout) {
+            Intent intent = new Intent(this, StartPage.class);
+            startActivity(intent);
 
         } else if (id == R.id.profile) {
 
