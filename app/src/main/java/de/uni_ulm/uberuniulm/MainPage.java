@@ -5,9 +5,11 @@ import android.location.Location;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import de.uni_ulm.uberuniulm.model.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 import android.view.Window;
@@ -81,6 +84,12 @@ public class MainPage extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(sectionsPagerAdapter);
+        TabLayout tabs = findViewById(R.id.tabs);
+        tabs.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -110,11 +119,6 @@ public class MainPage extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }else if(id==R.id.action_parking){
-            fragmentTransaction = fragmentManager.beginTransaction();
-            ParkingFragment parkingFragment=new ParkingFragment();
-            fragmentTransaction.replace(R.id.mainPageContentContainer, parkingFragment);
-            fragmentTransaction.commit();
         }
 
         return super.onOptionsItemSelected(item);
@@ -127,12 +131,13 @@ public class MainPage extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.home) {
-            LinearLayout mapFragment=(LinearLayout) findViewById(R.id.parkingFragmentMapContainer);
-            mapFragment.setVisibility(View.INVISIBLE);
+            Intent intent = new Intent(this, MainPage.class);
+            startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.booked) {
 
         } else if (id == R.id.offers) {
+
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.mainPageContentContainer, new MyOffersFragment());
             fragmentTransaction.commit();

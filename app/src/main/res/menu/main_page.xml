@@ -6,7 +6,5 @@
         android:orderInCategory="100"
         android:title="Benachrichtigung"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_parking"
-        android:title="Parking" />
+     />
 </menu>
