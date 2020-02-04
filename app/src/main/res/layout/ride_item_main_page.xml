@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="15dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#2CFFFFFF">
+
+    <TextView
+        android:id="@+id/textViewDeparture"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/imageView"
+        android:layout_toRightOf="@+id/imageView"
+        android:paddingBottom="10dp"
+        android:textColor="#FFFFFF"
+        android:textAlignment="center"
+        />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="70dp"
+        android:layout_height="85dp" />
+
+    <ImageView
+        android:id="@+id/ratingView"
+        android:layout_width="70dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/textViewDeparture"
+        android:layout_toEndOf="@+id/imageView"
+        android:layout_toRightOf="@+id/imageView"
+        android:paddingTop="10dp"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/TextViewPlaces"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginBottom="-43dp"
+        android:layout_toEndOf="@+id/imageView"
+        android:layout_toRightOf="@+id/imageView"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/TextViewArrow"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="131dp"
+        android:layout_toEndOf="@+id/textViewDeparture"
+        android:layout_toRightOf="@+id/imageView"
+        android:text="&lt;-&gt;"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/TextViewLine"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/TextViewArrow"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="132dp"
+        android:layout_marginTop="2dp"
+        android:layout_toEndOf="@+id/textViewDeparture"
+        android:layout_toRightOf="@+id/imageView"
+        android:text="-"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/TextViewDestination"
+        android:layout_width="64dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginLeft="166dp"
+        android:layout_toEndOf="@+id/TextViewArrow"
+        android:layout_toRightOf="@+id/imageView"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/TextViewTime"
+        android:layout_width="85dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/TextViewDestination"
+        android:layout_marginStart="36dp"
+        android:layout_marginLeft="166dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/textViewDeparture"
+        android:layout_toRightOf="@+id/imageView"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/TextViewPrice"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="93dp"
+        android:layout_toEndOf="@+id/TextViewDestination"
+        android:layout_toRightOf="@+id/TextViewArrow"
+        android:textColor="@color/colorPrimary" />
+
+
+</RelativeLayout>
