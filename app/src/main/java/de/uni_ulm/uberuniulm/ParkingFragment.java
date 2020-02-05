@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -17,9 +18,17 @@ import com.tomtom.online.sdk.map.MapFragment;
 import com.tomtom.online.sdk.map.Marker;
 import com.tomtom.online.sdk.map.MarkerBuilder;
 import com.tomtom.online.sdk.map.OnMapReadyCallback;
+import com.tomtom.online.sdk.map.RouteBuilder;
 import com.tomtom.online.sdk.map.SimpleMarkerBalloon;
 import com.tomtom.online.sdk.map.TomtomMap;
 import com.tomtom.online.sdk.map.TomtomMapCallback;
+import com.tomtom.online.sdk.routing.OnlineRoutingApi;
+import com.tomtom.online.sdk.routing.RoutingApi;
+import com.tomtom.online.sdk.routing.data.FullRoute;
+import com.tomtom.online.sdk.routing.data.RouteQuery;
+import com.tomtom.online.sdk.routing.data.RouteQueryBuilder;
+import com.tomtom.online.sdk.routing.data.RouteResponse;
+import com.tomtom.online.sdk.routing.data.RouteType;
 import com.tomtom.online.sdk.search.OnlineSearchApi;
 import com.tomtom.online.sdk.search.SearchApi;
 
@@ -27,6 +36,9 @@ import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class ParkingFragment extends Fragment implements OnMapReadyCallback, TomtomMapCallback.OnMapLongClickListener {
     public View fragmentView;
@@ -46,6 +58,7 @@ public class ParkingFragment extends Fragment implements OnMapReadyCallback, Tom
         initTomTomServices();
         initUIViews();
         setupUIViewListeners();
+
         return fragmentView;
     }
 

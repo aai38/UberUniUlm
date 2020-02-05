@@ -80,7 +80,7 @@
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/editText3"
+                    android:id="@+id/newOfferActivityDateTextField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -104,7 +104,7 @@
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/editText4"
+                    android:id="@+id/newOfferActivityTimeTextField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -121,7 +121,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/newOfferActivityStartTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/newOffer_start_title"
@@ -137,27 +137,103 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/newOfferActivityGoalContainer"
+            android:id="@+id/newOfferDestinationOuterContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView3"
+            <LinearLayout
+                android:id="@+id/newOfferActivityGoalContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/newOffer_destination_title"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <AutoCompleteTextView
-                android:id="@+id/newOfferActivityDestinationEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="AutoCompleteTextView" />
+                <TextView
+                    android:id="@+id/newOfferActivityDestinationTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/newOffer_destination_title"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/newOfferActivityDestinationEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="AutoCompleteTextView" />
+            </LinearLayout>
 
         </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/newOfferActivityBottomContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/newOfferActivityPlacesContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/newOfferActivityPlacesTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Places:"
+                    android:textColor="@color/black_fully_opaque"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/newOfferActivityPlacesTextField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newOfferActivityPriceContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/newOfferActivityPriceTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Price:"
+                    android:textColor="@color/black_fully_opaque"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/newOfferActivityPriceTextField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/newOfferActivityGoBttn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryDark"
+                android:text="GO!"
+                android:textAlignment="center"
+                android:textColor="@color/white_fully_opaque" />
+        </LinearLayout>
+
 
     </LinearLayout>
 

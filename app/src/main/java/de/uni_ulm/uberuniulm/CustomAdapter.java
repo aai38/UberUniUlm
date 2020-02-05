@@ -48,8 +48,6 @@ public class CustomAdapter extends ArrayAdapter<BookedRide> implements View.OnCl
         int position=(Integer) v.getTag();
         Object object= getItem(position);
         BookedRide bookedRide=(BookedRide) object;
-
-
     }
 
     private int lastPosition = -1;

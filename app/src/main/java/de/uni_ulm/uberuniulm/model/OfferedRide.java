@@ -1,5 +1,7 @@
 package de.uni_ulm.uberuniulm.model;
 
+import com.tomtom.online.sdk.map.Route;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -21,11 +23,11 @@ public class OfferedRide {
         this.departure = departure;
     }
 
-    public String getRoute() {
+    public Route getRoute() {
         return route;
     }
 
-    public void setRoute(String route) {
+    public void setRoute(Route route) {
         this.route = route;
     }
 
@@ -53,11 +55,11 @@ public class OfferedRide {
         this.date = date;
     }
 
-    public Time getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Time time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
@@ -87,17 +89,27 @@ public class OfferedRide {
 
     private String destination;
     private String departure;
-    private String route;
+    private Route route;
     private ParkingSpot parkingspot;
     private int price;
     private Date date;
-    private Time time;
+    private String time;
     private int places;
     private int places_open;
     private ArrayList<User> bookedUsers;
 
 
-    public OfferedRide(String destination, String departure, String route, ParkingSpot parkingspot, int price, Date date, Time time, int places, int places_open, ArrayList<User> bookedUsers) {
+    public OfferedRide(Route route, int price, Date date, String time, int places, int places_open) {
+        this.route = route;
+        this.price = price;
+        this.date = date;
+        this.time = time;
+        this.places = places;
+        this.places_open = places_open;
+        this.bookedUsers = new ArrayList<>();
+    }
+
+    public OfferedRide(String destination, String departure, Route route, ParkingSpot parkingspot, int price, Date date, String time, int places, int places_open, ArrayList<User> bookedUsers) {
         this.destination = destination;
         this.departure = departure;
         this.route = route;
