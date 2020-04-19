@@ -51,13 +51,7 @@ public class User {
         this.prename = prename;
     }
 
-    public String getMessage() {
-        return message;
-    }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public ArrayList<OfferedRide> getOfferedRides() {
         return offeredRides;
@@ -91,30 +85,41 @@ public class User {
         this.username = username;
     }
 
+    public ArrayList<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(ArrayList<Message> messages) {
+        this.messages = messages;
+    }
+
     private ArrayList<BookedRide> bookedRides;
     private String email;
     private String gender;
     private String image;
     private String lastname;
     private String prename;
-    private String message;
     private ArrayList<OfferedRide> offeredRides;
+
+
+
+    private ArrayList<Message> messages;
     private float rating;
     private Settings setting;
     private String username;
 
 
-    public User(ArrayList<BookedRide> bookedRides, String email, String gender, String image, String lastname, String prename, String message, ArrayList<OfferedRide> offeredRides, float rating, Settings setting, String username) {
+    public User(ArrayList<BookedRide> bookedRides, String email, String gender, String image, String lastname, String prename, ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, Settings setting, String username) {
         this.bookedRides = bookedRides;
         this.email = email;
         this.gender = gender;
         this.image = image;
         this.lastname = lastname;
         this.prename = prename;
-        this.message = message;
         this.offeredRides = offeredRides;
         this.rating = rating;
         this.setting = setting;
         this.username = username;
+        this.messages = messages;
     }
 }

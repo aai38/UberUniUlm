@@ -6,6 +6,15 @@ import java.sql.Time;
 public class BookedRide {
 
     private String destination;
+    private String departure;
+    private String route;
+    private ParkingSpot parkingspot;
+    private float price;
+    private Date date;
+    private Time time;
+    private int places;
+    private int places_open;
+    private User offering_person;
 
     public String getDestination() {
         return destination;
@@ -39,11 +48,11 @@ public class BookedRide {
         this.parkingspot = parkingspot;
     }
 
-    public int getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -79,15 +88,7 @@ public class BookedRide {
         this.offering_person = offering_person;
     }
 
-    private String departure;
-    private String route;
-    private ParkingSpot parkingspot;
-    private int price;
-    private Date date;
-    private Time time;
-    private int places;
-    private int places_open;
-    private User offering_person;
+
 
     public int getPlaces_open() {
         return places_open;
@@ -97,7 +98,7 @@ public class BookedRide {
         this.places_open = places_open;
     }
 
-    public BookedRide(String destination, int places_open, String departure, String route, ParkingSpot parkingspot, int price, Date date, Time time, int places, User offering_person) {
+    public BookedRide(String destination, int places_open, String departure, String route, ParkingSpot parkingspot, float price, Date date, Time time, int places, User offering_person) {
         this.destination = destination;
         this.departure = departure;
         this.route = route;

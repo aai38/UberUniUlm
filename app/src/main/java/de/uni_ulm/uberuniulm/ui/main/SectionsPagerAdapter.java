@@ -1,15 +1,13 @@
 package de.uni_ulm.uberuniulm.ui.main;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import de.uni_ulm.uberuniulm.MainPageFragment;
 import de.uni_ulm.uberuniulm.ParkingFragment;
-import de.uni_ulm.uberuniulm.R;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
