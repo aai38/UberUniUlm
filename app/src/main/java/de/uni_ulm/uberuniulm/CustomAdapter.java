@@ -12,10 +12,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.model.BookedRide;
+import de.uni_ulm.uberuniulm.model.OfferedRide;
 
-public class CustomAdapter extends ArrayAdapter<BookedRide> implements View.OnClickListener{
+public class CustomAdapter extends ArrayAdapter<OfferedRide> implements View.OnClickListener{
 
-    private ArrayList<BookedRide> dataSet;
+    private ArrayList<OfferedRide> dataSet;
     Context mContext;
 
     // View lookup cache
@@ -30,7 +31,7 @@ public class CustomAdapter extends ArrayAdapter<BookedRide> implements View.OnCl
         ImageView picture;
     }
 
-    public CustomAdapter(ArrayList<BookedRide> data, Context context) {
+    public CustomAdapter(ArrayList<OfferedRide> data, Context context) {
         super(context, R.layout.ride_item_main_page, data);
         this.dataSet = data;
         this.mContext=context;
@@ -42,7 +43,7 @@ public class CustomAdapter extends ArrayAdapter<BookedRide> implements View.OnCl
 
         int position=(Integer) v.getTag();
         Object object= getItem(position);
-        BookedRide bookedRide=(BookedRide) object;
+        OfferedRide bookedRide=(OfferedRide) object;
     }
 
     private int lastPosition = -1;
@@ -50,7 +51,7 @@ public class CustomAdapter extends ArrayAdapter<BookedRide> implements View.OnCl
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        BookedRide bookedRide = getItem(position);
+        OfferedRide offeredRide = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
 
@@ -81,12 +82,12 @@ public class CustomAdapter extends ArrayAdapter<BookedRide> implements View.OnCl
 
         lastPosition = position;
 
-        viewHolder.txtDestination.setText(bookedRide.getDestination());
-        viewHolder.txtDeparture.setText(bookedRide.getDeparture());
-        viewHolder.txtDate.setText(bookedRide.getDate().toString());
-        viewHolder.txtTime.setText(bookedRide.getTime().toString());
-        viewHolder.txtPrice.setText(bookedRide.getPrice() + "€");
-        viewHolder.txtPlaces.setText((bookedRide.getPlaces() - bookedRide.getPlaces_open()) + "/" + bookedRide.getPlaces());
+        viewHolder.txtDestination.setText(offeredRide.getDestination());
+        viewHolder.txtDeparture.setText(offeredRide.getDeparture());
+        viewHolder.txtDate.setText(offeredRide.getDate().toString());
+        viewHolder.txtTime.setText(offeredRide.getTime().toString());
+        viewHolder.txtPrice.setText(offeredRide.getPrice() + "€");
+        viewHolder.txtPlaces.setText((offeredRide.getPlaces() - offeredRide.getPlaces_open()) + "/" + offeredRide.getPlaces());
         //viewHolder.rating.setImageIcon();
         Drawable myDrawable = convertView.getContext().getDrawable(R.drawable.start_register_profile_photo);
         viewHolder.picture.setImageDrawable(myDrawable);

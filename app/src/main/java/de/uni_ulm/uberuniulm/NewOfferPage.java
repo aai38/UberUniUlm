@@ -3,6 +3,7 @@ package de.uni_ulm.uberuniulm;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +29,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.common.base.Optional;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.tomtom.online.sdk.common.location.LatLng;
 import com.tomtom.online.sdk.common.permission.AndroidPermissionChecker;
 import com.tomtom.online.sdk.location.LocationSource;
@@ -70,6 +73,8 @@ import java.util.Map;
 
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.model.Settings;
+import de.uni_ulm.uberuniulm.model.User;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -99,6 +104,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
     private Map<String, LatLng> searchResultsMap;
     private Runnable searchRunnable;
     private EditText startTextField, goalTextField, dateTextField, timeTextField, placesTextField, priceTextField;
+    public static ArrayList<OfferedRide> offeredRides;
 
     private Icon departureIcon, destinationIcon;
 
@@ -165,6 +171,23 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
             }
             Integer places= (Integer.parseInt(placesTextField.getText().toString()));
             OfferedRide offer=new OfferedRide(route, price, date, time, places, places );
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference();
+            User exampleUser = new User(null, "blabla", "female", "bla.png", "Mueller", "Nina", null, null, 2, new Settings("de", "black"), "nina");
+            //myRef.push().setValue(exampleUser);
+            //String key = myRef.getKey();
+
+            DatabaseReference ref = myRef.push();
+            ref.setValue(exampleUser);
+            String key = ref.getKey();
+            SharedPreferences pref = getApplicationContext().getSharedPreferences("UserKey", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("UserKey", key);
+
+            DatabaseReference refRide = myRef.child(key).child("offeredRide").push();
+            myRef.setValue(offer);
+            offer.setKey(refRide.getKey());
+            offeredRides.add(offer);
         }
 
         Intent intent = new Intent(NewOfferPage.this, MainPage.class);

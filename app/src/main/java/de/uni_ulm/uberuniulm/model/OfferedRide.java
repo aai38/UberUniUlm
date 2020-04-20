@@ -98,6 +98,16 @@ public class OfferedRide {
     private int places_open;
     private ArrayList<User> bookedUsers;
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    private String key;
+
 
     public OfferedRide(Route route, int price, Date date, String time, int places, int places_open) {
         this.route = route;
