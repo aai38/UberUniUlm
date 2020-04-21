@@ -270,7 +270,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
             }
             route = null;
             Integer places= (Integer.parseInt(placesTextField.getText().toString()));
-            OfferedRide offer=new OfferedRide(route, price, date, time, places, places );
+            OfferedRide offer=new OfferedRide(route, price, utilDate, time, places, places );
             offeredRides = new ArrayList<>();
             offeredRides.add(offer);
             FirebaseDatabase database = FirebaseDatabase.getInstance();
