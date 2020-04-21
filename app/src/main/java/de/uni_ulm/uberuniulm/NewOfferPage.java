@@ -3,10 +3,12 @@ package de.uni_ulm.uberuniulm;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +47,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.common.base.Optional;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.tomtom.online.sdk.common.location.LatLng;
 import com.tomtom.online.sdk.common.permission.AndroidPermissionChecker;
 import com.tomtom.online.sdk.location.LocationSource;
@@ -90,9 +94,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import de.uni_ulm.uberuniulm.model.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.model.Settings;
+import de.uni_ulm.uberuniulm.model.User;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -126,6 +135,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
     private Map<String, LatLng> searchResultsMap;
     private Runnable searchRunnable;
     private EditText startTextField, goalTextField, dateTextField, timeTextField, placesTextField, priceTextField;
+    public static ArrayList<OfferedRide> offeredRides;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private long currrentlySelectedRoute;
@@ -133,6 +143,9 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
     private WaypointArrayAdapter waypointArrayAdapter;
 
     private Icon departureIcon, destinationIcon, waypointIcon;
+
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,6 +224,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
         destinationIcon=Icon.Factory.fromResources(NewOfferPage.this, R.drawable.ic_map_route_destination);
         waypointIcon=Icon.Factory.fromResources(NewOfferPage.this, R.drawable.ic_markedlocation);
 
+        fragmentManager=getSupportFragmentManager();
 
         initTomTomServices();
         initSearchFieldsWithDefaultValues();
@@ -239,7 +253,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
 
     public void onNewOfferActivityConfirmBttn(View view){
         Integer price= Integer.parseInt(priceTextField.getText().toString());
-        if(route!=null&& price!=null){
+        //if(route!=null&& price!=null){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             java.util.Date utilDate;
             Date date;
@@ -247,17 +261,49 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
             try {
                 utilDate = sdf.parse(dateTextField.getText().toString());
                 date= new java.sql.Date(utilDate.getTime());
-                time = new SimpleDateFormat("h:mmaa").format(timeTextField.getText().toString());
+                time = timeTextField.getText().toString();
             } catch (ParseException e) {
                 e.printStackTrace();
                 utilDate=Calendar.getInstance().getTime();
                 date =new java.sql.Date(utilDate.getTime());
                 time=Calendar.getInstance().getTime().toString();
             }
+            route = null;
             Integer places= (Integer.parseInt(placesTextField.getText().toString()));
             OfferedRide offer=new OfferedRide(route, price, date, time, places, places );
-        }
+            offeredRides = new ArrayList<>();
+            offeredRides.add(offer);
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference();
 
+
+            SharedPreferences pref = getApplicationContext().getSharedPreferences("UserKey", 0);
+            String userId = pref.getString("UserKey", "");
+            Log.i("userkey", ""+userId);
+
+
+
+
+            if(offeredRides.size() == 1) {
+                DatabaseReference refRide = myRef.child(userId).push();
+                Log.i("size=1 new offer", ""+ refRide.getKey());
+
+                refRide.setValue(offer);
+                offer.setKey(refRide.getKey());
+            } else {
+                DatabaseReference refRide = myRef.child(userId).child("offeredRides").push();
+
+                Log.i("size>1 new offer", ""+ refRide.getKey());
+                refRide.setValue(offer);
+                offer.setKey(refRide.getKey());
+
+            }
+
+        //}
+
+        //fragmentTransaction = fragmentManager.beginTransaction();
+       // fragmentTransaction.replace(R.id.fragment_offers, new MainPageFragment());
+        //fragmentTransaction.commit();
         Intent intent = new Intent(NewOfferPage.this, MainPage.class);
         startActivity(intent);
     }

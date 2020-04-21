@@ -1,18 +1,27 @@
 package de.uni_ulm.uberuniulm;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import de.uni_ulm.uberuniulm.model.Settings;
+import de.uni_ulm.uberuniulm.model.User;
+
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class StartPage  extends AppCompatActivity {
     LinearLayout loginDialog;
     Gender gender= Gender.FEMALE;
+    SharedPreferences pref;
 
 
     @Override
@@ -83,6 +92,21 @@ public class StartPage  extends AppCompatActivity {
 
     public void onStartActivityRegisterBttn(View v){
         if(checkRegistration()){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference();
+            User exampleUser = new User(null, "blabla", "female", "bla.png", "Mueller", "Nina", null, null, 2, new Settings("de", "black"), "nina");
+            //myRef.push().setValue(exampleUser);
+            //String key = myRef.getKey();
+
+            DatabaseReference ref = myRef.push();
+            ref.setValue(exampleUser);
+            String key = ref.getKey();
+            pref = getApplicationContext().getSharedPreferences("UserKey", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            Log.i("key", ""+key);
+            editor.putString("UserKey", key);
+
+
             Intent intent = new Intent(StartPage.this, MainPage.class);
             startActivity(intent);
         }
