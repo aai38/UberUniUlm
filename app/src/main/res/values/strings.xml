@@ -25,6 +25,11 @@
     <string name="newOffer_time_title">Time</string>
     <string name="newOffer_start_title">Start location</string>
     <string name="newOffer_destination_title">Destination</string>
+    <string name="newOffer_waypoint_link">Add waypoint</string>
+
+    <string name="dialog_manage_waypoints_title">Add waypoint</string>
+    <string name="dialog_manage_waypoints_hint">Enter waypoint</string>
+    <string name="dialog_manage_waypoints_max_number_hint">Max. number of waypoints reached</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_test">Test</string>

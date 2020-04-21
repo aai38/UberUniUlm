@@ -1,27 +1,44 @@
 package de.uni_ulm.uberuniulm;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -36,15 +53,20 @@ import com.tomtom.online.sdk.location.LocationUpdateListener;
 import com.tomtom.online.sdk.map.CameraPosition;
 import com.tomtom.online.sdk.map.Icon;
 import com.tomtom.online.sdk.map.MapFragment;
+import com.tomtom.online.sdk.map.Marker;
 import com.tomtom.online.sdk.map.MarkerBuilder;
 import com.tomtom.online.sdk.map.OnMapReadyCallback;
 import com.tomtom.online.sdk.map.Route;
 import com.tomtom.online.sdk.map.RouteBuilder;
+import com.tomtom.online.sdk.map.RouteStyle;
+import com.tomtom.online.sdk.map.SimpleMarkerBalloon;
 import com.tomtom.online.sdk.map.TomtomMap;
 import com.tomtom.online.sdk.map.TomtomMapCallback;
 import com.tomtom.online.sdk.routing.OnlineRoutingApi;
 import com.tomtom.online.sdk.routing.RoutingApi;
 import com.tomtom.online.sdk.routing.data.FullRoute;
+import com.tomtom.online.sdk.routing.data.InstructionsType;
+import com.tomtom.online.sdk.routing.data.Report;
 import com.tomtom.online.sdk.routing.data.RouteQuery;
 import com.tomtom.online.sdk.routing.data.RouteQueryBuilder;
 import com.tomtom.online.sdk.routing.data.RouteResponse;
@@ -69,6 +91,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import de.uni_ulm.uberuniulm.model.OfferedRide;
+import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -83,24 +106,33 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
     private RoutingApi routingApi;
     private AutoCompleteTextView atvDepartureLocation;
     private AutoCompleteTextView atvDestinationLocation;
+    private AutoCompleteTextView atvWaypointLocation;
     private final Handler searchTimerHandler = new Handler();
     private LocationSource locationSource;
 
     private static final int AUTOCOMPLETE_SEARCH_DELAY_MILLIS = 600;
-    private static final int AUTOCOMPLETE_SEARCH_THRESHOLD = 3;
+    private static final int AUTOCOMPLETE_SEARCH_THRESHOLD = 2;
     private static final LatLng DEFAULT_DEPARTURE_LATLNG = new LatLng(48.418618, 9.942304);
     private static final LatLng DEFAULT_DESTINATION_LATLNG = new LatLng(48.426393, 9.960506);
     private static final int PERMISSION_REQUEST_LOCATION = 0;
+    private static final int MAX_ROUTE_ALTERNATIVES=2;
+    private static final RouteType[] ROUTETYPES_LIST={RouteType.FASTEST,RouteType.SHORTEST};
 
     private static final int SEARCH_FUZZY_LVL_MIN = 2;
 
     private ArrayAdapter<String> searchAdapter;
-    private List<String> searchAutocompleteList;
+    private List<String> searchAutocompleteList, waypoints;
+    private List<LatLng> waypointList;
     private Map<String, LatLng> searchResultsMap;
     private Runnable searchRunnable;
     private EditText startTextField, goalTextField, dateTextField, timeTextField, placesTextField, priceTextField;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
+    private TimePickerDialog.OnTimeSetListener mTimeSetListener;
+    private long currrentlySelectedRoute;
+    private Boolean waypointsInitiated=false;
+    private WaypointArrayAdapter waypointArrayAdapter;
 
-    private Icon departureIcon, destinationIcon;
+    private Icon departureIcon, destinationIcon, waypointIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,12 +150,66 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
         placesTextField= findViewById(R.id.newOfferActivityPlacesTextField);
         priceTextField= findViewById(R.id.newOfferActivityPriceTextField);
 
+        dateTextField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog = new DatePickerDialog(
+                        NewOfferPage.this, R.style.spinnerDatePickerStyle,
+                        mDateSetListener,
+                        year, month, day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getColor(R.color.colorSlightlyTransparentBlack)));
+                dialog.show();
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+            }
+        });
+
+        mDateSetListener= new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                String date = month + "/" + dayOfMonth + "/" + year;
+                dateTextField.setText(date);
+            }
+        };
+
+        timeTextField.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                final Calendar myCalender = Calendar.getInstance();
+                int hour = myCalender.get(Calendar.HOUR_OF_DAY);
+                int minute = myCalender.get(Calendar.MINUTE);
+                mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        if (view.isShown()) {
+                            myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                            myCalender.set(Calendar.MINUTE, minute);
+                            String time=hourOfDay+":"+minute;
+                            timeTextField.setText(time);
+                        }
+                    }
+                };
+                TimePickerDialog timePickerDialog = new TimePickerDialog(NewOfferPage.this,R.style.timePickerStyle , mTimeSetListener, hour, minute, true);
+                timePickerDialog.setTitle("Choose departure:");
+                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(getColor(R.color.colorSlightlyTransparentBlack)));
+                timePickerDialog.show();
+                timePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                timePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+            }
+        });
+
         mapFragment.setVisibility(View.VISIBLE);
         searchApi=OnlineSearchApi.create(this);
         routingApi=OnlineRoutingApi.create(this);
 
         departureIcon=Icon.Factory.fromResources(NewOfferPage.this, R.drawable.ic_map_route_departure);
         destinationIcon=Icon.Factory.fromResources(NewOfferPage.this, R.drawable.ic_map_route_destination);
+        waypointIcon=Icon.Factory.fromResources(NewOfferPage.this, R.drawable.ic_markedlocation);
 
 
         initTomTomServices();
@@ -139,6 +225,11 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
             tomtomMap.clear();
             drawRoute(latLngDeparture, latLngDestination);
         });
+
+        waypoints= new ArrayList<>();
+        waypointList= new ArrayList<>();
+        wayPointPosition=DEFAULT_DEPARTURE_LATLNG;
+        waypointArrayAdapter = new WaypointArrayAdapter(this);
     }
 
     public void onNewOfferActivityCancelBttn(View view){
@@ -295,6 +386,8 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
     private void initSearchFieldsWithDefaultValues() {
         atvDepartureLocation = findViewById(R.id.newOfferActivityStartEditText);
         atvDestinationLocation = findViewById(R.id.newOfferActivityDestinationEditText);
+        atvWaypointLocation = findViewById(R.id.dialogWaypointSearch);
+
         initLocationSource();
         initDepartureWithDefaultValue();
         initDestinationWithDefaultValue();
@@ -384,6 +477,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
 
     private void initWhereSection() {
         searchAutocompleteList = new ArrayList<>();
+        waypoints=new ArrayList<>();
         searchResultsMap = new HashMap<>();
         searchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, searchAutocompleteList);
 
@@ -416,6 +510,8 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
                 latLngDeparture = searchResultsMap.get(item);
             } else if (autoCompleteTextView == atvDestinationLocation) {
                 latLngDestination = searchResultsMap.get(item);
+            }else if(autoCompleteTextView == atvWaypointLocation){
+                wayPointPosition = searchResultsMap.get(item);
             }
             hideKeyboard(view);
         });
@@ -444,16 +540,26 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
 
     private RouteQuery createRouteQuery(LatLng start, LatLng stop, LatLng[] wayPoints) {
         return (wayPoints != null) ?
-                new RouteQueryBuilder(start, stop).withWayPoints(wayPoints).withRouteType(RouteType.FASTEST).build() :
-                new RouteQueryBuilder(start, stop).withRouteType(RouteType.FASTEST).build();
+                new RouteQueryBuilder(start, stop).withWayPoints(wayPoints).withMaxAlternatives(MAX_ROUTE_ALTERNATIVES)
+                        .withReport(Report.EFFECTIVE_SETTINGS)
+                        .withInstructionsType(InstructionsType.TEXT)
+                        .withConsiderTraffic(false).build():
+                new RouteQueryBuilder(start, stop).withWayPoints(wayPoints).withMaxAlternatives(MAX_ROUTE_ALTERNATIVES)
+                        .withReport(Report.EFFECTIVE_SETTINGS)
+                        .withInstructionsType(InstructionsType.TEXT)
+                        .withRouteType(ROUTETYPES_LIST[0])
+                        .withRouteType(ROUTETYPES_LIST[1])
+                        .withConsiderTraffic(false).build();
     }
 
 
 
     private void drawRoute(LatLng start, LatLng stop) {
-        wayPointPosition = null;
-        drawRouteWithWayPoints(start, stop, null);
-
+        LatLng[] waypointList=new LatLng[this.waypointList.size()];
+        for(int i=0; i<this.waypointList.size();i++){
+            waypointList[i]=this.waypointList.get(i);
+        }
+        drawRouteWithWayPoints(start, stop, waypointList);
     }
 
 
@@ -471,11 +577,35 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
                     }
 
                     private void displayRoutes(List<FullRoute> routes) {
+                        Boolean initialRouteSelected=false;
                         for (FullRoute fullRoute : routes) {
-                            route = tomtomMap.addRoute(new RouteBuilder(
-                                    fullRoute.getCoordinates()).startIcon(departureIcon).endIcon(destinationIcon));
+                            if(routes.indexOf(fullRoute)==0){
+                                route = tomtomMap.addRoute(new RouteBuilder(
+                                        fullRoute.getCoordinates()).startIcon(departureIcon).endIcon(destinationIcon).style(RouteStyle.DEFAULT_ROUTE_STYLE));
+                                currrentlySelectedRoute=route.getId();
+                            }else {
+                                route = tomtomMap.addRoute(new RouteBuilder(
+                                        fullRoute.getCoordinates()).startIcon(departureIcon).endIcon(destinationIcon).style(RouteStyle.DEFAULT_INACTIVE_ROUTE_STYLE));
+                            }
                         }
+
+                        for(int i=0; i<waypointList.size();i++){
+                            SimpleMarkerBalloon balloon = new SimpleMarkerBalloon(waypoints.get(i));
+                            MarkerBuilder markerBuilder = new MarkerBuilder(waypointList.get(i))
+                                    .markerBalloon(balloon);
+
+                            Marker m = tomtomMap.addMarker(markerBuilder);
+                        }
+                        tomtomMap.getRouteSettings().addOnRouteClickListener(new TomtomMapCallback.OnRouteClickListener() {
+                            @Override
+                            public void onRouteClick(@NonNull Route route) {
+                                tomtomMap.updateRouteStyle(currrentlySelectedRoute, RouteStyle.DEFAULT_INACTIVE_ROUTE_STYLE);
+                                tomtomMap.updateRouteStyle(route.getId(), RouteStyle.DEFAULT_ROUTE_STYLE);
+                                currrentlySelectedRoute=route.getId();
+                            }
+                        });
                     }
+
 
 
                     @Override
@@ -491,5 +621,81 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
         latLngDeparture = null;
         latLngDestination = null;
         route = null;
+    }
+
+    public void onNewWaypoint(View view){
+        LinearLayout fragmentContainer= findViewById(R.id.newOfferFragmentContainer);
+        fragmentContainer.setVisibility(View.VISIBLE);
+        setTextWatcherToAutoCompleteField(atvWaypointLocation);
+
+        if(!waypointsInitiated){
+            ListView waypointList= findViewById(R.id.dialogManageWaypointsList);
+            waypointList.setAdapter(waypointArrayAdapter);
+            waypointsInitiated=true;
+        }
+    }
+
+    public void onAddWaypointDialogButton(View view){
+        if(!waypointList.contains(wayPointPosition)&& wayPointPosition!=DEFAULT_DEPARTURE_LATLNG){
+            waypointList.add(wayPointPosition);
+            waypoints.add(atvWaypointLocation.getText().toString());
+            atvWaypointLocation.setText("");
+            if(waypointList.size()==3){
+                TextView waypointAddTitle= findViewById(R.id.dialogManageWaypointsTitle);
+                LinearLayout addWaypointContainer= findViewById(R.id.dialogWaypointAddWaypointContainer);
+                waypointAddTitle.setText(R.string.dialog_manage_waypoints_max_number_hint);
+                addWaypointContainer.setVisibility(View.INVISIBLE);
+            }
+            waypointArrayAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void onCloseWaypointDialogButton(View view){
+        onAddWaypointDialogButton(view);
+        LinearLayout fragmentContainer= findViewById(R.id.newOfferFragmentContainer);
+        fragmentContainer.setVisibility(View.INVISIBLE);
+
+    }
+
+    private class WaypointArrayAdapter extends ArrayAdapter<String> {
+        Context mContext;
+
+        public WaypointArrayAdapter(@NonNull Context context) {
+            super(context, 0 , waypoints);
+            mContext = context;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View listItem = convertView;
+            if(listItem == null)
+                listItem = LayoutInflater.from(NewOfferPage.this).inflate(R.layout.item_waypoint,parent,false);
+
+            String currentWaypoint= waypoints.get(position);
+
+            TextView waypointName = (TextView)listItem.findViewById(R.id.waypointNameTextfield);
+            waypointName.setText(waypoints.get(position));
+
+            ImageView deleteBttn= (ImageView) listItem.findViewById(R.id.waypointDeleteBttn);
+            deleteBttn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    waypointList.remove(position);
+                    waypoints.remove(position);
+                    wayPointPosition=DEFAULT_DEPARTURE_LATLNG;
+                    LinearLayout addWaypointContainer= findViewById(R.id.dialogWaypointAddWaypointContainer);
+                    waypointArrayAdapter.notifyDataSetChanged();
+
+                    if(waypoints.size()==2) {
+                        addWaypointContainer.setVisibility(View.VISIBLE);
+                        TextView waypointAddTitle= findViewById(R.id.dialogManageWaypointsTitle);
+                        waypointAddTitle.setText(R.string.dialog_manage_waypoints_title);
+                    }
+                }
+            });
+
+            return listItem;
+        }
     }
 }
