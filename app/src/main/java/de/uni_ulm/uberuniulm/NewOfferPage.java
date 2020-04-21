@@ -1,6 +1,7 @@
 package de.uni_ulm.uberuniulm;
 
 import android.Manifest;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,6 +72,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import de.uni_ulm.uberuniulm.model.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
 import de.uni_ulm.uberuniulm.model.Settings;
@@ -108,6 +112,9 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
 
     private Icon departureIcon, destinationIcon;
 
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +138,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
         departureIcon=Icon.Factory.fromResources(NewOfferPage.this, R.drawable.ic_map_route_departure);
         destinationIcon=Icon.Factory.fromResources(NewOfferPage.this, R.drawable.ic_map_route_destination);
 
+        fragmentManager=getSupportFragmentManager();
 
         initTomTomServices();
         initSearchFieldsWithDefaultValues();
@@ -154,7 +162,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
 
     public void onNewOfferActivityConfirmBttn(View view){
         Integer price= Integer.parseInt(priceTextField.getText().toString());
-        if(route!=null&& price!=null){
+        //if(route!=null&& price!=null){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             java.util.Date utilDate;
             Date date;
@@ -162,34 +170,49 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
             try {
                 utilDate = sdf.parse(dateTextField.getText().toString());
                 date= new java.sql.Date(utilDate.getTime());
-                time = new SimpleDateFormat("h:mmaa").format(timeTextField.getText().toString());
+                time = timeTextField.getText().toString();
             } catch (ParseException e) {
                 e.printStackTrace();
                 utilDate=Calendar.getInstance().getTime();
                 date =new java.sql.Date(utilDate.getTime());
                 time=Calendar.getInstance().getTime().toString();
             }
+            route = null;
             Integer places= (Integer.parseInt(placesTextField.getText().toString()));
             OfferedRide offer=new OfferedRide(route, price, date, time, places, places );
+            offeredRides = new ArrayList<>();
+            offeredRides.add(offer);
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference();
-            User exampleUser = new User(null, "blabla", "female", "bla.png", "Mueller", "Nina", null, null, 2, new Settings("de", "black"), "nina");
-            //myRef.push().setValue(exampleUser);
-            //String key = myRef.getKey();
 
-            DatabaseReference ref = myRef.push();
-            ref.setValue(exampleUser);
-            String key = ref.getKey();
-            SharedPreferences pref = getApplicationContext().getSharedPreferences("UserKey", 0); // 0 - for private mode
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString("UserKey", key);
 
-            DatabaseReference refRide = myRef.child(key).child("offeredRide").push();
-            myRef.setValue(offer);
-            offer.setKey(refRide.getKey());
-            offeredRides.add(offer);
-        }
+            SharedPreferences pref = getApplicationContext().getSharedPreferences("UserKey", 0);
+            String userId = pref.getString("UserKey", "");
+            Log.i("userkey", ""+userId);
 
+
+
+
+            if(offeredRides.size() == 1) {
+                DatabaseReference refRide = myRef.child(userId).push();
+                Log.i("size=1 new offer", ""+ refRide.getKey());
+
+                refRide.setValue(offer);
+                offer.setKey(refRide.getKey());
+            } else {
+                DatabaseReference refRide = myRef.child(userId).child("offeredRides").push();
+
+                Log.i("size>1 new offer", ""+ refRide.getKey());
+                refRide.setValue(offer);
+                offer.setKey(refRide.getKey());
+
+            }
+
+        //}
+
+        //fragmentTransaction = fragmentManager.beginTransaction();
+       // fragmentTransaction.replace(R.id.fragment_offers, new MainPageFragment());
+        //fragmentTransaction.commit();
         Intent intent = new Intent(NewOfferPage.this, MainPage.class);
         startActivity(intent);
     }

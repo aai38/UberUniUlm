@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,10 +62,11 @@ public class MainPageFragment extends Fragment {
         //        new Time(15, 00, 00), 3, new User(null, "blabla", "female", "bla.png", "Mueller", "Nina", null, null, 2, new Settings("de", "black"), "ninabina")));
 
         SharedPreferences pref = getContext().getSharedPreferences("UserKey", 0);
-        String UserId = pref.getString("UserKey", null);
+        String userId = pref.getString("UserKey", "");
+        Log.i("userid", ""+userId);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("uberuniulm").child(UserId).child("offeredRides");
+        DatabaseReference myRef = database.getReference("uberuniulm").child(userId).child("offeredRides");
 
 
         ArrayList<Object> values = new ArrayList<>();
@@ -76,6 +78,19 @@ public class MainPageFragment extends Fragment {
 
                     values.add(childSnapshot.getValue());
                 }
+                if(values.size()==0) {
+                    Log.i("onDataChange", "no values");
+                } else {
+                    Route route = (Route) values.get(0);
+                    int price = (int) (values.get(1));
+                    Date date = (Date) values.get(2);
+                    String time = values.get(3).toString();
+                    int places = (int) values.get(4);
+                    int places_open = (int) values.get(5);
+
+                    OfferedRide offeredRide = new OfferedRide(route, price, date, time, places, places_open);
+                    offeredRides.add(offeredRide);
+                }
             }
 
             @Override
@@ -84,15 +99,7 @@ public class MainPageFragment extends Fragment {
             }
         });
 
-        Route route = (Route) values.get(1);
-        int price = (int)(values.get(2));
-        Date date = (Date) values.get(4);
-        String time = values.get(5).toString();
-        int places = (int) values.get(6);
-        int places_open = (int) values.get(7);
 
-        OfferedRide offeredRide = new OfferedRide(route, price, date, time, places, places_open);
-        offeredRides.add(offeredRide);
 
         adapter= new CustomAdapter(offeredRides,fragmentView.getContext());
 

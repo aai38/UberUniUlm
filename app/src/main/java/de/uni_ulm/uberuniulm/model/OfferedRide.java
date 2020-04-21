@@ -2,8 +2,7 @@ package de.uni_ulm.uberuniulm.model;
 
 import com.tomtom.online.sdk.map.Route;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.util.Date;
 import java.util.ArrayList;
 
 public class OfferedRide {

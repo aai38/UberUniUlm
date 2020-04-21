@@ -85,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Today"
-                    android:inputType="date" />
+                    android:inputType="date|text" />
             </LinearLayout>
 
             <LinearLayout
@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="08:30"
-                    android:inputType="time" />
+                    android:inputType="text|time" />
             </LinearLayout>
         </LinearLayout>
 
