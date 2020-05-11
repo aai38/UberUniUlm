@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "617457019252-7v4oage1vrnu9eoihr7obu04uhd2rvh6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.uni_ulm.uberuniulm",
+            "certificate_hash": "eca8f01da3eee84bbab2ea365a938b40631fce1b"
+          }
+        },
+        {
           "client_id": "617457019252-js1c6s6shbkm4g19g19rkkuge86rdndo.apps.googleusercontent.com",
           "client_type": 3
         }

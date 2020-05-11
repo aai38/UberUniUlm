@@ -109,13 +109,11 @@ public class User {
     private String username;
 
 
-    public User(ArrayList<BookedRide> bookedRides, String email, String gender, String image, String lastname, String prename, ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, Settings setting, String username) {
+    public User(ArrayList<BookedRide> bookedRides, String email, String gender, String image, ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, Settings setting, String username) {
         this.bookedRides = bookedRides;
         this.email = email;
         this.gender = gender;
         this.image = image;
-        this.lastname = lastname;
-        this.prename = prename;
         this.offeredRides = offeredRides;
         this.rating = rating;
         this.setting = setting;

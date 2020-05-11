@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Desktop-UberUniUlm.iml" filepath="$PROJECT_DIR$/Desktop-UberUniUlm.iml" group="UberUniUlm" />
       <module fileurl="file://$PROJECT_DIR$/UberUniUlm.iml" filepath="$PROJECT_DIR$/UberUniUlm.iml" group="UberUniUlm" />
+      <module fileurl="file://$PROJECT_DIR$/app/UberUniUlm-app.iml" filepath="$PROJECT_DIR$/app/UberUniUlm-app.iml" group="UberUniUlm/app" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="UberUniUlm/app" />
     </modules>
   </component>
