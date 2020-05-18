@@ -105,6 +105,7 @@ import de.uni_ulm.uberuniulm.model.User;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class NewOfferPage extends AppCompatActivity implements LocationUpdateListener, NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, TomtomMapCallback.OnMapLongClickListener {
     private TomtomMap tomtomMap;
@@ -252,57 +253,42 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
     }
 
     public void onNewOfferActivityConfirmBttn(View view){
-        Integer price= Integer.parseInt(priceTextField.getText().toString());
+        int price= Integer.parseInt(priceTextField.getText().toString());
         //if(route!=null&& price!=null){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            java.util.Date utilDate;
-            Date date;
-            String time;
-            try {
-                utilDate = sdf.parse(dateTextField.getText().toString());
-                date= new java.sql.Date(utilDate.getTime());
-                time = timeTextField.getText().toString();
-            } catch (ParseException e) {
-                e.printStackTrace();
-                utilDate=Calendar.getInstance().getTime();
-                date =new java.sql.Date(utilDate.getTime());
-                time=Calendar.getInstance().getTime().toString();
-            }
-            route = null;
-            Integer places= (Integer.parseInt(placesTextField.getText().toString()));
-            OfferedRide offer=new OfferedRide(route, price, utilDate, time, places, places );
-            offeredRides = new ArrayList<>();
-            offeredRides.add(offer);
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference();
+
+        String date = "";
+        String time;
+
+        date = dateTextField.getText().toString();
+
+        time = timeTextField.getText().toString();
+        String departure = startTextField.getText().toString();
+        String destination = goalTextField.getText().toString();
+
+        Log.i("departure", departure + destination);
+
+        route = null;
+        int places= (Integer.parseInt(placesTextField.getText().toString()));
+        OfferedRide offer=new OfferedRide(route, price, date, time, places, places, departure, destination );
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
 
 
-            SharedPreferences pref = getApplicationContext().getSharedPreferences("UserKey", 0);
-            String userId = pref.getString("UserKey", "");
-            Log.i("userkey", ""+userId);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("UserKey", 0);
+        String userId = pref.getString("UserKey", "");
+        Log.i("userkey", ""+userId);
+        SharedPreferences.Editor editor = pref.edit();
 
-
-
-
-            if(offeredRides.size() == 1) {
-                DatabaseReference refRide = myRef.child(userId).push();
-                Log.i("size=1 new offer", ""+ refRide.getKey());
-
-                refRide.setValue(offer);
-                offer.setKey(refRide.getKey());
-            } else {
-                DatabaseReference refRide = myRef.child(userId).child("offeredRides").push();
-
-                Log.i("size>1 new offer", ""+ refRide.getKey());
-                refRide.setValue(offer);
-                offer.setKey(refRide.getKey());
-
-            }
+        int initalIndex = pref.getInt("RideId", 0);
+        myRef.child(userId).child("offeredRides").child(String.valueOf(initalIndex)).setValue(offer);
+        editor.putInt("RideId", initalIndex +1);
+        editor.apply();
 
         //}
 
         //fragmentTransaction = fragmentManager.beginTransaction();
-       // fragmentTransaction.replace(R.id.fragment_offers, new MainPageFragment());
+        // fragmentTransaction.replace(R.id.fragment_offers, new MainPageFragment());
         //fragmentTransaction.commit();
         Intent intent = new Intent(NewOfferPage.this, MainPage.class);
         startActivity(intent);

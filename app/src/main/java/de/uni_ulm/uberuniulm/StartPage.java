@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import de.uni_ulm.uberuniulm.model.BookedRide;
+import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.Settings;
 import de.uni_ulm.uberuniulm.model.User;
 
@@ -25,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 public class StartPage  extends AppCompatActivity {
     LinearLayout loginDialog;
@@ -183,7 +187,9 @@ public class StartPage  extends AppCompatActivity {
                             isValid = true;
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference();
-                            User exampleUser = new User(null, mailAdress.toString(), gender.toString(), "bla.png", null, null, -1, new Settings("de", "black"), username.toString());
+                            ArrayList offeredRide = new ArrayList<OfferedRide>();
+                            ArrayList bookedRide = new ArrayList<BookedRide>();
+                            User exampleUser = new User(bookedRide, mailAdress.toString(), gender.toString(), "bla.png", offeredRide, null, -1, username.toString());
                             //myRef.push().setValue(exampleUser);
                             //String key = myRef.getKey();
 
@@ -194,6 +200,8 @@ public class StartPage  extends AppCompatActivity {
                             SharedPreferences.Editor editor = pref.edit();
                             Log.i("key", ""+key);
                             editor.putString("UserKey", key);
+                            editor.putInt("RideId", 0);
+                            editor.apply();
 
                         } else {
                             Log.w("TAG", "createUserWithEmail:failure", task.getException());

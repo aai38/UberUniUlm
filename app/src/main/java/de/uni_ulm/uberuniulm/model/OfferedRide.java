@@ -46,11 +46,11 @@ public class OfferedRide {
         this.price = price;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -91,24 +91,17 @@ public class OfferedRide {
     private Route route;
     private ParkingSpot parkingspot;
     private int price;
-    private Date date;
+    private String date;
     private String time;
     private int places;
     private int places_open;
     private ArrayList<User> bookedUsers;
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     private String key;
 
 
-    public OfferedRide(Route route, int price, Date date, String time, int places, int places_open) {
+    public OfferedRide(Route route, int price, String date, String time, int places, int places_open, String departure, String destination) {
         this.route = route;
         this.price = price;
         this.date = date;
@@ -116,9 +109,11 @@ public class OfferedRide {
         this.places = places;
         this.places_open = places_open;
         this.bookedUsers = new ArrayList<>();
+        this.departure = departure;
+        this.destination = destination;
     }
 
-    public OfferedRide(String destination, String departure, Route route, ParkingSpot parkingspot, int price, Date date, String time, int places, int places_open, ArrayList<User> bookedUsers) {
+    public OfferedRide(String destination, String departure, Route route, ParkingSpot parkingspot, int price, String date, String time, int places, int places_open, ArrayList<User> bookedUsers) {
         this.destination = destination;
         this.departure = departure;
         this.route = route;

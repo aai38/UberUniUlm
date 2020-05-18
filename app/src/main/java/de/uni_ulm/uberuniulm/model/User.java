@@ -69,13 +69,13 @@ public class User {
         this.rating = rating;
     }
 
-    public Settings getSetting() {
+    /*public Settings getSetting() {
         return setting;
     }
 
     public void setSetting(Settings setting) {
         this.setting = setting;
-    }
+    }*/
 
     public String getUsername() {
         return username;
@@ -105,18 +105,18 @@ public class User {
 
     private ArrayList<Message> messages;
     private float rating;
-    private Settings setting;
+    //private Settings setting;
     private String username;
 
 
-    public User(ArrayList<BookedRide> bookedRides, String email, String gender, String image, ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, Settings setting, String username) {
+    public User(ArrayList<BookedRide> bookedRides, String email, String gender, String image, ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, String username) {
         this.bookedRides = bookedRides;
         this.email = email;
         this.gender = gender;
         this.image = image;
         this.offeredRides = offeredRides;
         this.rating = rating;
-        this.setting = setting;
+        //this.setting = setting;
         this.username = username;
         this.messages = messages;
     }

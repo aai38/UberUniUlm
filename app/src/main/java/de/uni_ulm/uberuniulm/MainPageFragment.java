@@ -30,6 +30,7 @@ import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
 import de.uni_ulm.uberuniulm.model.Settings;
 import de.uni_ulm.uberuniulm.model.User;
+import timber.log.Timber;
 
 
 public class MainPageFragment extends Fragment {
@@ -38,6 +39,8 @@ public class MainPageFragment extends Fragment {
     ArrayList<OfferedRide> offeredRides;
     ListView listView;
     private static CustomAdapter adapter;
+    private DatabaseReference myRef;
+    private OfferedRide offeredRide;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -66,38 +69,47 @@ public class MainPageFragment extends Fragment {
         Log.i("userid", ""+userId);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("uberuniulm").child(userId).child("offeredRides");
+
+        int ridesTotal = pref.getInt("RideId", 0);
+
+        for (int i = 0; i<= ridesTotal; i++) {
+            myRef = database.getReference().child(userId).child("offeredRides").child(""+i);
 
 
-        ArrayList<Object> values = new ArrayList<>();
+            ArrayList<Object> values = new ArrayList<>();
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
 
-                    values.add(childSnapshot.getValue());
+                        values.add(childSnapshot.getValue());
+                    }
+                    if(values.size()==0) {
+                        Log.i("onDataChange", "no values");
+                    } else {
+                        //Route route = (Route) values.get(0);
+                        Log.i("TAG", "values" + values.get(3).toString());
+                        long price = (long) (values.get(5));
+                        String date =  values.get(0).toString();
+                        String time = values.get(6).toString();
+                        long places = (long) values.get(3);
+                        long places_open = (long) values.get(4);
+                        String departure = values.get(1).toString();
+                        String destination = values.get(2).toString();
+
+                        offeredRide = new OfferedRide(null, (int) price, date, time, (int)places, (int)places_open, departure, destination);
+                        offeredRides.add(offeredRide);
+                    }
                 }
-                if(values.size()==0) {
-                    Log.i("onDataChange", "no values");
-                } else {
-                    Route route = (Route) values.get(0);
-                    int price = (int) (values.get(1));
-                    Date date = (Date) values.get(2);
-                    String time = values.get(3).toString();
-                    int places = (int) values.get(4);
-                    int places_open = (int) values.get(5);
 
-                    OfferedRide offeredRide = new OfferedRide(route, price, date, time, places, places_open);
-                    offeredRides.add(offeredRide);
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
                 }
-            }
+            });
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
 
 

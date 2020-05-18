@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="15dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,15 +9,15 @@
 
     <TextView
         android:id="@+id/textViewDeparture"
-        android:layout_width="130dp"
-        android:layout_height="40dp"
+        android:layout_width="113dp"
+        android:layout_height="39dp"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/imageView"
         android:layout_toRightOf="@+id/imageView"
         android:paddingBottom="10dp"
-        android:textColor="#FFFFFF"
         android:textAlignment="center"
-        />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -31,24 +32,23 @@
 
     <TextView
         android:id="@+id/textViewDate"
-        android:layout_width="130dp"
-        android:layout_height="40dp"
+        android:layout_width="114dp"
+        android:layout_height="42dp"
         android:layout_below="@+id/textViewDeparture"
         android:layout_toEndOf="@+id/imageView"
         android:layout_toRightOf="@+id/imageView"
         android:paddingTop="10dp"
         android:textAlignment="center"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/TextViewPlaces"
         android:layout_width="130dp"
         android:layout_height="40dp"
         android:layout_alignBottom="@+id/imageView"
-        android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginBottom="-43dp"
-        android:layout_toEndOf="@+id/imageView"
+        android:layout_marginLeft="1dp"
+        android:layout_marginBottom="-38dp"
         android:layout_toRightOf="@+id/imageView"
         android:textColor="@color/colorPrimary" />
 
@@ -69,8 +69,8 @@
         android:layout_height="40dp"
         android:layout_below="@+id/TextViewArrow"
         android:layout_marginStart="2dp"
-        android:layout_marginLeft="132dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginLeft="115dp"
+        android:layout_marginTop="5dp"
         android:layout_toEndOf="@+id/textViewDeparture"
         android:layout_toRightOf="@+id/imageView"
         android:text="-"
@@ -78,25 +78,27 @@
 
     <TextView
         android:id="@+id/TextViewDestination"
-        android:layout_width="64dp"
-        android:layout_height="44dp"
+        android:layout_width="84dp"
+        android:layout_height="42dp"
         android:layout_marginStart="3dp"
         android:layout_marginLeft="166dp"
         android:layout_toEndOf="@+id/TextViewArrow"
         android:layout_toRightOf="@+id/imageView"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/TextViewTime"
         android:layout_width="85dp"
         android:layout_height="40dp"
         android:layout_below="@+id/TextViewDestination"
-        android:layout_marginStart="36dp"
-        android:layout_marginLeft="166dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginStart="34dp"
+        android:layout_marginLeft="147dp"
+        android:layout_marginTop="3dp"
         android:layout_toEndOf="@+id/textViewDeparture"
         android:layout_toRightOf="@+id/imageView"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/TextViewPrice"
@@ -107,6 +109,16 @@
         android:layout_toEndOf="@+id/TextViewDestination"
         android:layout_toRightOf="@+id/TextViewArrow"
         android:textColor="@color/colorPrimary" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="39dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/TextViewTime"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="-1dp"
+        android:layout_toEndOf="@+id/TextViewPlaces"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
 
 </RelativeLayout>
