@@ -27,13 +27,7 @@ public class User {
         this.gender = gender;
     }
 
-    public String getImage() {
-        return image;
-    }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
 
     public String getLastname() {
         return lastname;
@@ -109,7 +103,7 @@ public class User {
     private String username;
 
 
-    public User(ArrayList<BookedRide> bookedRides, String email, String gender, String image, ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, String username) {
+    public User(ArrayList<BookedRide> bookedRides, String email, String gender,  ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, String username) {
         this.bookedRides = bookedRides;
         this.email = email;
         this.gender = gender;

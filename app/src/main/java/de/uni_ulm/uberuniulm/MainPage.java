@@ -1,17 +1,39 @@
 package de.uni_ulm.uberuniulm;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -26,12 +48,27 @@ import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
 
 
 public class MainPage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
+
+    private ImageView imageView;
+
+    private int REQUEST_CODE = 1;
+
+    private FirebaseUser currentUser;
+
+    private FirebaseAuth mAuth;
+    private boolean newProfilePhotoSet=false;
+    private static ProfileFragment currentFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +79,8 @@ public class MainPage extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         fragmentManager=getSupportFragmentManager();
+
+        imageView = findViewById(R.id.profileImage);
 
 
         Window window = getWindow();
@@ -70,6 +109,10 @@ public class MainPage extends AppCompatActivity
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
     }
 
     @Override
@@ -122,14 +165,15 @@ public class MainPage extends AppCompatActivity
             fragmentTransaction.replace(R.id.mainPageContentContainer, new MyOffersFragment());
             fragmentTransaction.commit();
 
-        } else if (id == R.id.settings) {
 
         } else if (id == R.id.logout) {
             Intent intent = new Intent(this, StartPage.class);
             startActivity(intent);
 
         } else if (id == R.id.profile) {
-
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.mainPageContentContainer, new ProfileFragment());
+            fragmentTransaction.commit();
         } else if (id == R.id.ratings) {
 
         }
@@ -142,5 +186,131 @@ public class MainPage extends AppCompatActivity
     public void onMyRidesNewRideBttn(View view){
         Intent intent = new Intent(MainPage.this, NewOfferPage.class);
         startActivity(intent);
+    }
+
+    public void onProfileRegisterCameraBttn(View v){
+        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainPage.this);
+        builder.setTitle("Choose your profile picture");
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+
+
+                if (options[item].equals("Take Photo")) {
+                    if (ContextCompat.checkSelfPermission(MainPage.this, Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_DENIED){
+                        ActivityCompat.requestPermissions(MainPage.this, new String[] {Manifest.permission.CAMERA}, REQUEST_CODE);
+                    }else{
+                        Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(takePicture, 0);
+                    }
+
+                } else if (options[item].equals("Choose from Gallery")) {
+                    if (ContextCompat.checkSelfPermission(MainPage.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_DENIED){
+                        ActivityCompat.requestPermissions(MainPage.this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                    }else{
+                        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(pickPhoto , 1);
+                    }
+
+
+                } else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ProfileFragment pf = MainPage.currentFragment;
+        imageView = pf.getView().findViewById(R.id.profileImage);
+        if(resultCode != RESULT_CANCELED) {
+            switch (requestCode) {
+                case 0:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
+
+                        pf.setImage(selectedImage);
+                        uploadProfilePhoto();
+                    }
+
+                    break;
+                case 1:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Uri selectedImage =  data.getData();
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        if (selectedImage != null) {
+                            Cursor cursor = getContentResolver().query(selectedImage,
+                                    filePathColumn, null, null, null);
+                            if (cursor != null) {
+                                cursor.moveToFirst();
+
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                String picturePath = cursor.getString(columnIndex);
+                                ProfileFragment profileFragment = new ProfileFragment();
+
+
+                                pf.setImagePath(picturePath);
+                                uploadProfilePhoto();
+                                cursor.close();
+                            }
+                        }
+                    }
+                    break;
+            }
+            //updateProfilePhotoResetBttn();
+            pf = null;
+        }
+    }
+
+    private Boolean uploadProfilePhoto(){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference profileImageRef = storageRef.child("profile_images/"+currentUser.getUid()+".jpg");
+
+        Boolean successfullyUpdated=false;
+        imageView.setDrawingCacheEnabled(true);
+        imageView.buildDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = profileImageRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.w("TAG", "uploadProfileImage:failure", exception);
+                Toast.makeText(MainPage.this, "Profile image upload failed.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.w("TAG", "uploadProfileImage:Success");
+            }
+        });
+
+        return successfullyUpdated;
+    }
+
+    /*private void updateProfilePhotoResetBttn(){
+        ImageButton resetProfilePhotoBttn= findViewById(R.id.startActivityRemoveProfilePhotoBttn);
+        if(newProfilePhotoSet){
+            resetProfilePhotoBttn.setVisibility(View.VISIBLE);
+        }else{
+            resetProfilePhotoBttn.setVisibility(View.INVISIBLE);
+        }
+    }*/
+
+    public static void setFragment(ProfileFragment profileFragment) {
+        currentFragment = profileFragment;
     }
 }

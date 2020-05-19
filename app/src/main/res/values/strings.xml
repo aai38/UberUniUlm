@@ -4,7 +4,7 @@
     <string name="start_login_button_login_text">LOGIN</string>
     <string name="start_login_button_forgotpassword_text">Forgot password</string>
     <string name="start_login_button_register_text">| Register</string>
-    <string name="start_login_username_title">Username/ E-Mail</string>
+    <string name="start_login_username_title">E-Mail</string>
     <string name="start_login_password_title">Password</string>
     <string name="start_login_name_value_example">max.mustermann@uni-ulm.de</string>
     <string name="start_login_password_value_example">password</string>
@@ -35,4 +35,8 @@
     <string name="title_activity_test">Test</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
+
+    <string name="profile_email">E-Mail</string>
+    <string name="profile_username">Username</string>
+    <string name="profile_name">Name</string>
 </resources>

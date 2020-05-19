@@ -15,7 +15,7 @@ public class MyOffersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_offers, container, false);
-
+        fragmentView.findViewById(R.id.startActivityRegisterProfileImage);
         return fragmentView;
     }
 }

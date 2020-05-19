@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import de.uni_ulm.uberuniulm.model.BookedRide;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
-import de.uni_ulm.uberuniulm.model.Settings;
 import de.uni_ulm.uberuniulm.model.User;
 
 import android.provider.MediaStore;
@@ -36,15 +35,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,9 +50,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 import java.io.ByteArrayOutputStream;
-
-import de.uni_ulm.uberuniulm.model.Settings;
-import de.uni_ulm.uberuniulm.model.User;
 
 public class StartPage  extends AppCompatActivity {
     LinearLayout loginDialog;
@@ -116,7 +109,7 @@ public class StartPage  extends AppCompatActivity {
     }
 
     public void onStartActivityLoginForgotPasswordBttn(View v){
-        Editable username= ((EditText) findViewById(R.id.startActivityLoginNameTextInput)).getText();
+        Editable username= ((EditText) findViewById(R.id.name)).getText();
         mAuth.sendPasswordResetEmail(username.toString())
                 .addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
@@ -259,8 +252,8 @@ public class StartPage  extends AppCompatActivity {
 
     private Boolean tryLogin(){
 
-        Editable username= ((EditText) findViewById(R.id.startActivityLoginNameTextInput)).getText();
-        Editable password= ((EditText) findViewById(R.id.startActivityLoginPasswordTextInput)).getText();
+        Editable username= ((EditText) findViewById(R.id.name)).getText();
+        Editable password= ((EditText) findViewById(R.id.username)).getText();
 
 
         mAuth.signInWithEmailAndPassword(username.toString(), password.toString())
@@ -305,7 +298,7 @@ public class StartPage  extends AppCompatActivity {
 
                             ArrayList offeredRide = new ArrayList<OfferedRide>();
                             ArrayList bookedRide = new ArrayList<BookedRide>();
-                            User exampleUser = new User(bookedRide, mailAdress.toString(), gender.toString(), "bla.png", offeredRide, null, -1, username.toString());
+                            User exampleUser = new User(bookedRide, mailAdress.toString(), gender.toString(),  offeredRide, null, -1, username.toString());
                             //myRef.push().setValue(exampleUser);
                             //String key = myRef.getKey();
 
