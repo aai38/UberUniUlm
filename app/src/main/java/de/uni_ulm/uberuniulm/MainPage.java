@@ -1,9 +1,11 @@
 package de.uni_ulm.uberuniulm;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -30,6 +32,11 @@ import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -48,11 +55,14 @@ import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 
 public class MainPage extends AppCompatActivity
@@ -69,6 +79,9 @@ public class MainPage extends AppCompatActivity
     private FirebaseAuth mAuth;
     private boolean newProfilePhotoSet=false;
     private static ProfileFragment currentFragment = null;
+    private ImageView drawerImage;
+    private TextView drawerText;
+    private DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +92,6 @@ public class MainPage extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         fragmentManager=getSupportFragmentManager();
-
-        imageView = findViewById(R.id.profileImage);
-
 
         Window window = getWindow();
 
@@ -102,6 +112,55 @@ public class MainPage extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        drawerImage = headerView.findViewById(R.id.profileImageDrawer);
+        drawerText = headerView.findViewById(R.id.nameDrawer);
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference profileImageRef = storageRef.child("profile_images/"+currentUser.getUid()+".jpg");
+        profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                drawerImage.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainPage.this, "can not load image", Toast.LENGTH_SHORT).show();
+            }
+        });
+        SharedPreferences pref = getSharedPreferences("UserKey", 0);
+        String userId = pref.getString("UserKey", "");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        myRef = database.getReference().child(userId);
+        ArrayList values = new ArrayList();
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+
+                    values.add(childSnapshot.getValue());
+                }
+                if(values.size() == 5) {
+                    drawerText.setText(values.get(4).toString());
+                } else if (values.size() == 6) {
+                    drawerText.setText(values.get(5).toString());
+                } else {
+                    drawerText.setText(values.get(6).toString());
+                }
+
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         navigationView.setNavigationItemSelectedListener(this);
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
@@ -109,9 +168,6 @@ public class MainPage extends AppCompatActivity
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
-
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
 
     }
 

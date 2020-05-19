@@ -12,15 +12,15 @@
         android:layout_width="113dp"
         android:layout_height="39dp"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/imageView"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_toEndOf="@+id/profileImageDrawer"
+        android:layout_toRightOf="@+id/profileImageDrawer"
         android:paddingBottom="10dp"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/profileImageDrawer"
         android:layout_width="70dp"
         android:layout_height="85dp" />
 
@@ -28,15 +28,15 @@
         android:id="@+id/ratingView"
         android:layout_width="70dp"
         android:layout_height="35dp"
-        android:layout_below="@+id/imageView" />
+        android:layout_below="@+id/profileImageDrawer" />
 
     <TextView
         android:id="@+id/textViewDate"
         android:layout_width="114dp"
         android:layout_height="42dp"
         android:layout_below="@+id/textViewDeparture"
-        android:layout_toEndOf="@+id/imageView"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_toEndOf="@+id/profileImageDrawer"
+        android:layout_toRightOf="@+id/profileImageDrawer"
         android:paddingTop="10dp"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
@@ -46,10 +46,10 @@
         android:id="@+id/TextViewPlaces"
         android:layout_width="130dp"
         android:layout_height="40dp"
-        android:layout_alignBottom="@+id/imageView"
+        android:layout_alignBottom="@+id/profileImageDrawer"
         android:layout_marginLeft="1dp"
         android:layout_marginBottom="-38dp"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_toRightOf="@+id/profileImageDrawer"
         android:textColor="@color/colorPrimary" />
 
     <TextView
@@ -59,7 +59,7 @@
         android:layout_marginStart="1dp"
         android:layout_marginLeft="131dp"
         android:layout_toEndOf="@+id/textViewDeparture"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_toRightOf="@+id/profileImageDrawer"
         android:text="&lt;-&gt;"
         android:textColor="#FFFFFF" />
 
@@ -72,7 +72,7 @@
         android:layout_marginLeft="115dp"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@+id/textViewDeparture"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_toRightOf="@+id/profileImageDrawer"
         android:text="-"
         android:textColor="#FFFFFF" />
 
@@ -83,7 +83,7 @@
         android:layout_marginStart="3dp"
         android:layout_marginLeft="166dp"
         android:layout_toEndOf="@+id/TextViewArrow"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_toRightOf="@+id/profileImageDrawer"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 
@@ -96,7 +96,7 @@
         android:layout_marginLeft="147dp"
         android:layout_marginTop="3dp"
         android:layout_toEndOf="@+id/textViewDeparture"
-        android:layout_toRightOf="@+id/imageView"
+        android:layout_toRightOf="@+id/profileImageDrawer"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 

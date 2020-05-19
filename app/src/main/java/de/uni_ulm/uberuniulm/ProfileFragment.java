@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -51,6 +53,9 @@ public class ProfileFragment extends Fragment {
 
     private FirebaseAuth mAuth;
 
+    private ImageButton changeEmail;
+    private ImageButton changeUsername;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,44 +71,76 @@ public class ProfileFragment extends Fragment {
 
         email = fragmentView.findViewById(R.id.profileEmail);
         username = fragmentView.findViewById(R.id.username);
+        changeEmail = fragmentView.findViewById(R.id.changeEmail);
+        changeUsername = fragmentView.findViewById(R.id.changeUsername);
 
-        /*email.addTextChangedListener(new TextWatcher() {
+        email.setEnabled(false);
+        username.setEnabled(false);
+
+        changeUsername.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                final EditText edittext = new EditText(getContext());
+                alert.setMessage("Enter Your Message");
+                alert.setTitle("Change Username");
 
+                alert.setView(edittext);
+
+                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        String usernameString = edittext.getText().toString();
+                        database.getReference().child(userId+ "/username").setValue(usernameString);
+                    }
+                });
+
+                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // what ever you want to do with No option.
+                    }
+                });
+
+                alert.show();
             }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        });
 
-            }
-
+        changeEmail.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void afterTextChanged(Editable editable) {
-                database.getReference().child(userId+"/email").setValue(editable.toString());
+            public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                final EditText edittext = new EditText(getContext());
+                edittext.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                alert.setMessage("Enter Your Message");
+                alert.setTitle("Change Email");
+
+                alert.setView(edittext);
+
+                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        String emailString = edittext.getText().toString();
+                        database.getReference().child(userId+ "/email").setValue(emailString);
+                    }
+                });
+
+                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // what ever you want to do with No option.
+                    }
+                });
+
+                alert.show();
             }
         });
 
-        username.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                database.getReference().child(userId+"/username").setValue(editable.toString());
-            }
-        });
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
 
-        */
+
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override

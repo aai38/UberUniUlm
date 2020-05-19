@@ -1,7 +1,6 @@
 package de.uni_ulm.uberuniulm;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import de.uni_ulm.uberuniulm.model.BookedRide;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 
 public class CustomAdapter extends ArrayAdapter<OfferedRide> implements View.OnClickListener{
@@ -66,7 +64,7 @@ public class CustomAdapter extends ArrayAdapter<OfferedRide> implements View.OnC
             viewHolder.txtDestination = (TextView) convertView.findViewById(R.id.TextViewDestination);
             viewHolder.txtDeparture = (TextView) convertView.findViewById(R.id.textViewDeparture);
             viewHolder.txtDate = (TextView) convertView.findViewById(R.id.textViewDate);
-            viewHolder.picture = (ImageView) convertView.findViewById(R.id.imageView);
+            viewHolder.picture = (ImageView) convertView.findViewById(R.id.profileImageDrawer);
             viewHolder.rating = (ImageView) convertView.findViewById(R.id.ratingView);
             viewHolder.txtPlaces = (TextView) convertView.findViewById(R.id.TextViewPlaces);
             viewHolder.txtPrice = (TextView) convertView.findViewById(R.id.TextViewPrice);
