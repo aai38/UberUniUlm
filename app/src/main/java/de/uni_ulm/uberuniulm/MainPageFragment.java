@@ -101,8 +101,7 @@ public class MainPageFragment extends Fragment {
                             String destination = values.get(3).toString();
 
                             offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination);
-
-                            offeredRides.add(new Pair<>(user.,offeredRide));
+                            offeredRides.add(new Pair<>(user.getKey(),offeredRide));
                             adapter.notifyDataSetChanged();
                         }
                     }
