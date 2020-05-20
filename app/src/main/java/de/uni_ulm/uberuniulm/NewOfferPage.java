@@ -97,6 +97,7 @@ import java.util.Map;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import de.uni_ulm.uberuniulm.model.MyOffersFragment;
+import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
@@ -254,7 +255,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
 
     public void onNewOfferActivityConfirmBttn(View view){
         int price= Integer.parseInt(priceTextField.getText().toString());
-        //if(route!=null&& price!=null){
+        if(route!=null&& price>=0){
 
         String date = "";
         String time;
@@ -267,7 +268,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
 
         Log.i("departure", departure + destination);
 
-        route = null;
+        //route = null;
         int places= (Integer.parseInt(placesTextField.getText().toString()));
         OfferedRide offer=new OfferedRide(route, price, date, time, places, places, departure, destination );
 
@@ -275,7 +276,8 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
         DatabaseReference myRef = database.getReference();
 
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("UserKey", 0);
+        final SharedPreferences pref = new ObscuredSharedPreferences(
+                NewOfferPage.this, NewOfferPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         String userId = pref.getString("UserKey", "");
         Log.i("userkey", ""+userId);
         SharedPreferences.Editor editor = pref.edit();
@@ -285,7 +287,7 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
         editor.putInt("RideId", initalIndex +1);
         editor.apply();
 
-        //}
+        }
 
         //fragmentTransaction = fragmentManager.beginTransaction();
         // fragmentTransaction.replace(R.id.fragment_offers, new MainPageFragment());

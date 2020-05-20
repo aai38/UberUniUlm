@@ -42,6 +42,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
+
 public class ProfileFragment extends Fragment {
     public View fragmentView;
     private ImageView imageView;
@@ -62,7 +64,7 @@ public class ProfileFragment extends Fragment {
         fragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
         imageView = fragmentView.findViewById(R.id.profileImage);
 
-        SharedPreferences pref = getContext().getSharedPreferences("UserKey", 0);
+        SharedPreferences pref = new ObscuredSharedPreferences(fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("UserKey", 0));
         String userId = pref.getString("UserKey", "");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         MainPage.setFragment(ProfileFragment.this);

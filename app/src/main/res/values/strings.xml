@@ -8,6 +8,8 @@
     <string name="start_login_password_title">Password</string>
     <string name="start_login_name_value_example">max.mustermann@uni-ulm.de</string>
     <string name="start_login_password_value_example">password</string>
+    <string name="start_login_stay_loggedin">Stay logged in</string>
+    <string name="start_login_password_hint">min. 6 characters</string>
 
     <string name="start_register_name_value_example">Max Mustermann</string>
     <string name="start_register_button_register">Register</string>

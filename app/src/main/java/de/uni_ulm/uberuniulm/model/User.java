@@ -107,7 +107,6 @@ public class User {
         this.bookedRides = bookedRides;
         this.email = email;
         this.gender = gender;
-        this.image = image;
         this.offeredRides = offeredRides;
         this.rating = rating;
         //this.setting = setting;

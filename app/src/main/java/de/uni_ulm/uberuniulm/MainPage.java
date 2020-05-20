@@ -50,6 +50,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.uni_ulm.uberuniulm.model.MyOffersFragment;
+import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
@@ -133,7 +134,7 @@ public class MainPage extends AppCompatActivity
                 Toast.makeText(MainPage.this, "can not load image", Toast.LENGTH_SHORT).show();
             }
         });
-        SharedPreferences pref = getSharedPreferences("UserKey", 0);
+        SharedPreferences pref = new ObscuredSharedPreferences(this, this.getSharedPreferences("UserKey", 0));
         String userId = pref.getString("UserKey", "");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference().child(userId);
@@ -149,6 +150,8 @@ public class MainPage extends AppCompatActivity
                     drawerText.setText(values.get(4).toString());
                 } else if (values.size() == 6) {
                     drawerText.setText(values.get(5).toString());
+                } else if (values.size() == 4) {
+                    drawerText.setText(values.get(3).toString());
                 } else {
                     drawerText.setText(values.get(6).toString());
                 }
@@ -223,6 +226,8 @@ public class MainPage extends AppCompatActivity
 
 
         } else if (id == R.id.logout) {
+            SharedPreferences pref= new ObscuredSharedPreferences(this, this.getSharedPreferences("UserKey", 0));
+            pref.edit().putBoolean("StayLoggedIn", false).apply();
             Intent intent = new Intent(this, StartPage.class);
             startActivity(intent);
 

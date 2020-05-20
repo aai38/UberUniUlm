@@ -2,6 +2,7 @@ package de.uni_ulm.uberuniulm;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import de.uni_ulm.uberuniulm.model.BookedRide;
+import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.User;
 
@@ -24,10 +26,12 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -62,6 +66,7 @@ public class StartPage  extends AppCompatActivity {
     private ImageButton maleIcon;
     private ImageButton femaleIcon;
     private ImageButton transIcon;
+    private CheckBox loggedInCheckBox;
     private int REQUEST_CODE = 1;
     private Uri uri;
     private ImageView profilePhoto;
@@ -83,6 +88,38 @@ public class StartPage  extends AppCompatActivity {
         femaleIcon=(ImageButton) findViewById(R.id.startActivityRegisterFemaleGenderBttn);
         transIcon= (ImageButton) findViewById(R.id.startActivityRegisterTransGenderBttn);
 
+        loggedInCheckBox=(CheckBox) findViewById(R.id.startActivityLoggedInCheckbox);
+
+        pref = new ObscuredSharedPreferences(
+                StartPage.this, StartPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+
+        if(pref.getBoolean("StayLoggedIn", false)){
+            loggedInCheckBox.setChecked(true);
+            String username=pref.getString("UserName", null);
+            String password=pref.getString("UserPassword", null);
+
+
+            if(!username.isEmpty()&& !password.isEmpty()) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                AuthCredential credential = EmailAuthProvider
+                        .getCredential(username, password);
+
+                // Prompt the user to re-provide their sign-in credentials
+                if (user != null) {
+                    user.reauthenticate(credential)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Log.d("RE-AUTHENTICATION", user.getEmail());
+                                    Intent intent = new Intent(StartPage.this, MainPage.class);
+                                    startActivity(intent);
+                                }
+                            });
+                }
+            }
+
+        }
+
     }
 
     public void onStart() {
@@ -92,7 +129,17 @@ public class StartPage  extends AppCompatActivity {
     }
 
     public void onStartActivityLoginBttn(View v){
-        if(tryLogin()){
+        Editable username= ((EditText) findViewById(R.id.name)).getText();
+        Editable password= ((EditText) findViewById(R.id.username)).getText();
+
+        if(tryLogin(username.toString(), password.toString())){
+            if(loggedInCheckBox.isChecked()){
+                pref.edit().putBoolean("StayLoggedIn", true).apply();
+                pref.edit().putString("UserName", username.toString()).apply();
+                pref.edit().putString("UserPassword", password.toString()).apply();
+            }else{
+                pref.edit().putBoolean("StayLoggedIn", false).apply();
+            }
             Intent intent = new Intent(StartPage.this, MainPage.class);
             startActivity(intent);
         } else {
@@ -250,12 +297,7 @@ public class StartPage  extends AppCompatActivity {
         }
     }
 
-    private Boolean tryLogin(){
-
-        Editable username= ((EditText) findViewById(R.id.name)).getText();
-        Editable password= ((EditText) findViewById(R.id.username)).getText();
-
-
+    private Boolean tryLogin(String username, String password){
         mAuth.signInWithEmailAndPassword(username.toString(), password.toString())
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -308,7 +350,10 @@ public class StartPage  extends AppCompatActivity {
                                 uploadProfilePhoto();
                             }
                             String key = ref.getKey();
-                            pref = getApplicationContext().getSharedPreferences("UserKey", 0); // 0 - for private mode
+
+                            pref = new ObscuredSharedPreferences(
+                                    StartPage.this, StartPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+                            //pref = getApplicationContext().getSharedPreferences("UserKey", 0); // 0 - for private mode
                             SharedPreferences.Editor editor = pref.edit();
                             Log.i("key", ""+key);
                             editor.putString("UserKey", key);
@@ -316,6 +361,8 @@ public class StartPage  extends AppCompatActivity {
                             editor.apply();
 
                         } else {
+                            TextView passwordHintText= (TextView) findViewById(R.id.startActivityRegisterPasswordInstruction);
+                            passwordHintText.setText(R.string.start_login_password_hint);
                             Log.w("TAG", "createUserWithEmail:failure", task.getException());
                             Toast.makeText(StartPage.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -367,5 +414,10 @@ public class StartPage  extends AppCompatActivity {
 
     public void updateUI (FirebaseUser actualUser) {
         currentUser = actualUser;
+    }
+
+    public void onRegisterPasswordHint(View v){
+        TextView passwordHintText= (TextView) findViewById(R.id.startActivityRegisterPasswordInstruction);
+        passwordHintText.setText(R.string.start_login_password_hint);
     }
 }

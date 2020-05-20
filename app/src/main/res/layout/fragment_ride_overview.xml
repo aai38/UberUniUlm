@@ -19,7 +19,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/rideOverviewCloseBttn"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_weight="0"
@@ -29,13 +29,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/imageView3"
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/rideOverviewProfilePhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 android:layout_weight="1"
+                android:adjustViewBounds="false"
+                android:scaleType="centerInside"
                 app:srcCompat="@drawable/start_register_profile_photo" />
 
             <LinearLayout
@@ -46,7 +49,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/rideOverviewUserNameText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Aline"
@@ -54,7 +57,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/rideOfferStartGoalText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Staudinger Straße -> Helmholzstraße"
@@ -62,7 +65,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/ridOfferDateText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Today - 8:10"

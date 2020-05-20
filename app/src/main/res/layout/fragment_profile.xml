@@ -23,7 +23,7 @@
             android:layout_marginRight="20dp"
             android:layout_weight="1">
 
-            <ImageView
+            <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/profileImage"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
@@ -31,7 +31,12 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/start_register_profile_photo" />
+                app:srcCompat="@drawable/start_register_profile_photo"
+                app:civ_border_color="@color/colorPrimary"
+                app:civ_border_width="5dp"
+                app:civ_shadow="true"
+                app:civ_shadow_color="@color/colorSemiTransparentBlack"
+                app:civ_shadow_radius="5" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/startActivityChangeCameraBttn"

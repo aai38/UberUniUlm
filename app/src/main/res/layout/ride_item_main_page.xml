@@ -1,56 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="15dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="#2AFFFFFF"
     android:orientation="vertical"
-    android:background="#2CFFFFFF">
+    android:paddingLeft="15dp"
+    android:paddingTop="15dp"
+    android:paddingEnd="0dp"
+    android:paddingRight="0dp">
 
     <TextView
         android:id="@+id/textViewDeparture"
         android:layout_width="113dp"
         android:layout_height="39dp"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/profileImageDrawer"
-        android:layout_toRightOf="@+id/profileImageDrawer"
+        android:layout_toEndOf="@+id/profileImageContainer"
+        android:layout_toRightOf="@+id/profileImageContainer"
         android:paddingBottom="10dp"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 
-    <ImageView
-        android:id="@+id/profileImageDrawer"
-        android:layout_width="70dp"
-        android:layout_height="85dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profileImageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/ratingView"
-        android:layout_width="70dp"
-        android:layout_height="35dp"
-        android:layout_below="@+id/profileImageDrawer" />
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/profileImageDrawer"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:src="@drawable/start_register_profile_photo"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="3dp"
+            app:civ_shadow="true"
+            app:civ_shadow_color="@color/colorSemiTransparentBlack"
+            app:civ_shadow_radius="5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textViewDate"
-        android:layout_width="114dp"
-        android:layout_height="42dp"
-        android:layout_below="@+id/textViewDeparture"
-        android:layout_toEndOf="@+id/profileImageDrawer"
-        android:layout_toRightOf="@+id/profileImageDrawer"
-        android:paddingTop="10dp"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/TextViewPlaces"
-        android:layout_width="130dp"
-        android:layout_height="40dp"
-        android:layout_alignBottom="@+id/profileImageDrawer"
-        android:layout_marginLeft="1dp"
-        android:layout_marginBottom="-38dp"
-        android:layout_toRightOf="@+id/profileImageDrawer"
-        android:textColor="@color/colorPrimary" />
+        <RatingBar
+            android:id="@+id/ratingView"
+            style="@style/CustomRatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:max="5"
+            android:numStars="5"
+            android:rating="3"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/TextViewArrow"
@@ -59,21 +65,8 @@
         android:layout_marginStart="1dp"
         android:layout_marginLeft="131dp"
         android:layout_toEndOf="@+id/textViewDeparture"
-        android:layout_toRightOf="@+id/profileImageDrawer"
+        android:layout_toRightOf="@+id/profileImageContainer"
         android:text="&lt;-&gt;"
-        android:textColor="#FFFFFF" />
-
-    <TextView
-        android:id="@+id/TextViewLine"
-        android:layout_width="32dp"
-        android:layout_height="40dp"
-        android:layout_below="@+id/TextViewArrow"
-        android:layout_marginStart="2dp"
-        android:layout_marginLeft="115dp"
-        android:layout_marginTop="5dp"
-        android:layout_toEndOf="@+id/textViewDeparture"
-        android:layout_toRightOf="@+id/profileImageDrawer"
-        android:text="-"
         android:textColor="#FFFFFF" />
 
     <TextView
@@ -81,44 +74,81 @@
         android:layout_width="84dp"
         android:layout_height="42dp"
         android:layout_marginStart="3dp"
-        android:layout_marginLeft="166dp"
         android:layout_toEndOf="@+id/TextViewArrow"
-        android:layout_toRightOf="@+id/profileImageDrawer"
+        android:layout_toRightOf="@+id/profileImageContainer"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/TextViewTime"
-        android:layout_width="85dp"
-        android:layout_height="40dp"
-        android:layout_below="@+id/TextViewDestination"
-        android:layout_marginStart="34dp"
-        android:layout_marginLeft="147dp"
-        android:layout_marginTop="3dp"
-        android:layout_toEndOf="@+id/textViewDeparture"
-        android:layout_toRightOf="@+id/profileImageDrawer"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewDeparture"
+        android:layout_alignStart="@+id/textViewDeparture"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/TextViewPrice"
-        android:layout_width="32dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="93dp"
+        <TextView
+            android:id="@+id/textViewDate"
+            android:layout_width="114dp"
+            android:layout_height="42dp"
+            android:layout_marginLeft="10dp"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/TextViewLine"
+            android:layout_width="32dp"
+            android:layout_height="40dp"
+            android:text="-"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/TextViewTime"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/TextViewDestination"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="0dp"
         android:layout_toEndOf="@+id/TextViewDestination"
-        android:layout_toRightOf="@+id/TextViewArrow"
-        android:textColor="@color/colorPrimary" />
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="39dp"
-        android:layout_height="35dp"
-        android:layout_below="@+id/TextViewTime"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="-1dp"
-        android:layout_toEndOf="@+id/TextViewPlaces"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        <TextView
+            android:id="@+id/TextViewPrice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/TextViewPlaces"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="39dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="5dp"
+            app:srcCompat="@android:drawable/ic_dialog_email" />
+    </LinearLayout>
 
 
 </RelativeLayout>
