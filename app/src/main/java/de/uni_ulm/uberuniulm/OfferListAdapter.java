@@ -33,10 +33,10 @@ import de.uni_ulm.uberuniulm.model.User;
 
 public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.OfferViewHolder>  implements View.OnClickListener{
 
-    private ArrayList<Pair<String,OfferedRide>> dataSet;
+    private ArrayList<Pair<Pair<String, Float>,OfferedRide>> dataSet;
     Context mContext;
 
-    public OfferListAdapter(Context mContext, ArrayList<Pair<String,OfferedRide>> offeredRides) {
+    public OfferListAdapter(Context mContext, ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides) {
         this.mContext = mContext;
         dataSet = offeredRides;
     }
@@ -50,11 +50,11 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
 
     @Override
     public void onBindViewHolder(@NonNull OfferViewHolder viewHolder, int position) {
-        String userID=dataSet.get(position).first;
+        String userID=dataSet.get(position).first.first;
+        Float rating= dataSet.get(position).first.second;
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference profileImageRef = storageRef.child("profile_images/"+userID.substring(1)+".jpg");
-        Log.d("IMAGETOBEDISPLAYED", "profile_images/"+userID.substring(1)+".jpg");
+        StorageReference profileImageRef = storageRef.child("profile_images/"+userID+".jpg");
 
         final long ONE_MEGABYTE = 1024 * 1024;
         profileImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -68,8 +68,6 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                int id = mContext.getResources().getIdentifier("de.uni_ulm.uberuniulm:drawable/" + "start_register_profile_photo.png", null, null);
-                viewHolder.picture.setImageResource(id);
             }
         });
         OfferedRide offeredRide = dataSet.get(position).second;
@@ -80,7 +78,12 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
         viewHolder.txtTime.setText(offeredRide.getTime().toString());
         viewHolder.txtPrice.setText(offeredRide.getPrice() + "€");
         viewHolder.txtPlaces.setText((offeredRide.getPlaces() - offeredRide.getPlaces_open()) + "/" + offeredRide.getPlaces());
-        //viewHolder.rating.setImageIcon();
+        if(rating<=0){
+            viewHolder.rating.setRating(0);
+        }else{
+            viewHolder.rating.setRating(rating);
+        }
+
     }
 
     @Override

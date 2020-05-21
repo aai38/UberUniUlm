@@ -34,7 +34,7 @@ public class MyOffersFragment extends Fragment {
     private RecyclerView myoffersRecyclerView;
     private static OfferListAdapter adapter;
     private DatabaseReference myRef;
-    private ArrayList<Pair<String, OfferedRide>> offeredRides;
+    private ArrayList<Pair<Pair<String,Float>, OfferedRide>> offeredRides;
     private FirebaseAuth mAuth;
 
 
@@ -80,14 +80,20 @@ public class MyOffersFragment extends Fragment {
                             Log.i("TAG", "values" + values.get(3).toString());
                             long price = (long) (values.get(6));
                             String date =  values.get(1).toString();
-                            String time = values.get(7).toString();
+                            String time;
+                            if(values.size()==9){
+                                time= values.get(8).toString();
+                            }else{
+                                time= values.get(7).toString();
+                            }
                             long places = (long) values.get(4);
                             long places_open = (long) values.get(5);
                             String departure = values.get(2).toString();
                             String destination = values.get(3).toString();
 
                             OfferedRide offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination);
-                            offeredRides.add(new Pair<>(currentUser.getUid(),offeredRide));
+                            Float rating= -2.0f;
+                            offeredRides.add(new Pair(new Pair(userId,rating),offeredRide));
                             adapter.notifyDataSetChanged();
                         }
                     }

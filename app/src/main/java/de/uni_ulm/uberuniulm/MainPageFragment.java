@@ -41,8 +41,7 @@ import de.uni_ulm.uberuniulm.model.ParkingSpots;
 public class MainPageFragment extends Fragment {
 
     public View fragmentView;
-    ArrayList<Pair<String,OfferedRide>> offeredRides;
-    ArrayList<Pair<String, BookedRide>> availableRides;
+    ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides;
     RecyclerView offerRecyclerView;
     private static OfferListAdapter adapter;
     private DatabaseReference myRef;
@@ -79,6 +78,7 @@ public class MainPageFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot user: dataSnapshot.getChildren()) {
                     DataSnapshot usersOfferedRides= user.child("offeredRides");
+                    Long rating= (Long) user.child("rating").getValue();
                     for (DataSnapshot ride : usersOfferedRides.getChildren()) {
                         ArrayList<Object> values = new ArrayList();
                         values.add(dataSnapshot.getKey());
@@ -94,14 +94,19 @@ public class MainPageFragment extends Fragment {
                             Log.i("TAG", "values" + values.get(2).toString());
                             long price = (long) (values.get(6));
                             String date =  values.get(1).toString();
-                            String time = values.get(7).toString();
+                            String time;
+                            if(values.size()==9){
+                                 time= values.get(8).toString();
+                            }else{
+                                time= values.get(7).toString();
+                            }
                             long places = (long) values.get(4);
                             long places_open = (long) values.get(5);
                             String departure = values.get(2).toString();
                             String destination = values.get(3).toString();
 
                             offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination);
-                            offeredRides.add(new Pair<>(user.getKey(),offeredRide));
+                            offeredRides.add(new Pair(new Pair(user.getKey(), rating.floatValue()),offeredRide));
                             adapter.notifyDataSetChanged();
                         }
                     }

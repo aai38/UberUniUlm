@@ -35,6 +35,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.ktx.Firebase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -58,7 +63,8 @@ import java.io.ByteArrayOutputStream;
 public class StartPage  extends AppCompatActivity {
     LinearLayout loginDialog;
     Gender gender= Gender.FEMALE;
-    SharedPreferences pref;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
     private FirebaseAuth mAuth;
     private Boolean isValid = false, newProfilePhotoSet=false;
     private Boolean logInSuccessful = false;
@@ -92,6 +98,7 @@ public class StartPage  extends AppCompatActivity {
 
         pref = new ObscuredSharedPreferences(
                 StartPage.this, StartPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+        editor = pref.edit();
 
         if(pref.getBoolean("StayLoggedIn", false)){
             loggedInCheckBox.setChecked(true);
@@ -298,16 +305,36 @@ public class StartPage  extends AppCompatActivity {
     }
 
     private Boolean tryLogin(String username, String password){
-        mAuth.signInWithEmailAndPassword(username.toString(), password.toString())
+        mAuth.signInWithEmailAndPassword(username, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d("TAG", "signInWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         updateUI(user);
                         logInSuccessful = true;
+                        final String[] userkey = new String[1];
 
+                        ValueEventListener valueEventListener = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for(DataSnapshot child: dataSnapshot.getChildren()){
+                                    if(child.child("email").getValue().equals(username)) {
+                                        userkey[0] = child.getKey();
+                                        editor.putString("UserKey", userkey[0]);
+                                        editor.putInt("RideId", (int) child.child("offeredRides").getChildrenCount());
+                                        editor.apply();
+                                    }
+                                }
+                            }
 
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.i("SHAREDPREFERROR", "Could not load userkey");
+                            }
+                        };
+
+                        Query userkeyQuery= FirebaseDatabase.getInstance().getReference().orderByChild("email").equalTo(username);
+                        userkeyQuery.addListenerForSingleValueEvent(valueEventListener);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("TAG", "signInWithEmail:failure", task.getException());
@@ -317,8 +344,6 @@ public class StartPage  extends AppCompatActivity {
                         logInSuccessful = false;
                     }
                 });
-
-
         return logInSuccessful;
     }
 
@@ -346,15 +371,11 @@ public class StartPage  extends AppCompatActivity {
 
                             DatabaseReference ref = myRef.push();
                             ref.setValue(exampleUser);
-                            if(newProfilePhotoSet){
-                                uploadProfilePhoto();
-                            }
                             String key = ref.getKey();
+                            if(newProfilePhotoSet){
+                                uploadProfilePhoto(key);
+                            }
 
-                            pref = new ObscuredSharedPreferences(
-                                    StartPage.this, StartPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
-                            //pref = getApplicationContext().getSharedPreferences("UserKey", 0); // 0 - for private mode
-                            SharedPreferences.Editor editor = pref.edit();
                             Log.i("key", ""+key);
                             editor.putString("UserKey", key);
                             editor.putInt("RideId", 0);
@@ -377,10 +398,10 @@ public class StartPage  extends AppCompatActivity {
         return isValid;
     }
 
-    private Boolean uploadProfilePhoto(){
+    private Boolean uploadProfilePhoto(String userKey){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference profileImageRef = storageRef.child("profile_images/"+currentUser.getUid()+".jpg");
+        StorageReference profileImageRef = storageRef.child("profile_images/"+userKey+".jpg");
 
         Boolean successfullyUpdated=false;
         profilePhoto.setDrawingCacheEnabled(true);
@@ -419,5 +440,10 @@ public class StartPage  extends AppCompatActivity {
     public void onRegisterPasswordHint(View v){
         TextView passwordHintText= (TextView) findViewById(R.id.startActivityRegisterPasswordInstruction);
         passwordHintText.setText(R.string.start_login_password_hint);
+    }
+
+    @Override
+    public void onBackPressed(){
+        finish();
     }
 }

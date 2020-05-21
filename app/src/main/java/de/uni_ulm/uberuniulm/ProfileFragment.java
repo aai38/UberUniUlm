@@ -171,7 +171,7 @@ public class ProfileFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference profileImageRef = storageRef.child("profile_images/"+currentUser.getUid()+".jpg");
+        StorageReference profileImageRef = storageRef.child("profile_images/"+userId+".jpg");
         profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {

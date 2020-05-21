@@ -83,6 +83,7 @@ public class MainPage extends AppCompatActivity
     private ImageView drawerImage;
     private TextView drawerText;
     private DatabaseReference myRef;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,11 +118,14 @@ public class MainPage extends AppCompatActivity
         drawerImage = headerView.findViewById(R.id.profileImageDrawer);
         drawerText = headerView.findViewById(R.id.nameDrawer);
 
+        SharedPreferences pref = new ObscuredSharedPreferences(this, this.getSharedPreferences("UserKey", 0));
+        userId = pref.getString("UserKey", "");
+
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference profileImageRef = storageRef.child("profile_images/"+currentUser.getUid()+".jpg");
+        StorageReference profileImageRef = storageRef.child("profile_images/"+userId+".jpg");
         profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
@@ -134,8 +138,7 @@ public class MainPage extends AppCompatActivity
                 Toast.makeText(MainPage.this, "can not load image", Toast.LENGTH_SHORT).show();
             }
         });
-        SharedPreferences pref = new ObscuredSharedPreferences(this, this.getSharedPreferences("UserKey", 0));
-        String userId = pref.getString("UserKey", "");
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference().child(userId);
         ArrayList values = new ArrayList();
@@ -228,9 +231,9 @@ public class MainPage extends AppCompatActivity
         } else if (id == R.id.logout) {
             SharedPreferences pref= new ObscuredSharedPreferences(this, this.getSharedPreferences("UserKey", 0));
             pref.edit().putBoolean("StayLoggedIn", false).apply();
+            mAuth.signOut();
             Intent intent = new Intent(this, StartPage.class);
             startActivity(intent);
-
         } else if (id == R.id.profile) {
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.mainPageContentContainer, new ProfileFragment());
@@ -334,7 +337,7 @@ public class MainPage extends AppCompatActivity
     private Boolean uploadProfilePhoto(){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference profileImageRef = storageRef.child("profile_images/"+currentUser.getUid()+".jpg");
+        StorageReference profileImageRef = storageRef.child("profile_images/"+userId+".jpg");
 
         Boolean successfullyUpdated=false;
         imageView.setDrawingCacheEnabled(true);
