@@ -23,6 +23,7 @@ import de.uni_ulm.uberuniulm.model.User;
 
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -59,6 +60,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 import java.io.ByteArrayOutputStream;
+
+import static android.view.View.AUTOFILL_HINT_EMAIL_ADDRESS;
 
 public class StartPage  extends AppCompatActivity {
     LinearLayout loginDialog;
@@ -163,17 +166,38 @@ public class StartPage  extends AppCompatActivity {
     }
 
     public void onStartActivityLoginForgotPasswordBttn(View v){
-        Editable username= ((EditText) findViewById(R.id.name)).getText();
-        mAuth.sendPasswordResetEmail(username.toString())
-                .addOnCompleteListener(this, task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(this, "Reset link sent to your email", Toast.LENGTH_LONG)
-                        .show();
-            } else {
-                Toast.makeText(this, "Unable to send reset mail, please enter your mail first", Toast.LENGTH_LONG)
-                        .show();
+        AlertDialog.Builder alert = new AlertDialog.Builder(StartPage.this);
+        final EditText edittext = new EditText(StartPage.this);
+        edittext.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        edittext.setHint(AUTOFILL_HINT_EMAIL_ADDRESS);
+        alert.setMessage("Enter Your E-mail");
+        alert.setTitle("Forgot Password");
+
+        alert.setView(edittext);
+
+        alert.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                mAuth.sendPasswordResetEmail(edittext.getText().toString())
+                        .addOnCompleteListener(StartPage.this, task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(StartPage.this, "Reset link sent to your email", Toast.LENGTH_LONG)
+                                        .show();
+                            } else {
+                                Toast.makeText(StartPage.this, "Unable to send reset mail, please enter your mail first", Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
             }
         });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // what ever you want to do with No option.
+            }
+        });
+
+        alert.show();
+
     }
 
     public void onStartActivityRegisterCameraBttn(View v){
@@ -445,5 +469,11 @@ public class StartPage  extends AppCompatActivity {
     @Override
     public void onBackPressed(){
         finish();
+    }
+
+    public void OnRegisterLoginBttn (View v) {
+        LinearLayout registerDialog=(LinearLayout) findViewById(R.id.startActivityRegisterContentContainer);
+        registerDialog.setVisibility(View.INVISIBLE);
+        loginDialog.setVisibility(View.VISIBLE);
     }
 }
