@@ -97,11 +97,14 @@ public class MyBookedRidesFragment extends Fragment {
                     Log.i("bookedRides", "nobookedRides");
                 } else {
                     for (int i = 0; i < bookedRidesData.size(); i++) {
-                        for (DataSnapshot ride : dataSnapshot.child(bookedRidesData.get(i).getUserKey()).child("offeredRides").getChildren()) {
+                        String index = ""+bookedRidesData.get(i).getzIndex();
+                        DataSnapshot ride = dataSnapshot.child(bookedRidesData.get(i).getUserKey()).child("offeredRides").child(index);
                             ArrayList<Object> values = new ArrayList();
-                            values.add(dataSnapshot.getKey());
+                            values.add(dataSnapshot.getValue());
+
                             for (DataSnapshot rideValue : ride.getChildren()) {
                                 values.add(rideValue.getValue());
+                                Log.e("values", values.toString());
                             }
 
                             if (values.size() == 0) {
@@ -138,7 +141,7 @@ public class MyBookedRidesFragment extends Fragment {
                     }
 
 
-                }
+
             }
 
             @Override

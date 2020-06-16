@@ -151,7 +151,10 @@ public class MainPageFragment extends Fragment {
                         final SharedPreferences pref = new ObscuredSharedPreferences(
                                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
                         int zIndex = pref.getInt("BookedRideId", 0);
+
+                        //hier eigentlich Benachrichtigung an Fahrer
                         myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
+
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putInt("BookedRideId", zIndex +1);
                         editor.apply();
