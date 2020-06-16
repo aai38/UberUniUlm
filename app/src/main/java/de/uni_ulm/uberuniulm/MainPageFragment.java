@@ -19,8 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -46,7 +48,7 @@ public class MainPageFragment extends Fragment {
     public View fragmentView;
     ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides;
     RecyclerView offerRecyclerView;
-    private static OfferListAdapter adapter;
+    private OfferListAdapter adapter;
     private DatabaseReference myRef;
     private OfferedRide offeredRide;
     private String userId;
@@ -56,6 +58,38 @@ public class MainPageFragment extends Fragment {
         fragmentView = inflater.inflate(R.layout.fragment_main_page, container, false);
         LinearLayout mapFragment = fragmentView.findViewById(R.id.mainPageFragmentContainer);
         mapFragment.setVisibility(View.VISIBLE);
+        SearchView departure = fragmentView.findViewById(R.id.searchViewDeparture);
+        SearchView destination = fragmentView.findViewById(R.id.searchViewDestination);
+
+        departure.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                adapter.filterDeparture(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                adapter.filterDeparture(s);
+                return true;
+            }
+        });
+
+        destination.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                adapter.filterDestination(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                adapter.filterDestination(s);
+                return true;
+            }
+        });
+
+
 
 
         offerRecyclerView = (RecyclerView) fragmentView.findViewById(R.id.mainPageOfferRecyclerView);

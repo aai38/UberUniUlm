@@ -14,7 +14,7 @@
 
     <TextView
         android:id="@+id/textViewDeparture"
-        android:layout_width="113dp"
+        android:layout_width="90dp"
         android:layout_height="39dp"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/profileImageContainer"
@@ -31,8 +31,9 @@
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/profileImageDrawer"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:layout_marginTop="8dp"
             android:src="@drawable/start_register_profile_photo"
             app:civ_border_color="@color/colorPrimary"
             app:civ_border_width="3dp"
@@ -41,8 +42,10 @@
             app:civ_shadow_radius="5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
         <RatingBar
             android:id="@+id/ratingView"
@@ -71,7 +74,7 @@
 
     <TextView
         android:id="@+id/TextViewDestination"
-        android:layout_width="84dp"
+        android:layout_width="80dp"
         android:layout_height="42dp"
         android:layout_marginStart="3dp"
         android:layout_toEndOf="@+id/TextViewArrow"
@@ -90,7 +93,7 @@
 
         <TextView
             android:id="@+id/textViewDate"
-            android:layout_width="114dp"
+            android:layout_width="100dp"
             android:layout_height="42dp"
             android:layout_marginLeft="10dp"
             android:textAlignment="center"
@@ -102,6 +105,7 @@
             android:id="@+id/TextViewLine"
             android:layout_width="32dp"
             android:layout_height="40dp"
+            android:layout_marginStart="5dp"
             android:text="-"
             android:textColor="#FFFFFF" />
 
@@ -130,23 +134,23 @@
             android:layout_height="match_parent"
             android:textAlignment="center"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/TextViewPlaces"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/bookingButton"
             android:layout_width="39dp"
             android:layout_height="35dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:onClick="onBookRideButton"
             app:srcCompat="@android:drawable/ic_dialog_email" />
     </LinearLayout>

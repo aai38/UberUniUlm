@@ -17,23 +17,25 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <EditText
-            android:id="@+id/departure"
-            android:layout_width="225dp"
+        <SearchView
+            android:id="@+id/searchViewDeparture"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="departure"
-            android:inputType="textPersonName"
-            android:textColor="@android:color/white" />
+            android:queryHint="Search Departure"
+            android:iconifiedByDefault="false"
+            android:layout_alignParentTop="true"
+            />
 
-        <EditText
-            android:id="@+id/destination"
-            android:layout_width="225dp"
+
+
+        <SearchView
+            android:id="@+id/searchViewDestination"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="destination"
-            android:inputType="textPersonName|textPostalAddress"
-            android:textColor="@android:color/white" />
+            android:queryHint="Search Destination"
+            android:iconifiedByDefault="false"
+            android:layout_alignParentTop="true"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mainPageOfferRecyclerView"

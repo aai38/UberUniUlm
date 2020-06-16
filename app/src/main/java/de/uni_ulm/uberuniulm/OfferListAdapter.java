@@ -40,6 +40,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     private ArrayList<Pair<Pair<String, Float>,OfferedRide>> dataSet;
     private final ClickListener listener;
     Context mContext;
+    private ArrayList<Pair<Pair<String, Float>,OfferedRide>> dataSetCopy = new ArrayList<>();
 
     public OfferListAdapter(Context mContext, ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides, ClickListener listener) {
         this.listener = listener;
@@ -50,12 +51,15 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     @NonNull
     @Override
     public OfferViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        dataSetCopy.addAll(dataSet);
         View view = LayoutInflater.from(mContext).inflate(R.layout.ride_item_main_page, parent, false);
         return new OfferViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull OfferViewHolder viewHolder, int position) {
+
+
         String userID=dataSet.get(position).first.first;
         Float rating= dataSet.get(position).first.second;
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -90,6 +94,45 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             viewHolder.rating.setRating(rating);
         }
 
+    }
+
+    public void filterDeparture(String text) {
+        Log.e("dataSetcopy", dataSetCopy.toString());
+        dataSet.clear();
+        if(text.isEmpty()){
+            dataSet.addAll(dataSetCopy);
+        } else{
+            text = text.toLowerCase();
+            for(Pair item: dataSetCopy){
+                Log.e("item", item.second.toString());
+                OfferedRide offeredRide = (OfferedRide) item.second;
+                if(offeredRide.getDeparture().toLowerCase().contains(text)){
+                    dataSet.add(item);
+                    Log.e("dataset", dataSet.toString());
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public void filterDestination(String text) {
+
+        Log.e("dataSetcopy", dataSetCopy.toString());
+        dataSet.clear();
+        if(text.isEmpty()){
+            dataSet.addAll(dataSetCopy);
+        } else{
+            text = text.toLowerCase();
+            for(Pair item: dataSetCopy){
+                Log.e("item", item.second.toString());
+                OfferedRide offeredRide = (OfferedRide) item.second;
+                if(offeredRide.getDestination().toLowerCase().contains(text)){
+                    dataSet.add(item);
+                    Log.e("dataset", dataSet.toString());
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -141,5 +184,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
 
             listenerRef.get().onPositionClicked(getAdapterPosition());
         }
+
+
     }
 }
