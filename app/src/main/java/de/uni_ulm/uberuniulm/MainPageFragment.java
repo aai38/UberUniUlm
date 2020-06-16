@@ -1,7 +1,9 @@
 package de.uni_ulm.uberuniulm;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -36,6 +38,7 @@ import de.uni_ulm.uberuniulm.model.BookedRide;
 import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.ui.ClickListener;
 
 
 public class MainPageFragment extends Fragment {
@@ -46,6 +49,7 @@ public class MainPageFragment extends Fragment {
     private static OfferListAdapter adapter;
     private DatabaseReference myRef;
     private OfferedRide offeredRide;
+    private String userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,7 +68,7 @@ public class MainPageFragment extends Fragment {
 
         SharedPreferences pref = new ObscuredSharedPreferences(
                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("UserKey", Context.MODE_PRIVATE));
-        String userId = pref.getString("UserKey", "");
+        userId = pref.getString("UserKey", "");
         Log.i("userid", "" + userId);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -95,17 +99,25 @@ public class MainPageFragment extends Fragment {
                             long price = (long) (values.get(6));
                             String date =  values.get(1).toString();
                             String time;
-                            if(values.size()==9){
+                            String userkey;
+                            long zIndex;
+                            if(values.size()==11){
                                  time= values.get(8).toString();
+                                 userkey = values.get(9).toString();
+                                 zIndex = (long) values.get(10);
                             }else{
                                 time= values.get(7).toString();
+                                userkey = values.get(8).toString();
+                                zIndex = (long) values.get(9);
                             }
                             long places = (long) values.get(4);
                             long places_open = (long) values.get(5);
                             String departure = values.get(2).toString();
                             String destination = values.get(3).toString();
 
-                            offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination);
+
+
+                            offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int) zIndex);
                             offeredRides.add(new Pair(new Pair(user.getKey(), rating.floatValue()),offeredRide));
                             adapter.notifyDataSetChanged();
                         }
@@ -120,7 +132,42 @@ public class MainPageFragment extends Fragment {
 
         });
 
-        adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides);
+        adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {
+            @Override
+            public void onPositionClicked(int position) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                alert.setMessage("You want to book this ride?");
+                alert.setTitle("Book Ride");
+
+
+                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Pair clickedRidePair = offeredRides.get(position);
+                        OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference();
+                        BookedRide bookedRide = new BookedRide(clickedRide.getUserId(), clickedRide.getzIndex());
+                        final SharedPreferences pref = new ObscuredSharedPreferences(
+                                fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
+                        int zIndex = pref.getInt("BookedRideId", 0);
+                        myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putInt("BookedRideId", zIndex +1);
+                        editor.apply();
+
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // what ever you want to do with No option.
+                    }
+                });
+
+                alert.show();
+            }
+        });
         Log.d("OFFEREDRIDES", String.valueOf(offeredRides.size()));
         offerRecyclerView.setAdapter(adapter);
 

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.OfferListAdapter;
 import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.ui.ClickListener;
 
 public class MyOffersFragment extends Fragment {
     public View fragmentView;
@@ -81,17 +82,23 @@ public class MyOffersFragment extends Fragment {
                             long price = (long) (values.get(6));
                             String date =  values.get(1).toString();
                             String time;
-                            if(values.size()==9){
+                            String userkey;
+                            long zIndex;
+                            if(values.size()==11){
                                 time= values.get(8).toString();
+                                userkey = values.get(9).toString();
+                                zIndex = (long) values.get(10);
                             }else{
                                 time= values.get(7).toString();
+                                userkey = values.get(8).toString();
+                                zIndex = (long) values.get(9);
                             }
                             long places = (long) values.get(4);
                             long places_open = (long) values.get(5);
                             String departure = values.get(2).toString();
                             String destination = values.get(3).toString();
 
-                            OfferedRide offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination);
+                            OfferedRide offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int)zIndex);
                             Float rating= -2.0f;
                             offeredRides.add(new Pair(new Pair(userId,rating),offeredRide));
                             adapter.notifyDataSetChanged();
@@ -106,7 +113,12 @@ public class MyOffersFragment extends Fragment {
 
         });
 
-        adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides);
+        adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {
+            @Override
+            public void onPositionClicked(int position) {
+
+            }
+        });
         myoffersRecyclerView.setAdapter(adapter);
 
         return fragmentView;

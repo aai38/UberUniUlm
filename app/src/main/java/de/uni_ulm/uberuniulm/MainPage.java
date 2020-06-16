@@ -27,6 +27,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
@@ -49,14 +50,17 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import de.uni_ulm.uberuniulm.model.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.model.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 
+import static android.view.View.AUTOFILL_HINT_EMAIL_ADDRESS;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -153,10 +157,10 @@ public class MainPage extends AppCompatActivity
                     drawerText.setText(values.get(4).toString());
                 } else if (values.size() == 6) {
                     drawerText.setText(values.get(5).toString());
-                } else if (values.size() == 4) {
-                    drawerText.setText(values.get(3).toString());
-                } else {
+                } else if (values.size() == 7){
                     drawerText.setText(values.get(6).toString());
+                } else {
+                    drawerText.setText(values.get(7).toString());
                 }
 
 
@@ -220,7 +224,9 @@ public class MainPage extends AppCompatActivity
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.booked) {
-
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.mainPageContentContainer, new MyBookedRidesFragment());
+            fragmentTransaction.commit();
         } else if (id == R.id.offers) {
 
             fragmentTransaction = fragmentManager.beginTransaction();
@@ -377,4 +383,6 @@ public class MainPage extends AppCompatActivity
     public static void setFragment(ProfileFragment profileFragment) {
         currentFragment = profileFragment;
     }
+
+
 }

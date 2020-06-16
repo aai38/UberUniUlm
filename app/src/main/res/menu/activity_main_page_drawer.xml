@@ -23,10 +23,7 @@
 
 
     <group android:checkableBehavior="single">
-        <item
 
-                android:title="Settings"
-                android:id="@+id/settings"/>
         <item
 
                 android:title="Log out"

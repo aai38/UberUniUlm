@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,18 +27,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.model.BookedRide;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.User;
+import de.uni_ulm.uberuniulm.ui.ClickListener;
 
 public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.OfferViewHolder>  implements View.OnClickListener{
 
     private ArrayList<Pair<Pair<String, Float>,OfferedRide>> dataSet;
+    private final ClickListener listener;
     Context mContext;
 
-    public OfferListAdapter(Context mContext, ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides) {
+    public OfferListAdapter(Context mContext, ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides, ClickListener listener) {
+        this.listener = listener;
         this.mContext = mContext;
         dataSet = offeredRides;
     }
@@ -99,14 +105,18 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     }
 
 
-    class OfferViewHolder extends RecyclerView.ViewHolder {
+    class OfferViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView txtDestination, txtDeparture, txtDate, txtPlaces, txtPrice, txtTime;
         ImageView picture;
         RatingBar rating;
+        ImageButton book;
+        private WeakReference<ClickListener> listenerRef;
 
         public OfferViewHolder(@NonNull View convertView) {
             super(convertView);
+
+            listenerRef = new WeakReference<>(listener);
 
             txtDestination = (TextView) convertView.findViewById(R.id.TextViewDestination);
             txtDeparture = (TextView) convertView.findViewById(R.id.textViewDeparture);
@@ -116,6 +126,20 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             txtPlaces = (TextView) convertView.findViewById(R.id.TextViewPlaces);
             txtPrice = (TextView) convertView.findViewById(R.id.TextViewPrice);
             txtTime = (TextView) convertView.findViewById(R.id.TextViewTime);
+            book = (ImageButton) convertView.findViewById(R.id.bookingButton);
+
+            book.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == book.getId()) {
+                Log.d("listener", book.getId() + "");
+            } else {
+
+            }
+
+            listenerRef.get().onPositionClicked(getAdapterPosition());
         }
     }
 }

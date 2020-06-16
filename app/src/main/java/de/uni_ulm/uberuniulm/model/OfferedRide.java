@@ -100,8 +100,27 @@ public class OfferedRide {
 
     private String key;
 
+    public String getUserId() {
+        return userId;
+    }
 
-    public OfferedRide(Route route, int price, String date, String time, int places, int places_open, String departure, String destination) {
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public int getzIndex() {
+        return zIndex;
+    }
+
+    public void setzIndex(int zIndex) {
+        this.zIndex = zIndex;
+    }
+
+    private String userId;
+    private int zIndex;
+
+
+    public OfferedRide(Route route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex) {
         this.route = route;
         this.price = price;
         this.date = date;
@@ -111,18 +130,9 @@ public class OfferedRide {
         this.bookedUsers = new ArrayList<>();
         this.departure = departure;
         this.destination = destination;
+        this.userId = userId;
+        this.zIndex = zIndex;
     }
 
-    public OfferedRide(String destination, String departure, Route route, ParkingSpot parkingspot, int price, String date, String time, int places, int places_open, ArrayList<User> bookedUsers) {
-        this.destination = destination;
-        this.departure = departure;
-        this.route = route;
-        this.parkingspot = parkingspot;
-        this.price = price;
-        this.date = date;
-        this.time = time;
-        this.places = places;
-        this.places_open = places_open;
-        this.bookedUsers = bookedUsers;
-    }
+
 }

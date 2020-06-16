@@ -267,24 +267,25 @@ public class NewOfferPage extends AppCompatActivity implements LocationUpdateLis
         String destination = goalTextField.getText().toString();
 
         Log.i("departure", departure + destination);
+        final SharedPreferences pref = new ObscuredSharedPreferences(
+                    NewOfferPage.this, NewOfferPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+        String userId = pref.getString("UserKey", "");
 
-        //route = null;
+        int zIndex = pref.getInt("RideId", 0);
         int places= (Integer.parseInt(placesTextField.getText().toString()));
-        OfferedRide offer=new OfferedRide(route, price, date, time, places, places, departure, destination );
+        OfferedRide offer=new OfferedRide(route, price, date, time, places, places, departure, destination, userId, zIndex);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
 
 
-        final SharedPreferences pref = new ObscuredSharedPreferences(
-                NewOfferPage.this, NewOfferPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
-        String userId = pref.getString("UserKey", "");
+
         Log.i("userkey", ""+userId);
         SharedPreferences.Editor editor = pref.edit();
 
-        int initalIndex = pref.getInt("RideId", 0);
-        myRef.child(userId).child("offeredRides").child(String.valueOf(initalIndex)).setValue(offer);
-        editor.putInt("RideId", initalIndex +1);
+
+        myRef.child(userId).child("offeredRides").child(String.valueOf(zIndex)).setValue(offer);
+        editor.putInt("RideId", zIndex +1);
         editor.apply();
 
         }

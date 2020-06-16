@@ -155,8 +155,10 @@ public class ProfileFragment extends Fragment {
                     username.setText(values.get(4).toString());
                 } else if (values.size() == 6) {
                     username.setText(values.get(5).toString());
-                } else {
+                } else if (values.size() == 7){
                     username.setText(values.get(6).toString());
+                } else {
+                    username.setText(values.get(7).toString());
                 }
                 email.setText(values.get(0).toString());
 
