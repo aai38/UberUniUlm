@@ -13,10 +13,32 @@
             android:gravity="right"
             android:orientation="horizontal">
 
+            <ImageButton
+                android:id="@+id/rideOverviewBookingButton"
+                android:layout_width="39dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="10dp"
+                app:srcCompat="@android:drawable/ic_dialog_email" />
+
+            <ImageButton
+                android:id="@+id/rideOverviewMarkButton"
+                android:layout_width="39dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:adjustViewBounds="true"
+                android:background="@color/transparent"
+                android:onClick="onBookRideButton"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_mark_offer_deselected" />
+
             <ImageView
                 android:id="@+id/rideOverviewCloseBttn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="45dp"
                 android:layout_weight="0"
                 app:srcCompat="@drawable/ic_cancel" />
         </LinearLayout>

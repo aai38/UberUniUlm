@@ -161,8 +161,6 @@ public class MyBookedRidesFragment extends Fragment {
                         }
                     }
 
-
-
             }
 
             @Override
