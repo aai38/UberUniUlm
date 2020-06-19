@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rideOverviewUpperContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:id="@+id/rideOverviewUpperContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/backgroundgradient"
-        android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/backgroundgradient">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,53 +21,84 @@
                 app:srcCompat="@drawable/ic_cancel" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/profileImageContainer"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_margin="10dp">
 
             <com.mikhaellopez.circularimageview.CircularImageView
-                android:id="@+id/rideOverviewProfilePhoto"
-                android:layout_width="wrap_content"
+                android:id="@+id/offerOverviewProfileImageDrawer"
+                android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                android:adjustViewBounds="false"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/start_register_profile_photo" />
+                android:src="@drawable/start_register_profile_photo"
+                app:civ_border_color="@color/colorPrimary"
+                app:civ_border_width="3dp"
+                app:civ_shadow="true"
+                app:civ_shadow_color="@color/colorSemiTransparentBlack"
+                app:civ_shadow_radius="5"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
 
-            <LinearLayout
+            <RatingBar
+                android:id="@+id/ratingView"
+                style="@style/CustomRatingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:max="5"
+                android:numStars="5"
+                android:rating="3"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/rideOverviewUserNameText"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:text="Aline"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/rideOverviewUserNameText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Aline"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="18sp" />
+            <TextView
+                android:id="@+id/rideOfferStartGoalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Staudinger Straße -> Helmholzstraße"
+                android:textColor="@color/black_fully_opaque"
+                android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/rideOfferStartGoalText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Staudinger Straße -> Helmholzstraße"
-                    android:textColor="@color/black_fully_opaque"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/ridOfferDateText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Today - 8:10"
-                    android:textColor="@color/black_fully_opaque"
-                    android:textSize="18sp" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/ridOfferDateText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Today - 8:10"
+                android:textColor="@color/black_fully_opaque"
+                android:textSize="18sp" />
         </LinearLayout>
+    </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,14 +115,14 @@
                 app:srcCompat="@drawable/ic_map_traffic_incident_midgrey_small" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/rideOverviewCarInfoText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="VW Golf - 4 Plätze" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/rideOverviewPriceText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -104,16 +130,4 @@
                 android:text="1€"
                 android:textColor="@color/black_fully_opaque" />
         </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <fragment
-            android:id="@+id/rideOverviewMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
 </LinearLayout>

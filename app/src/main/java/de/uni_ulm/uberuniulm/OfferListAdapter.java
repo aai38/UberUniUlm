@@ -37,12 +37,12 @@ import de.uni_ulm.uberuniulm.ui.ClickListener;
 
 public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.OfferViewHolder>  implements View.OnClickListener{
 
-    private ArrayList<Pair<Pair<String, Float>,OfferedRide>> dataSet;
+    private ArrayList<Pair<ArrayList,OfferedRide>> dataSet;
     private final ClickListener listener;
     Context mContext;
-    private ArrayList<Pair<Pair<String, Float>,OfferedRide>> dataSetCopy = new ArrayList<>();
+    private ArrayList<Pair<ArrayList,OfferedRide>> dataSetCopy = new ArrayList<>();
 
-    public OfferListAdapter(Context mContext, ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides, ClickListener listener) {
+    public OfferListAdapter(Context mContext, ArrayList<Pair<ArrayList,OfferedRide>> offeredRides, ClickListener listener) {
         this.listener = listener;
         this.mContext = mContext;
         dataSet = offeredRides;
@@ -60,8 +60,8 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     public void onBindViewHolder(@NonNull OfferViewHolder viewHolder, int position) {
 
 
-        String userID=dataSet.get(position).first.first;
-        Float rating= dataSet.get(position).first.second;
+        String userID=(String) dataSet.get(position).first.get(0);
+        Float rating= (Float) dataSet.get(position).first.get(2);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference profileImageRef = storageRef.child("profile_images/"+userID+".jpg");
@@ -143,8 +143,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     @Override
     public void onClick(View v) {
         int position=(Integer) v.getTag();
-        Object object= dataSet.get(position);
-        OfferedRide bookedRide=(OfferedRide) object;
+
     }
 
 
@@ -158,6 +157,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
 
         public OfferViewHolder(@NonNull View convertView) {
             super(convertView);
+            convertView.setOnClickListener(this);
 
             listenerRef = new WeakReference<>(listener);
 
@@ -178,11 +178,10 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
         public void onClick(View view) {
             if (view.getId() == book.getId()) {
                 Log.d("listener", book.getId() + "");
+                listenerRef.get().onPositionClicked(getAdapterPosition());
             } else {
-
+                listenerRef.get().onOfferClicked(getAdapterPosition());
             }
-
-            listenerRef.get().onPositionClicked(getAdapterPosition());
         }
 
 

@@ -1,7 +1,6 @@
 package de.uni_ulm.uberuniulm;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,8 +26,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.provider.MediaStore;
-import android.text.InputType;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,15 +52,12 @@ import android.view.MenuItem;
 import de.uni_ulm.uberuniulm.model.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.model.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 
-import static android.view.View.AUTOFILL_HINT_EMAIL_ADDRESS;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -159,6 +155,8 @@ public class MainPage extends AppCompatActivity
                     drawerText.setText(values.get(5).toString());
                 } else if (values.size() == 7){
                     drawerText.setText(values.get(6).toString());
+                }else if (values.size() == 4){
+                    drawerText.setText(values.get(3).toString());
                 } else {
                     drawerText.setText(values.get(7).toString());
                 }
@@ -254,7 +252,8 @@ public class MainPage extends AppCompatActivity
     }
 
     public void onMyRidesNewRideBttn(View view){
-        Intent intent = new Intent(MainPage.this, NewOfferPage.class);
+        Intent intent = new Intent(MainPage.this, MapActivity.class);
+        intent.putExtra("VIEWTYPE", "NEWOFFER");
         startActivity(intent);
     }
 
@@ -382,6 +381,9 @@ public class MainPage extends AppCompatActivity
 
     public static void setFragment(ProfileFragment profileFragment) {
         currentFragment = profileFragment;
+    }
+
+    public void onRideElement(Pair<ArrayList, OfferedRide> offeredRide){
     }
 
 

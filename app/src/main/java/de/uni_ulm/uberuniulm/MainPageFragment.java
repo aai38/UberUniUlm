@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -32,9 +33,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.tomtom.online.sdk.common.location.LatLng;
+import com.tomtom.online.sdk.map.Icon;
 import com.tomtom.online.sdk.map.Route;
+import com.tomtom.online.sdk.map.RouteBuilder;
+import com.tomtom.online.sdk.map.RouteStyle;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import de.uni_ulm.uberuniulm.model.BookedRide;
 import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
@@ -43,10 +53,10 @@ import de.uni_ulm.uberuniulm.model.ParkingSpots;
 import de.uni_ulm.uberuniulm.ui.ClickListener;
 
 
-public class MainPageFragment extends Fragment {
+public class MainPageFragment extends Fragment{
 
     public View fragmentView;
-    ArrayList<Pair<Pair<String, Float>,OfferedRide>> offeredRides;
+    ArrayList<Pair<ArrayList,OfferedRide>> offeredRides;
     RecyclerView offerRecyclerView;
     private OfferListAdapter adapter;
     private DatabaseReference myRef;
@@ -103,7 +113,6 @@ public class MainPageFragment extends Fragment {
         SharedPreferences pref = new ObscuredSharedPreferences(
                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         userId = pref.getString("UserKey", "");
-        Log.i("userid", "" + userId);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         int ridesTotal = pref.getInt("RideId", 0);
@@ -117,6 +126,9 @@ public class MainPageFragment extends Fragment {
                 for(DataSnapshot user: dataSnapshot.getChildren()) {
                     DataSnapshot usersOfferedRides= user.child("offeredRides");
                     Long rating= (Long) user.child("rating").getValue();
+                    ArrayList userData = new ArrayList();
+                    userData.add(user.getKey());
+                    userData.add(user.child("username").getValue());
                     for (DataSnapshot ride : usersOfferedRides.getChildren()) {
                         ArrayList<Object> values = new ArrayList();
                         values.add(dataSnapshot.getKey());
@@ -127,9 +139,17 @@ public class MainPageFragment extends Fragment {
                         if(values.size()==0) {
                             Log.i("onDataChange", "no values");
                         } else {
-                            //Route route = (Route) values.get(0);
-                            Route route =null;
-                            Log.i("TAG", "values" + values.get(2).toString());
+                            List<LatLng> coordinates=new ArrayList<>();
+                            try {
+                                List<HashMap> coordinatesHash = (List<HashMap>) values.get(7);
+                                for(HashMap coordinate : coordinatesHash){
+                                    LatLng coord=new LatLng((Double)coordinate.get("latitude"), (Double) coordinate.get("longitude"));
+                                    coordinates.add(coord);
+                                }
+                            }catch(ClassCastException e){
+                                coordinates= new ArrayList<>();
+                            }
+
                             long price = (long) (values.get(6));
                             String date =  values.get(1).toString();
                             String time;
@@ -140,9 +160,9 @@ public class MainPageFragment extends Fragment {
                                  userkey = values.get(9).toString();
                                  zIndex = (long) values.get(10);
                             }else{
-                                time= values.get(7).toString();
-                                userkey = values.get(8).toString();
-                                zIndex = (long) values.get(9);
+                                time= values.get(8).toString();
+                                userkey = values.get(9).toString();
+                                zIndex = (long) values.get(10);
                             }
                             long places = (long) values.get(4);
                             long places_open = (long) values.get(5);
@@ -150,9 +170,9 @@ public class MainPageFragment extends Fragment {
                             String destination = values.get(3).toString();
 
 
-
-                            offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int) zIndex);
-                            offeredRides.add(new Pair(new Pair(user.getKey(), rating.floatValue()),offeredRide));
+                            offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int) zIndex);
+                            userData.add((float) rating);
+                            offeredRides.add(new Pair(userData, offeredRide));
                             adapter.notifyDataSetChanged();
                         }
                     }
@@ -204,7 +224,20 @@ public class MainPageFragment extends Fragment {
 
                 alert.show();
             }
+
+            @Override
+            public void onOfferClicked(int position) {
+                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                Pair clickedRidePair = offeredRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                intent.putExtra("RIDE", clickedRide);
+                intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
+                startActivity(intent);
+            }
         });
+
+
         Log.d("OFFEREDRIDES", String.valueOf(offeredRides.size()));
         offerRecyclerView.setAdapter(adapter);
 

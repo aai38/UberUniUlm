@@ -1,6 +1,7 @@
 package de.uni_ulm.uberuniulm.model;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -14,6 +15,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,11 +24,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.tomtom.online.sdk.common.location.LatLng;
 import com.tomtom.online.sdk.map.Route;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import de.uni_ulm.uberuniulm.MapActivity;
 import de.uni_ulm.uberuniulm.OfferListAdapter;
+import de.uni_ulm.uberuniulm.ProfileFragment;
 import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.ui.ClickListener;
 
@@ -35,8 +42,9 @@ public class MyOffersFragment extends Fragment {
     private RecyclerView myoffersRecyclerView;
     private static OfferListAdapter adapter;
     private DatabaseReference myRef;
-    private ArrayList<Pair<Pair<String,Float>, OfferedRide>> offeredRides;
+    private ArrayList<Pair<ArrayList, OfferedRide>> offeredRides;
     private FirebaseAuth mAuth;
+    private AutoCompleteTextView atvWaypointLocation;
 
 
     @Override
@@ -66,6 +74,7 @@ public class MyOffersFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.i("onDataChange2", dataSnapshot.getKey()+" "+String.valueOf(dataSnapshot.child("offeredRides").getChildrenCount()));
+                String username = (String) dataSnapshot.child(userId).child("username").getValue();
                     for (DataSnapshot ride : dataSnapshot.child("offeredRides").getChildren()) {
                         ArrayList<Object> values = new ArrayList();
                         values.add(dataSnapshot.getKey());
@@ -76,8 +85,17 @@ public class MyOffersFragment extends Fragment {
                         if(values.size()==0) {
                             Log.i("onDataChange", "no values");
                         } else {
-                            //Route route = (Route) values.get(0);
-                            Route route = null;
+                            List<LatLng> coordinates=new ArrayList<>();
+                            try {
+                                List<HashMap> coordinatesHash = (List<HashMap>) values.get(7);
+                                for(HashMap coordinate : coordinatesHash){
+                                    LatLng coord=new LatLng((Double)coordinate.get("latitude"), (Double) coordinate.get("longitude"));
+                                    coordinates.add(coord);
+                                }
+                            }catch(ClassCastException e){
+                                Log.d("YEAH", "OBVIOUSLY");
+                                coordinates= new ArrayList<>();
+                            }
                             Log.i("TAG", "values" + values.get(3).toString());
                             long price = (long) (values.get(6));
                             String date =  values.get(1).toString();
@@ -98,9 +116,13 @@ public class MyOffersFragment extends Fragment {
                             String departure = values.get(2).toString();
                             String destination = values.get(3).toString();
 
-                            OfferedRide offeredRide = new OfferedRide(route, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int)zIndex);
+                            OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int)zIndex);
+                            ArrayList<Object> userData = new ArrayList();
+                            userData.add(userId);
+                            userData.add(username);
                             Float rating= -2.0f;
-                            offeredRides.add(new Pair(new Pair(userId,rating),offeredRide));
+                            userData.add(rating);
+                            offeredRides.add(new Pair(userData,offeredRide));
                             adapter.notifyDataSetChanged();
                         }
                     }
@@ -117,6 +139,17 @@ public class MyOffersFragment extends Fragment {
             @Override
             public void onPositionClicked(int position) {
 
+            }
+
+            @Override
+            public void onOfferClicked(int position){
+                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                Pair clickedRidePair = offeredRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                intent.putExtra("RIDE", clickedRide);
+                intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
+                startActivity(intent);
             }
         });
         myoffersRecyclerView.setAdapter(adapter);

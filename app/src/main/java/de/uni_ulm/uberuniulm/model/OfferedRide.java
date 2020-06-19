@@ -1,11 +1,18 @@
 package de.uni_ulm.uberuniulm.model;
 
-import com.tomtom.online.sdk.map.Route;
+import android.widget.ArrayAdapter;
 
+import com.tomtom.online.sdk.common.location.LatLng;
+import com.tomtom.online.sdk.map.Route;
+import com.tomtom.online.sdk.map.RouteBuilder;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class OfferedRide {
+public class OfferedRide implements Serializable {
     public String getDestination() {
         return destination;
     }
@@ -22,11 +29,11 @@ public class OfferedRide {
         this.departure = departure;
     }
 
-    public Route getRoute() {
+    public List<LatLng> getRoute() {
         return route;
     }
 
-    public void setRoute(Route route) {
+    public void setRoute(List<LatLng> route) {
         this.route = route;
     }
 
@@ -88,7 +95,7 @@ public class OfferedRide {
 
     private String destination;
     private String departure;
-    private Route route;
+    private List<LatLng> route;
     private ParkingSpot parkingspot;
     private int price;
     private String date;
@@ -120,7 +127,7 @@ public class OfferedRide {
     private int zIndex;
 
 
-    public OfferedRide(Route route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex) {
+    public OfferedRide(List<LatLng> route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex) {
         this.route = route;
         this.price = price;
         this.date = date;
@@ -133,6 +140,27 @@ public class OfferedRide {
         this.userId = userId;
         this.zIndex = zIndex;
     }
+
+    /*public OfferedRide(HashMap route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex) {
+        List<LatLng> coordinates;
+        ArrayList<LatLng>[] coordinatesUnParsed=(ArrayList<LatLng>[]) route.get("coordinates");
+        for(int i=0; i<route.size(); i++){
+
+        }
+
+
+        this.route = route;
+        this.price = price;
+        this.date = date;
+        this.time = time;
+        this.places = places;
+        this.places_open = places_open;
+        this.bookedUsers = new ArrayList<>();
+        this.departure = departure;
+        this.destination = destination;
+        this.userId = userId;
+        this.zIndex = zIndex;
+    }*/
 
 
 }
