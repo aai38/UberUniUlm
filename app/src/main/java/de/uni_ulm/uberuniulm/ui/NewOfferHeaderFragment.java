@@ -52,6 +52,7 @@ import java.util.Map;
 import de.uni_ulm.uberuniulm.MainPage;
 import de.uni_ulm.uberuniulm.MapActivity;
 import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.model.OfferedRide;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -90,12 +91,12 @@ public class NewOfferHeaderFragment extends Fragment {
         fragmentView = inflater.inflate(R.layout.fragment_new_ride_header, container, false);
         mapActivity = (MapActivity) getActivity();
 
-        startTextField = fragmentView.findViewById(R.id.newOfferActivityStartEditText);
-        goalTextField = fragmentView.findViewById(R.id.newOfferActivityDestinationEditText);
-        dateTextField = fragmentView.findViewById(R.id.newOfferActivityDateTextField);
-        timeTextField = fragmentView.findViewById(R.id.newOfferActivityTimeTextField);
-        placesTextField = fragmentView.findViewById(R.id.newOfferActivityPlacesTextField);
-        priceTextField = fragmentView.findViewById(R.id.newOfferActivityPriceTextField);
+        startTextField =(EditText)  fragmentView.findViewById(R.id.newOfferActivityStartEditText);
+        goalTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityDestinationEditText);
+        dateTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityDateTextField);
+        timeTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityTimeTextField);
+        placesTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityPlacesTextField);
+        priceTextField =(EditText)  fragmentView.findViewById(R.id.newOfferActivityPriceTextField);
 
         confirmBttn = fragmentView.findViewById(R.id.newOfferActivityConfirmBttn);
         closeBttn = fragmentView.findViewById(R.id.newOfferActivityCancelBttn);
@@ -199,6 +200,21 @@ public class NewOfferHeaderFragment extends Fragment {
         }
 
         return fragmentView;
+    }
+
+
+    public void setUpExistingOffer(OfferedRide ride){
+        placesTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityPlacesTextField);
+        priceTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityPriceTextField);
+        dateTextField.setText(ride.getDate());
+        timeTextField.setText(ride.getTime());
+        startTextField.setText(ride.getDeparture());
+        goalTextField.setText(ride.getDestination());
+        String price= String.valueOf(ride.getPrice());
+        String places= String.valueOf(ride.getPlaces());
+
+        priceTextField.setText(price, TextView.BufferType.EDITABLE);
+        placesTextField.setText(places, TextView.BufferType.EDITABLE);
     }
 
     private void initSearchFieldsWithDefaultValues() {

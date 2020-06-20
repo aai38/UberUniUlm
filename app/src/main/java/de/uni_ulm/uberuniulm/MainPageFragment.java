@@ -2,14 +2,14 @@ package de.uni_ulm.uberuniulm;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,29 +19,25 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
+import android.widget.Spinner;
+import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
+import com.google.android.material.chip.Chip;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
-import com.tomtom.online.sdk.map.Icon;
-import com.tomtom.online.sdk.map.Route;
-import com.tomtom.online.sdk.map.RouteBuilder;
-import com.tomtom.online.sdk.map.RouteStyle;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.text.ParseException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +47,7 @@ import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
 import de.uni_ulm.uberuniulm.ui.ClickListener;
+import de.uni_ulm.uberuniulm.ui.OfferListAdapter;
 
 
 public class MainPageFragment extends Fragment{
@@ -70,6 +67,66 @@ public class MainPageFragment extends Fragment{
         mapFragment.setVisibility(View.VISIBLE);
         SearchView departure = fragmentView.findViewById(R.id.searchViewDeparture);
         SearchView destination = fragmentView.findViewById(R.id.searchViewDestination);
+        ImageButton addFilterBttn= fragmentView.findViewById(R.id.addFilterBttn);
+
+        addFilterBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FrameLayout filterDialog=(FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
+                filterDialog.setVisibility(View.VISIBLE);
+                setUpFilterDialog();
+            }
+        });
+
+        ImageButton filterConfirmBttn= fragmentView.findViewById(R.id.addFilterConfirmBttn);
+        filterConfirmBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner filterTypeSpinner=fragmentView.findViewById(R.id.addFilterTypeSpinner);
+                int filterType =filterTypeSpinner.getSelectedItemPosition();
+                if(filterType!=1){
+                    Spinner filterContentSpinner=fragmentView.findViewById(R.id.addFilterContentSpinner);
+                    int filterContent= filterContentSpinner.getSelectedItemPosition();
+                    adapter.setFilter(filterType, filterContent);
+                }else{
+                    EditText usernameTextField= fragmentView.findViewById(R.id.addFilterTextInput);
+                    String username= usernameTextField.getText().toString();
+                    adapter.setUsernameFilter(username);
+                }
+
+                LinearLayout filterContainer= (LinearLayout) fragmentView.findViewById(R.id.filterOverview);
+                LinearLayout filterItem = (LinearLayout) inflater.inflate(R.layout.filter_overview_item, null, false);
+
+                TextView filterItemText=(TextView) filterItem.findViewById(R.id.filterItemText);
+                filterItemText.setText("Filter: "+ fragmentView.getResources().getStringArray(R.array.distances)[0]);
+
+                ImageButton filterItemCloseButton= (ImageButton) filterItem.findViewById(R.id.filterItemCloseBttn);
+
+                filterItem.setContentDescription(String.valueOf(filterType));
+                filterItemCloseButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int filterType= Integer.parseInt(filterItem.getContentDescription().toString());
+                        filterContainer.removeView((ViewGroup)view.getParent());
+                        adapter.deleteFilter(filterType);
+                    }
+                });
+
+                FrameLayout filterDialog=(FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
+                filterDialog.setVisibility(View.INVISIBLE);
+
+                filterContainer.addView(filterItem);
+            }
+        });
+
+        ImageButton filterCancelBttn= fragmentView.findViewById(R.id.addFilterCancelBttn);
+        filterCancelBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FrameLayout filterDialog=(FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
+                filterDialog.setVisibility(View.INVISIBLE);
+            }
+        });
 
         departure.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -98,9 +155,6 @@ public class MainPageFragment extends Fragment{
                 return true;
             }
         });
-
-
-
 
         offerRecyclerView = (RecyclerView) fragmentView.findViewById(R.id.mainPageOfferRecyclerView);
         offerRecyclerView.setHasFixedSize(true);
@@ -235,6 +289,17 @@ public class MainPageFragment extends Fragment{
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
             }
+
+            @Override
+            public void onEditClicked(int position){
+                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                Pair clickedRidePair = offeredRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                intent.putExtra("RIDE", clickedRide);
+                intent.putExtra("VIEWTYPE", "EDITOFFER");
+                startActivity(intent);
+            }
         });
 
 
@@ -242,5 +307,63 @@ public class MainPageFragment extends Fragment{
         offerRecyclerView.setAdapter(adapter);
 
         return fragmentView;
+    }
+
+    private void setUpFilterDialog() {
+        Spinner filterTypeSpinner= (Spinner) fragmentView.findViewById(R.id.addFilterTypeSpinner);
+        ArrayAdapter adapterType= new ArrayAdapter<String>(getActivity(),
+               R.layout.filter_spinner_item, getResources().getStringArray(R.array.filters));
+        filterTypeSpinner.setAdapter(adapterType);
+
+        Spinner filterContentSpinner= (Spinner) fragmentView.findViewById(R.id.addFilterContentSpinner);
+        ArrayAdapter adapterContent= new ArrayAdapter<String>(getActivity(),
+                R.layout.filter_spinner_item, getResources().getStringArray(R.array.distances));
+        filterContentSpinner.setAdapter(adapterContent);
+
+        filterTypeSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+        filterTypeSpinner.setSelection(0);
+
+        filterContentSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+        filterContentSpinner.setSelection(0);
+        filterContentSpinner.setVisibility(View.VISIBLE);
+
+        EditText userNameTextField=(EditText) fragmentView.findViewById(R.id.addFilterTextInput);
+        userNameTextField.setVisibility(View.GONE);
+
+        filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                ArrayAdapter adapter;
+                switch(position){
+                    case 0:
+                        filterContentSpinner.setVisibility(View.VISIBLE);
+                        userNameTextField.setVisibility(View.GONE);
+                        adapter = new ArrayAdapter<String>(getActivity(),
+                                R.layout.filter_spinner_item, getResources().getStringArray(R.array.distances));
+                        filterContentSpinner.setAdapter(adapter);
+                        break;
+                    case 1:
+                        userNameTextField.setVisibility(View.VISIBLE);
+                        filterContentSpinner.setVisibility(View.GONE);
+                    case 2:
+                        filterContentSpinner.setVisibility(View.VISIBLE);
+                        userNameTextField.setVisibility(View.GONE);
+                        adapter = new ArrayAdapter<String>(getActivity(),
+                                R.layout.filter_spinner_item, getResources().getStringArray(R.array.price));
+                        filterContentSpinner.setAdapter(adapter);
+                        break;
+                    case 3:
+                        filterContentSpinner.setVisibility(View.GONE);
+                        userNameTextField.setVisibility(View.GONE);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
     }
 }

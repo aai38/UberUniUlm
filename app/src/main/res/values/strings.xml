@@ -43,5 +43,7 @@
     <string name="profile_username">Username</string>
     <string name="profile_name">Name</string>
 
+    <string name="addFilterDialog_title">Add Filter</string>
+
 
 </resources>

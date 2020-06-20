@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="filters">
+        <item>Distance to current Position</item>
+        <item>Username</item>
+        <item>Price</item>
+        <item>Hide booked up rides</item>
+    </string-array>
+    <string-array
+        name="distances">
+        <item>50m</item>
+        <item>100m</item>
+        <item>500m</item>
+        <item>1000m</item>
+    </string-array>
+    <string-array
+        name="price">
+        <item>1€</item>
+        <item>2€</item>
+        <item>3€</item>
+        <item>5€</item>
+    </string-array>
+</resources>

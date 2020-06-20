@@ -1,15 +1,9 @@
 package de.uni_ulm.uberuniulm.model;
 
-import android.widget.ArrayAdapter;
-
 import com.tomtom.online.sdk.common.location.LatLng;
-import com.tomtom.online.sdk.map.Route;
-import com.tomtom.online.sdk.map.RouteBuilder;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class OfferedRide implements Serializable {

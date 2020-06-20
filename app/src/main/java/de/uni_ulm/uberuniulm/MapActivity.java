@@ -28,8 +28,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.common.base.Optional;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -62,7 +60,6 @@ import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderFullAddr
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchQueryBuilder;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchResponse;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +71,7 @@ import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
 import de.uni_ulm.uberuniulm.ui.RideOverviewHeaderFragment;
+import de.uni_ulm.uberuniulm.ui.map.TypedBallonViewAdapter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -136,6 +134,11 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
                 ride = (OfferedRide) getIntent().getSerializableExtra("RIDE");
                 overviewHeaderFragment = new RideOverviewHeaderFragment();
                 fragmentTransaction.replace(R.id.newOfferActivityHeaderFragmentContainer, overviewHeaderFragment);
+            }else if(viewType.equals("EDITOFFER")){
+                userData= (ArrayList) getIntent().getExtras().get("USER");
+                ride = (OfferedRide) getIntent().getSerializableExtra("RIDE");
+                fragment = new NewOfferHeaderFragment();
+                fragmentTransaction.replace(R.id.newOfferActivityHeaderFragmentContainer, fragment);
             }
         fragmentTransaction.commit();
 
@@ -148,6 +151,10 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         waypointList= new ArrayList<>();
         wayPointPosition=DEFAULT_DEPARTURE_LATLNG;
         waypointArrayAdapter = new WaypointArrayAdapter(this);
+
+        if(viewType.equals("EDITOFFER")){
+            fragment.setUpExistingOffer(ride);
+        }
     }
 
     public SearchApi getSearchApi(){
@@ -161,25 +168,28 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
 
     public void onNewOfferActivityConfirmBttn(int price, String date, String time, int places, String departure, String destination){
         if(route!=null&& price>=0){
-        final SharedPreferences pref = new ObscuredSharedPreferences(
-                    MapActivity.this, MapActivity.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
-        String userId = pref.getString("UserKey", "");
+            final SharedPreferences pref = new ObscuredSharedPreferences(
+                        MapActivity.this, MapActivity.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+            String userId = pref.getString("UserKey", "");
 
 
 
-        int zIndex = pref.getInt("RideId", 0);
+            int zIndex = pref.getInt("RideId", 0);
 
-        OfferedRide offer=new OfferedRide(route.getCoordinates(), price, date, time, places, places, departure, destination, userId, zIndex);
+            OfferedRide offer=new OfferedRide(route.getCoordinates(), price, date, time, places, places, departure, destination, userId, zIndex);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference();
 
-        SharedPreferences.Editor editor = pref.edit();
 
-        myRef.child(userId).child("offeredRides").child(String.valueOf(zIndex)).setValue(offer);
-        editor.putInt("RideId", zIndex +1);
-        editor.apply();
-
+            if(viewType.equals("EDITOFFER")){
+                myRef.child(userId).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(offer);
+            }else{
+                SharedPreferences.Editor editor = pref.edit();
+                myRef.child(userId).child("offeredRides").child(String.valueOf(zIndex)).setValue(offer);
+                editor.putInt("RideId", zIndex +1);
+                editor.apply();
+            }
         }
 
         Intent intent = new Intent(MapActivity.this, MainPage.class);
@@ -203,9 +213,12 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
                         .build()
         );
 
-        if(viewType.equals("RIDEOVERVIEW")){
+        if(viewType.equals("RIDEOVERVIEW")|| viewType.equals("EDITOFFER")){
             route=tomtomMap.addRoute(new RouteBuilder(ride.getRoute()).startIcon(departureIcon).endIcon(destinationIcon).style(RouteStyle.DEFAULT_ROUTE_STYLE));
+
+
         }
+
     }
 
     @Override

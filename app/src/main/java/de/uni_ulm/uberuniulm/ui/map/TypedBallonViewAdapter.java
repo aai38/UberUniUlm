@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm;
+package de.uni_ulm.uberuniulm.ui.map;
 
 import android.view.View;
 import android.widget.ProgressBar;
@@ -8,6 +8,7 @@ import com.tomtom.online.sdk.map.BaseBalloonViewAdapter;
 import com.tomtom.online.sdk.map.BaseMarkerBalloon;
 import com.tomtom.online.sdk.map.Marker;
 
+import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
 

@@ -155,4 +155,5 @@ public class RideOverviewHeaderFragment extends Fragment {
 
         return fragmentView;
     }
+
 }

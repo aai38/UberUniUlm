@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/filterItemContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="25dp"
+    android:background="@drawable/button_style"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/offset_default"
+    android:paddingLeft="@dimen/offset_default"
+    android:paddingEnd="@dimen/offset_default"
+    android:paddingRight="@dimen/offset_small">
+
+    <ImageView
+        android:id="@+id/filterItemIcon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_weight="1"
+        android:background="@drawable/ic_filter"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp" />
+
+    <TextView
+        android:id="@+id/filterItemText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingEnd="@dimen/offset_small"
+        android:paddingRight="@dimen/offset_small"
+        android:text="TextView"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp" />
+
+    <ImageButton
+        android:id="@+id/filterItemCloseBttn"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_weight="1"
+        android:adjustViewBounds="true"
+        android:background="@color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_cancel" />
+</LinearLayout>

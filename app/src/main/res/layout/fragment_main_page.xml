@@ -17,25 +17,55 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <SearchView
-            android:id="@+id/searchViewDeparture"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <SearchView
+                android:id="@+id/searchViewDeparture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:iconifiedByDefault="false"
+                android:queryHint="Search Departure"
+                app:layout_constraintBottom_toTopOf="@id/searchViewDestination"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </SearchView>
+
+            <SearchView
+                android:id="@+id/searchViewDestination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:iconifiedByDefault="false"
+                android:queryHint="Search Destination"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/searchViewDeparture" />
+
+            <ImageButton
+                android:id="@+id/addFilterBttn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_margin="5dp"
+                android:adjustViewBounds="true"
+                android:background="@color/transparent"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_filter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <LinearLayout
+            android:id="@+id/filterOverview"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:queryHint="Search Departure"
-            android:iconifiedByDefault="false"
-            android:layout_alignParentTop="true"
-            />
-
-
-
-        <SearchView
-            android:id="@+id/searchViewDestination"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:queryHint="Search Destination"
-            android:iconifiedByDefault="false"
-            android:layout_alignParentTop="true"
-            />
+            android:orientation="horizontal"
+            android:padding="@dimen/offset_small" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mainPageOfferRecyclerView"
@@ -52,4 +82,16 @@
         android:visibility="visible"
         app:barrierDirection="right"
         tools:layout_editor_absoluteY="731dp" />
+
+    <include
+        android:id="@+id/addFilterDialog"
+        layout="@layout/fragment_filter_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/mainPageFragmentContainer"
+        app:layout_constraintEnd_toEndOf="@+id/mainPageFragmentContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

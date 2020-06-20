@@ -11,14 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
-import com.tomtom.online.sdk.map.Route;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.uni_ulm.uberuniulm.MapActivity;
-import de.uni_ulm.uberuniulm.OfferListAdapter;
+import de.uni_ulm.uberuniulm.ui.OfferListAdapter;
 import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.ui.ClickListener;
 
@@ -184,6 +182,17 @@ public class MyBookedRidesFragment extends Fragment {
                 intent.putExtra("USER", (ArrayList) clickedRidePair.first);
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
+                startActivity(intent);
+            }
+
+            @Override
+            public void onEditClicked(int position){
+                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                Pair clickedRidePair = bookedRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                intent.putExtra("RIDE", clickedRide);
+                intent.putExtra("VIEWTYPE", "EDITOFFER");
                 startActivity(intent);
             }
         });

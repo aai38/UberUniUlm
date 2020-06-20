@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.model.ParkingSpot;
 import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.ui.map.TypedBallonViewAdapter;
 
 public class ParkingFragment extends Fragment implements OnMapReadyCallback, TomtomMapCallback.OnMapLongClickListener {
     public View fragmentView;
