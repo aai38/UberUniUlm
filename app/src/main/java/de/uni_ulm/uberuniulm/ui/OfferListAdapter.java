@@ -124,40 +124,18 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     }
 
     public void setFilter(int filtertype, int contentIndex){
-        switch(filtertype){
-            case 0:
-                //user position just needs to be implemented
-                break;
-            case 2:
-                dataSet=filters.setPriceFilter(dataSet, contentIndex);
-                break;
-            case 3:
-                dataSet=filters.setPlacesFilter(dataSet);
-                break;
-
-        }
-
+        filters.newFilter(dataSetCopy, filtertype, contentIndex);
         notifyDataSetChanged();
     }
 
     public void deleteFilter(int filtertype){
-        switch(filtertype){
-            case 0:
-                //user position just needs to be implemented
-                break;
-            case 2:
-                dataSet=filters.deletePriceFilter(dataSetCopy);
-                break;
-            case 3:
-                dataSet=filters.deletePlacesFilter(dataSetCopy);
-                break;
-
-        }
+        dataSet=filters.deleteFilter(dataSetCopy, filtertype);
         notifyDataSetChanged();
     }
 
     public void setUsernameFilter(String username){
-        dataSet= filters.setUsernameFilter(dataSet, username);
+        dataSet= filters.setUsernameFilter(dataSetCopy, username);
+        notifyDataSetChanged();
     }
 
     public void filterDestination(String text) {

@@ -2,20 +2,21 @@
 <resources>
     <string-array
         name="filters">
-        <item>Distance to current Position</item>
-        <item>Username</item>
+        <item>Distance</item>
+        <item>Offeror</item>
         <item>Price</item>
         <item>Hide booked up rides</item>
+        <item>Date</item>
     </string-array>
     <string-array
-        name="distances">
+        name="Distance">
         <item>50m</item>
         <item>100m</item>
         <item>500m</item>
         <item>1000m</item>
     </string-array>
     <string-array
-        name="price">
+        name="Price">
         <item>1€</item>
         <item>2€</item>
         <item>3€</item>

@@ -38,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,23 +83,25 @@ public class MainPageFragment extends Fragment{
         filterConfirmBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Spinner filterTypeSpinner=fragmentView.findViewById(R.id.addFilterTypeSpinner);
-                int filterType =filterTypeSpinner.getSelectedItemPosition();
-                if(filterType!=1){
-                    Spinner filterContentSpinner=fragmentView.findViewById(R.id.addFilterContentSpinner);
-                    int filterContent= filterContentSpinner.getSelectedItemPosition();
-                    adapter.setFilter(filterType, filterContent);
-                }else{
-                    EditText usernameTextField= fragmentView.findViewById(R.id.addFilterTextInput);
-                    String username= usernameTextField.getText().toString();
-                    adapter.setUsernameFilter(username);
-                }
-
-                LinearLayout filterContainer= (LinearLayout) fragmentView.findViewById(R.id.filterOverview);
+                Spinner filterTypeSpinner = fragmentView.findViewById(R.id.addFilterTypeSpinner);
+                int filterType = filterTypeSpinner.getSelectedItemPosition();
+                String[] filters = getResources().getStringArray(R.array.filters);
+                LinearLayout filterContainer = (LinearLayout) fragmentView.findViewById(R.id.filterOverview);
                 LinearLayout filterItem = (LinearLayout) inflater.inflate(R.layout.filter_overview_item, null, false);
+                TextView filterItemText = (TextView) filterItem.findViewById(R.id.filterItemText);
 
-                TextView filterItemText=(TextView) filterItem.findViewById(R.id.filterItemText);
-                filterItemText.setText("Filter: "+ fragmentView.getResources().getStringArray(R.array.distances)[0]);
+                if (!filters[filterType].equals("Offeror")) {
+                    Spinner filterContentSpinner = fragmentView.findViewById(R.id.addFilterContentSpinner);
+                    int filterContent = filterContentSpinner.getSelectedItemPosition();
+                    adapter.setFilter(filterType, filterContent);
+                    String filterName=filters[filterType];
+                    filterItemText.setText(filters[filterType] + ": " + fragmentView.getResources().getStringArray(getResId(filterName, R.array.class))[0]);
+                } else {
+                    EditText usernameTextField = fragmentView.findViewById(R.id.addFilterTextInput);
+                    String offerorName = usernameTextField.getText().toString();
+                    adapter.setUsernameFilter(offerorName);
+                    filterItemText.setText(filters[filterType] + ": " + offerorName);
+                }
 
                 ImageButton filterItemCloseButton= (ImageButton) filterItem.findViewById(R.id.filterItemCloseBttn);
 
@@ -317,7 +320,7 @@ public class MainPageFragment extends Fragment{
 
         Spinner filterContentSpinner= (Spinner) fragmentView.findViewById(R.id.addFilterContentSpinner);
         ArrayAdapter adapterContent= new ArrayAdapter<String>(getActivity(),
-                R.layout.filter_spinner_item, getResources().getStringArray(R.array.distances));
+                R.layout.filter_spinner_item, getResources().getStringArray(R.array.Distance));
         filterContentSpinner.setAdapter(adapterContent);
 
         filterTypeSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
@@ -339,17 +342,18 @@ public class MainPageFragment extends Fragment{
                         filterContentSpinner.setVisibility(View.VISIBLE);
                         userNameTextField.setVisibility(View.GONE);
                         adapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.filter_spinner_item, getResources().getStringArray(R.array.distances));
+                                R.layout.filter_spinner_item, getResources().getStringArray(R.array.Distance));
                         filterContentSpinner.setAdapter(adapter);
                         break;
                     case 1:
                         userNameTextField.setVisibility(View.VISIBLE);
                         filterContentSpinner.setVisibility(View.GONE);
+                        break;
                     case 2:
                         filterContentSpinner.setVisibility(View.VISIBLE);
                         userNameTextField.setVisibility(View.GONE);
                         adapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.filter_spinner_item, getResources().getStringArray(R.array.price));
+                                R.layout.filter_spinner_item, getResources().getStringArray(R.array.Price));
                         filterContentSpinner.setAdapter(adapter);
                         break;
                     case 3:
@@ -365,5 +369,16 @@ public class MainPageFragment extends Fragment{
             }
 
         });
+    }
+
+    public static int getResId(String resName, Class<?> c) {
+
+        try {
+            Field idField = c.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 }

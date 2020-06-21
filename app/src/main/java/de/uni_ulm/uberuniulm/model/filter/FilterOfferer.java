@@ -32,6 +32,6 @@ public class FilterOfferer {
                 offersFiltered.add(offers.get(i));
             }
         }
-        return offers;
+        return offersFiltered;
     }
 }

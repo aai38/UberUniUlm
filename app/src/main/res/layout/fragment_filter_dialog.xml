@@ -53,11 +53,11 @@
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/offset_small"
                     android:layout_weight="1"
-                    android:entries="@array/distances" />
+                    android:entries="@array/Distance" />
 
                 <EditText
                     android:id="@+id/addFilterTextInput"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/offset_small"
                     android:layout_weight="1"
