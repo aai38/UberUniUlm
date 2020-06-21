@@ -124,7 +124,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     }
 
     public void setFilter(int filtertype, int contentIndex){
-        filters.newFilter(dataSetCopy, filtertype, contentIndex);
+        dataSet=filters.newFilter(dataSetCopy, filtertype, contentIndex);
         notifyDataSetChanged();
     }
 

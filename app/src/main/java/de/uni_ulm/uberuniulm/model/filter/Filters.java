@@ -84,14 +84,12 @@ public class Filters {
             case 3:
                 deletePlacesFilter();
                 break;
-
         }
         return filter();
     }
 
     public void setPriceFilter(int priceIndex){
         String priceString= context.getResources().getStringArray(R.array.Price)[priceIndex];
-        Log.d("PRICE BEFORE PARSE: ",priceString);
         price= Integer.parseInt(priceString.substring(0,priceString.length()-1));
         priceFilterSet=true;
     }
