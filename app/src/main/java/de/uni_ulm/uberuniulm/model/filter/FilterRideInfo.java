@@ -3,9 +3,12 @@ package de.uni_ulm.uberuniulm.model.filter;
 import android.util.Log;
 import android.util.Pair;
 
+import org.joda.time.DateTime;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.uni_ulm.uberuniulm.model.OfferedRide;
@@ -16,22 +19,33 @@ public class FilterRideInfo {
     }
 
     public Boolean filterByTime(String time1, String time2){
-        String[] t2=time2.split(":"), t1=time1.split(":");
 
         try{
-            int hours1=Integer.parseInt(t1[0]);
-            int hours2=Integer.parseInt(t2[0]);
-            int minutes1=Integer.parseInt(t1[1]);
-            int minutes2=Integer.parseInt(t2[1]);
+            if(!time1.equals("")&& !time2.equals("")) {
+                SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
+                Date timeParsed1 = timeFormatter.parse(time1);
+                Date timeParsed2 = timeFormatter.parse(time2);
 
-            if(hours1<hours2){
-                return true;
-            }else if(hours1==hours2 && minutes1<=minutes2){
-                return true;
-            }else{
-                return false;
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(timeParsed2);
+                cal.add(Calendar.HOUR_OF_DAY, -5);
+
+                Date lowerBound= cal.getTime();
+
+                cal.add(Calendar.HOUR_OF_DAY, 5);
+
+                Date upperBound= cal.getTime();
+
+                        Date d = cal.getTime();
+                if (timeParsed1.after(lowerBound)&& timeParsed1.before(upperBound)) {
+                    Log.d("TIMECHECK: ", "true");
+                    return true;
+                } else {
+                    Log.d("TIMECHECK: ", "false");
+                    return false;
+                }
             }
-        }catch(NumberFormatException e){
+        }catch(ParseException e){
             e.printStackTrace();
         }
 
@@ -41,7 +55,7 @@ public class FilterRideInfo {
     public ArrayList filterByTime(ArrayList<Pair<ArrayList, OfferedRide>> offers, String time){
         ArrayList offersFiltered= new ArrayList();
         for(int i=0; i<offers.size();i++){
-            if(filterByDate(offers.get(i).second.getDate(), time)){
+            if(filterByTime(offers.get(i).second.getDate(), time)){
                 offersFiltered.add(offers.get(i));
             }
         }
@@ -51,13 +65,17 @@ public class FilterRideInfo {
 
     public Boolean filterByDate(String date1, String date2){
         try {
-            Date date1parsed=new SimpleDateFormat("dd/MM/yyyy").parse(date1);
-            Date date2parsed=new SimpleDateFormat("dd/MM/yyyy").parse(date2);
+            if(!date1.equals("")& !date2.equals("")) {
+                Date date1parsed = new SimpleDateFormat("MM/dd/yyy").parse(date1);
+                Date date2parsed = new SimpleDateFormat("MM/dd/yyy").parse(date2);
 
-            if(date1parsed.before(date2parsed)){
-                return true;
-            }else{
-                return false;
+                /*if (date1parsed.before(date2parsed)) {
+                    Log.d("DATECHECK: ", "true");
+                    return true;
+                } else */if (date1parsed == date2parsed) {
+                    Log.d("DATECHECK: ", "false");
+                    return true;
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -66,15 +84,17 @@ public class FilterRideInfo {
         return false;
     }
 
-    public ArrayList filterByDate(ArrayList<Pair<ArrayList, OfferedRide>> offers, String date){
+    public ArrayList filterByDate(ArrayList<Pair<ArrayList, OfferedRide>> offers, String date, String time){
         ArrayList offersFiltered= new ArrayList();
         for(int i=0; i<offers.size();i++){
             if(filterByDate(offers.get(i).second.getDate(), date)){
                 offersFiltered.add(offers.get(i));
+            }else if(filterByTime(offers.get(i).second.getTime(), time)){
+                offersFiltered.add(offers.get(i));
             }
         }
 
-        return offers;
+        return offersFiltered;
     }
 
     public ArrayList filterByPlaces(ArrayList<Pair<ArrayList, OfferedRide>> offers){

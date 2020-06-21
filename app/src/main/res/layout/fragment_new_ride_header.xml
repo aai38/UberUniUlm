@@ -52,61 +52,47 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/newOfferActivityDateTimeContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/newOfferActivityDateTimeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/newOfferActivityDateContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+        <ImageView
+            android:id="@+id/newOfferCalendarIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="@dimen/offset_small"
+            android:layout_weight="0"
+            android:background="@drawable/ic_calendar" />
 
-                    <TextView
-                        android:id="@+id/newOfferActivityDateTitleText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/newOffer_date_title"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="18sp" />
+        <EditText
+            android:id="@+id/newOfferActivityDateTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="date" />
 
-                    <EditText
-                        android:id="@+id/newOfferActivityDateTextField"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="Today"
-                        android:inputType="date" />
-                </LinearLayout>
+        <ImageView
+            android:id="@+id/newOfferTimeIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="@dimen/offset_small"
+            android:layout_weight="0"
+            android:background="@drawable/ic_time" />
 
-                <LinearLayout
-                    android:id="@+id/newOfferActivityTimeContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+        <EditText
+            android:id="@+id/newOfferActivityTimeTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="08:30"
+            android:inputType="time" />
 
-                    <TextView
-                        android:id="@+id/newOfferActivityTimeTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/newOffer_time_title"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/newOfferActivityTimeTextField"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="08:30"
-                        android:inputType="time" />
-                </LinearLayout>
-            </LinearLayout>
+    </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/newOfferActivityStartContainer"

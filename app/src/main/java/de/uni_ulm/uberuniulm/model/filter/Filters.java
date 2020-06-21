@@ -13,11 +13,11 @@ import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
 
 public class Filters {
-    Boolean userNameFilterSet=false, priceFilterSet=false, placesFilterSet=false, distanceFilterSet=false;
+    Boolean userNameFilterSet=false, priceFilterSet=false, placesFilterSet=false, distanceFilterSet=false, dateFilterSet=false;
     int price, distance;
-    String userName;
+    String userName, date, time;
     LatLng userPosition;
-    ArrayList<Pair<ArrayList, OfferedRide>> offers;
+    ArrayList offers;
     FilterRideInfo infoFilter;
     FilterDistance distanceFilter;
     FilterOfferer usernameFilter;
@@ -26,7 +26,7 @@ public class Filters {
     public Filters(Context mContext){
         context=mContext;
         infoFilter = new FilterRideInfo();
-        distanceFilter= new FilterDistance();
+        distanceFilter= new FilterDistance(mContext);
         usernameFilter= new FilterOfferer();
     }
 
@@ -45,8 +45,12 @@ public class Filters {
         }
 
         if(distanceFilterSet){
-            offersFiltered=distanceFilter.FilterListByDistanceTotalRoute(offersFiltered, userPosition, distance);
+            offersFiltered=distanceFilter.FilterListByDistanceTotalRoute(offersFiltered, distance);
 
+        }
+
+        if(dateFilterSet){
+            offersFiltered= infoFilter.filterByDate(offersFiltered, date, time);
         }
 
         return offersFiltered;
@@ -56,7 +60,7 @@ public class Filters {
         offers=dataSet;
         switch(filterType){
             case 0:
-                //user position just needs to be implemented
+                setDistanceFilter(contentIndex);
                 break;
             case 2:
                 setPriceFilter(contentIndex);
@@ -73,7 +77,7 @@ public class Filters {
         this.offers=dataSet;
         switch(filter){
             case 0:
-                //user position just needs to be implemented
+                deleteDistanceFilter();
                 break;
             case 1:
                 deleteUsernameFilter();
@@ -84,37 +88,38 @@ public class Filters {
             case 3:
                 deletePlacesFilter();
                 break;
+            case 4:
+                deleteDateFilter();
+                break;
         }
         return filter();
     }
 
-    public void setPriceFilter(int priceIndex){
+    private void setPriceFilter(int priceIndex){
         String priceString= context.getResources().getStringArray(R.array.Price)[priceIndex];
         price= Integer.parseInt(priceString.substring(0,priceString.length()-1));
         priceFilterSet=true;
     }
 
-    public void deletePriceFilter(){
+    private void deletePriceFilter(){
         priceFilterSet=false;
     }
 
-    public void setPlacesFilter(){
+    private void setPlacesFilter(){
         placesFilterSet=true;
     }
 
-    public void deletePlacesFilter(){
+    private void deletePlacesFilter(){
         placesFilterSet=false;
     }
 
-    public ArrayList setDistanceFilter(ArrayList offers, int distanceIndex, LatLng userPosition){
+    private ArrayList setDistanceFilter(int distanceIndex){
         String distanceString= context.getResources().getStringArray(R.array.Distance)[distanceIndex];
-        distance= Integer.parseInt(distanceString.substring(0,distanceString.length()-2));
-        this.userPosition=userPosition;
-        this.offers=offers;
+        distance= Integer.parseInt(distanceString.substring(0,distanceString.length()-1));
         distanceFilterSet=true;
         return filter();
     }
-    public void deleteDistanceFilter(){
+    private void deleteDistanceFilter(){
         distanceFilterSet=false;
     }
 
@@ -125,7 +130,19 @@ public class Filters {
         return filter();
     }
 
-    public void deleteUsernameFilter(){
+    private void deleteUsernameFilter(){
         userNameFilterSet=false;
+    }
+
+    public ArrayList setDateFilter(ArrayList offers, String date, String time){
+        this.offers=offers;
+        dateFilterSet=true;
+        this.date=date;
+        this.time=time;
+        return filter();
+    }
+
+    private void deleteDateFilter(){
+        dateFilterSet=false;
     }
 }

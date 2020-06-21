@@ -67,6 +67,61 @@
                     android:textColor="@color/colorPrimary"
                     android:textSize="16sp"
                     android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/addFilterDateContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/addFilterCalendarIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_margin="@dimen/offset_small"
+                            android:background="@drawable/ic_calendar" />
+
+                        <EditText
+                            android:id="@+id/addFilterDateTextField"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:inputType="date"
+                            android:textColor="@color/colorPrimary" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/addFilterTimeIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_margin="@dimen/offset_small"
+                            android:background="@drawable/ic_time" />
+
+                        <EditText
+                            android:id="@+id/addFilterTimeTextField"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="8:30"
+                            android:inputType="textPersonName|time"
+                            android:textColor="@color/colorPrimary" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -96,6 +151,7 @@
                     android:background="@color/transparent"
                     android:scaleType="fitXY"
                     app:srcCompat="@drawable/ic_confirm" />
+
 
             </LinearLayout>
 

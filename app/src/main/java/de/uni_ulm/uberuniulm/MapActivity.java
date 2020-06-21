@@ -167,12 +167,10 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
     }
 
     public void onNewOfferActivityConfirmBttn(int price, String date, String time, int places, String departure, String destination){
-        if(route!=null&& price>=0){
+        if(route!=null){
             final SharedPreferences pref = new ObscuredSharedPreferences(
                         MapActivity.this, MapActivity.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
             String userId = pref.getString("UserKey", "");
-
-
 
             int zIndex = pref.getInt("RideId", 0);
 
@@ -180,7 +178,6 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
 
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference();
-
 
             if(viewType.equals("EDITOFFER")){
                 myRef.child(userId).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(offer);
@@ -190,10 +187,13 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
                 editor.putInt("RideId", zIndex +1);
                 editor.apply();
             }
+            Intent intent = new Intent(MapActivity.this, MainPage.class);
+            startActivity(intent);
+
+        }else{
+            Toast.makeText(this, getResources().getString(R.string.newOffer_route_invalid_error), Toast.LENGTH_SHORT).show();
         }
 
-        Intent intent = new Intent(MapActivity.this, MainPage.class);
-        startActivity(intent);
     }
 
     @Override

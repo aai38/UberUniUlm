@@ -1,15 +1,23 @@
 package de.uni_ulm.uberuniulm;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -28,8 +37,9 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
-import com.google.android.material.chip.Chip;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +49,14 @@ import com.tomtom.online.sdk.common.location.LatLng;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.security.Permission;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,8 +67,10 @@ import de.uni_ulm.uberuniulm.model.ParkingSpots;
 import de.uni_ulm.uberuniulm.ui.ClickListener;
 import de.uni_ulm.uberuniulm.ui.OfferListAdapter;
 
+import static androidx.core.content.ContextCompat.getSystemService;
 
-public class MainPageFragment extends Fragment{
+
+public class MainPageFragment extends Fragment {
 
     public View fragmentView;
     ArrayList<Pair<ArrayList,OfferedRide>> offeredRides;
@@ -60,15 +79,17 @@ public class MainPageFragment extends Fragment{
     private DatabaseReference myRef;
     private OfferedRide offeredRide;
     private String userId;
+    private ArrayList<LinearLayout> filterItems;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         fragmentView = inflater.inflate(R.layout.fragment_main_page, container, false);
         LinearLayout mapFragment = fragmentView.findViewById(R.id.mainPageFragmentContainer);
         mapFragment.setVisibility(View.VISIBLE);
         SearchView departure = fragmentView.findViewById(R.id.searchViewDeparture);
         SearchView destination = fragmentView.findViewById(R.id.searchViewDestination);
         ImageButton addFilterBttn= fragmentView.findViewById(R.id.addFilterBttn);
+        filterItems=new ArrayList<>();
 
         addFilterBttn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,29 +108,59 @@ public class MainPageFragment extends Fragment{
                 int filterType = filterTypeSpinner.getSelectedItemPosition();
                 String[] filters = getResources().getStringArray(R.array.filters);
                 LinearLayout filterContainer = (LinearLayout) fragmentView.findViewById(R.id.filterOverview);
-                LinearLayout filterItem = (LinearLayout) inflater.inflate(R.layout.filter_overview_item, null, false);
+                LinearLayout filterItem = null;
+                Boolean itemExists=false;
+
+                for(LinearLayout item: filterItems){
+                    if(item.getContentDescription().equals(String.valueOf(filterType))) {
+                        filterItem = item;
+                        itemExists=true;
+                    }
+                }
+
+                if(!itemExists){
+                    filterItem = (LinearLayout) inflater.inflate(R.layout.filter_overview_item, null, false);
+                    filterItem.setContentDescription(filters[filterType]);
+                }
+
                 TextView filterItemText = (TextView) filterItem.findViewById(R.id.filterItemText);
 
-                if (!filters[filterType].equals("Offeror")) {
-                    Spinner filterContentSpinner = fragmentView.findViewById(R.id.addFilterContentSpinner);
-                    int filterContent = filterContentSpinner.getSelectedItemPosition();
-                    adapter.setFilter(filterType, filterContent);
-                    String filterName=filters[filterType];
-                    filterItemText.setText(filters[filterType] + ": " + fragmentView.getResources().getStringArray(getResId(filterName, R.array.class))[0]);
-                } else {
+                if (filters[filterType].equals("Offeror")) {
                     EditText usernameTextField = fragmentView.findViewById(R.id.addFilterTextInput);
                     String offerorName = usernameTextField.getText().toString();
                     adapter.setUsernameFilter(offerorName);
                     filterItemText.setText(filters[filterType] + ": " + offerorName);
+                }else if(filters[filterType].equals("Date")){
+                    EditText dateTextField= (EditText) fragmentView.findViewById(R.id.addFilterDateTextField);
+                    EditText timeTextField= (EditText) fragmentView.findViewById(R.id.addFilterTimeTextField);
+                    String date=dateTextField.getText().toString();
+                    String time= timeTextField.getText().toString();
+                    adapter.setDateFilter(date, time);
+                    filterItemText.setText(filters[filterType] + ": " + date+ " "+ time);
+                }else{
+                    Spinner filterContentSpinner = fragmentView.findViewById(R.id.addFilterContentSpinner);
+                    int filterContent = filterContentSpinner.getSelectedItemPosition();
+                    adapter.setFilter(filterType, filterContent);
+                    String filterName=filters[filterType];
+                    if(!filters[filterType].equals("Hide booked up rides")) {
+                        filterItemText.setText(filters[filterType] + ": " + fragmentView.getResources().getStringArray(getResId(filterName, R.array.class))[filterContent]);
+                    }else{
+                        filterItemText.setText(filters[filterType]);
+                    }
                 }
 
                 ImageButton filterItemCloseButton= (ImageButton) filterItem.findViewById(R.id.filterItemCloseBttn);
 
-                filterItem.setContentDescription(String.valueOf(filterType));
+                LinearLayout finalFilterItem = filterItem;
                 filterItemCloseButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int filterType= Integer.parseInt(filterItem.getContentDescription().toString());
+                        for(LinearLayout item: filterItems){
+                            if(item.getContentDescription().equals(filters[filterType])) {
+                                filterItems.remove(item);
+                            }
+                        }
+                        int filterType= Integer.parseInt(finalFilterItem.getContentDescription().toString());
                         filterContainer.removeView((ViewGroup)view.getParent());
                         adapter.deleteFilter(filterType);
                     }
@@ -118,9 +169,15 @@ public class MainPageFragment extends Fragment{
                 FrameLayout filterDialog=(FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
                 filterDialog.setVisibility(View.INVISIBLE);
 
-                filterContainer.addView(filterItem);
+                if(!itemExists){
+                    filterItem.setContentDescription(String.valueOf(filterType));
+                    filterContainer.addView(filterItem);
+                    filterItems.add(filterItem);
+                }
+
             }
         });
+
 
         ImageButton filterCancelBttn= fragmentView.findViewById(R.id.addFilterCancelBttn);
         filterCancelBttn.setOnClickListener(new View.OnClickListener() {
@@ -304,9 +361,7 @@ public class MainPageFragment extends Fragment{
                 startActivity(intent);
             }
         });
-
-
-        Log.d("OFFEREDRIDES", String.valueOf(offeredRides.size()));
+        
         offerRecyclerView.setAdapter(adapter);
 
         return fragmentView;
@@ -333,6 +388,8 @@ public class MainPageFragment extends Fragment{
         EditText userNameTextField=(EditText) fragmentView.findViewById(R.id.addFilterTextInput);
         userNameTextField.setVisibility(View.GONE);
 
+        LinearLayout dateContainer= (LinearLayout) fragmentView.findViewById(R.id.addFilterDateContainer);
+
         filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -341,6 +398,7 @@ public class MainPageFragment extends Fragment{
                     case 0:
                         filterContentSpinner.setVisibility(View.VISIBLE);
                         userNameTextField.setVisibility(View.GONE);
+                        dateContainer.setVisibility(View.GONE);
                         adapter = new ArrayAdapter<String>(getActivity(),
                                 R.layout.filter_spinner_item, getResources().getStringArray(R.array.Distance));
                         filterContentSpinner.setAdapter(adapter);
@@ -348,10 +406,12 @@ public class MainPageFragment extends Fragment{
                     case 1:
                         userNameTextField.setVisibility(View.VISIBLE);
                         filterContentSpinner.setVisibility(View.GONE);
+                        dateContainer.setVisibility(View.GONE);
                         break;
                     case 2:
                         filterContentSpinner.setVisibility(View.VISIBLE);
                         userNameTextField.setVisibility(View.GONE);
+                        dateContainer.setVisibility(View.GONE);
                         adapter = new ArrayAdapter<String>(getActivity(),
                                 R.layout.filter_spinner_item, getResources().getStringArray(R.array.Price));
                         filterContentSpinner.setAdapter(adapter);
@@ -359,6 +419,34 @@ public class MainPageFragment extends Fragment{
                     case 3:
                         filterContentSpinner.setVisibility(View.GONE);
                         userNameTextField.setVisibility(View.GONE);
+                        dateContainer.setVisibility(View.GONE);
+                        break;
+                    case 4:
+                        filterContentSpinner.setVisibility(View.GONE);
+                        userNameTextField.setVisibility(View.GONE);
+                        dateContainer.setVisibility(View.VISIBLE);
+
+
+                        EditText dateTextField= (EditText) fragmentView.findViewById(R.id.addFilterDateTextField);
+                        Calendar calendar= Calendar.getInstance();
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        dateTextField.setText(sdf.format(calendar.getTime()));
+                        dateTextField.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                selectDate(view);
+                            }
+                        });
+
+                        EditText timeTextField= (EditText) fragmentView.findViewById(R.id.addFilterTimeTextField);
+                        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
+                        timeTextField.setText(timeFormatter.format(calendar.getTime()));
+                        timeTextField.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                selectTime(view);
+                            }
+                        });
                         break;
                 }
             }
@@ -371,7 +459,7 @@ public class MainPageFragment extends Fragment{
         });
     }
 
-    public static int getResId(String resName, Class<?> c) {
+    private static int getResId(String resName, Class<?> c) {
 
         try {
             Field idField = c.getDeclaredField(resName);
@@ -381,4 +469,55 @@ public class MainPageFragment extends Fragment{
             return -1;
         }
     }
+    
+    private void selectDate(View view){
+        EditText dateTextField= (EditText) fragmentView.findViewById(R.id.addFilterDateTextField);
+        DatePickerDialog.OnDateSetListener mDateSetListener = null;
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                String date = dayOfMonth + "/" + month + "/" + year;
+                dateTextField.setText(date);
+            }
+        };
+
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), R.style.spinnerDatePickerStyle,mDateSetListener,year, month, day);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getActivity().getColor(R.color.colorSlightlyTransparentBlack)));
+        dialog.show();
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+    }
+
+    
+    private void selectTime(View view){
+        EditText timeTextField= (EditText) fragmentView.findViewById(R.id.addFilterTimeTextField);
+        TimePickerDialog.OnTimeSetListener mTimeSetListener;
+        final Calendar myCalender = Calendar.getInstance();
+        int hour = myCalender.get(Calendar.HOUR_OF_DAY);
+        int minute = myCalender.get(Calendar.MINUTE);
+        mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                if (view.isShown()) {
+                    myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    myCalender.set(Calendar.MINUTE, minute);
+                    SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
+                    String time = hourOfDay + ":" + minute;
+                    timeTextField.setText(timeFormatter.format(time));
+                }
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), R.style.timePickerStyle, mTimeSetListener, hour, minute, true);
+        timePickerDialog.setTitle("Choose time:");
+        timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(getActivity().getColor(R.color.colorSlightlyTransparentBlack)));
+        timePickerDialog.show();
+        timePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+        timePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+    }
+
 }

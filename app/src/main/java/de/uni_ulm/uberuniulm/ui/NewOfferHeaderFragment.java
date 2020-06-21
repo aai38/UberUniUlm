@@ -42,8 +42,14 @@ import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderFullAddr
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchQueryBuilder;
 import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchResponse;
 
+import org.joda.time.Hours;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -81,6 +87,8 @@ public class NewOfferHeaderFragment extends Fragment {
     private static final LatLng DEFAULT_DESTINATION_LATLNG = new LatLng(48.426393, 9.960506);
     private static final int PERMISSION_REQUEST_LOCATION = 0;
     private Boolean notInitiated=true;
+    private SimpleDateFormat timeFormatter, monthFormatter;
+    private Calendar cal;
 
     private final Handler searchTimerHandler = new Handler();
 
@@ -101,6 +109,16 @@ public class NewOfferHeaderFragment extends Fragment {
         confirmBttn = fragmentView.findViewById(R.id.newOfferActivityConfirmBttn);
         closeBttn = fragmentView.findViewById(R.id.newOfferActivityCancelBttn);
 
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        monthFormatter = new SimpleDateFormat("dd/MM/yyyy");
+        dateTextField.setText(monthFormatter.format(cal.getTime()));
+        timeFormatter = new SimpleDateFormat("HH:mm");
+        timeTextField.setText(timeFormatter.format(cal.getTime()));
+
         Button btnRouteShow = fragmentView.findViewById(R.id.newOfferActivityGoBttn);
         btnRouteShow.setOnClickListener(v -> {
             mapActivity.drawRoute(latLngDeparture, latLngDestination);
@@ -109,10 +127,16 @@ public class NewOfferHeaderFragment extends Fragment {
         dateTextField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+
+                mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String date = dayOfMonth + "/" + month + "/" + year;
+                        cal.set(year, month, dayOfMonth);
+                        dateTextField.setText(monthFormatter.format(cal.getTime()));
+                    }
+                };
 
                 DatePickerDialog dialog = new DatePickerDialog(
                         mapActivity, R.style.spinnerDatePickerStyle,
@@ -125,26 +149,19 @@ public class NewOfferHeaderFragment extends Fragment {
             }
         });
 
-        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String date = month + "/" + dayOfMonth + "/" + year;
-                dateTextField.setText(date);
-            }
-        };
+
 
         timeTextField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Calendar myCalender = Calendar.getInstance();
-                int hour = myCalender.get(Calendar.HOUR_OF_DAY);
-                int minute = myCalender.get(Calendar.MINUTE);
+                int hour = cal.get(Calendar.HOUR_OF_DAY);
+                int minute = cal.get(Calendar.MINUTE);
                 mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         if (view.isShown()) {
-                            myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                            myCalender.set(Calendar.MINUTE, minute);
+                            cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                            cal.set(Calendar.MINUTE, minute);
                             String time = hourOfDay + ":" + minute;
                             timeTextField.setText(time);
                         }
@@ -163,20 +180,40 @@ public class NewOfferHeaderFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 int price = Integer.parseInt(priceTextField.getText().toString());
-                if (price >= 0) {
 
-                    String date = "";
-                    String time;
-                    date = dateTextField.getText().toString();
-
-                    time = timeTextField.getText().toString();
-                    String departure = startTextField.getText().toString();
-                    String destination = goalTextField.getText().toString();
-                    int places = (Integer.parseInt(placesTextField.getText().toString()));
-
-                    mapActivity.onNewOfferActivityConfirmBttn(price, date, time, places, departure, destination);
+                if (price < 0) {
+                    price = 0;
                 }
-            }
+
+                int places = (Integer.parseInt(placesTextField.getText().toString()));
+                if(places<0) {
+                    places = 0;
+                }
+
+                String date= dateTextField.getText().toString();
+                String time= timeTextField.getText().toString();
+
+                try {
+                    Date today=Calendar.getInstance().getTime();
+                    Date dateParsed=(monthFormatter.parse(date));
+                    Date timeParsed=(timeFormatter.parse(time));
+                    cal.setTime(dateParsed);
+                    cal.set(Calendar.HOUR_OF_DAY, timeParsed.getHours());
+                    cal.set(Calendar.MINUTE, timeParsed.getMinutes());
+                    if(cal.getTime().before(today)){
+                        Toast.makeText(mapActivity, getResources().getString(R.string.newOffer_date_inthepast_error), Toast.LENGTH_SHORT).show();
+                    }else{
+                        String departure = startTextField.getText().toString();
+                        String destination = goalTextField.getText().toString();
+                        mapActivity.onNewOfferActivityConfirmBttn(price, date, time, places, departure, destination);
+                    }
+
+                } catch (ParseException e) {
+                    Toast.makeText(mapActivity, getResources().getString(R.string.newOffer_date_invalid_error), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                }
+
         });
 
         closeBttn.setOnClickListener(new View.OnClickListener() {

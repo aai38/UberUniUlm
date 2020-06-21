@@ -14,6 +14,7 @@
         <item>100m</item>
         <item>500m</item>
         <item>1000m</item>
+        <item>2000m</item>
     </string-array>
     <string-array
         name="Price">

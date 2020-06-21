@@ -138,6 +138,11 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
         notifyDataSetChanged();
     }
 
+    public void setDateFilter(String date, String time){
+        dataSet=filters.setDateFilter(dataSetCopy, date, time);
+        notifyDataSetChanged();
+    }
+
     public void filterDestination(String text) {
 
         Log.e("dataSetcopy", dataSetCopy.toString());
