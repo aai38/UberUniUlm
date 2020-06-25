@@ -481,7 +481,9 @@ public class MainPageFragment extends Fragment {
         mDateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String date = dayOfMonth + "/" + month + "/" + year;
+                cal.set(year, month, day);
+                cal.add(Calendar.MONTH, 1);
+                String date = dayOfMonth + "/" + cal.getTime().getMonth() + "/" + year;
                 dateTextField.setText(date);
             }
         };
@@ -508,7 +510,7 @@ public class MainPageFragment extends Fragment {
                     myCalender.set(Calendar.MINUTE, minute);
                     SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
                     String time = hourOfDay + ":" + minute;
-                    timeTextField.setText(timeFormatter.format(time));
+                    timeTextField.setText(time);
                 }
             }
         };

@@ -69,8 +69,10 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             public void onSuccess(byte[] bytes) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 ImageView image = (ImageView) viewHolder.picture;
-                image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
-                        image.getHeight(), false));
+                if(image.getWidth()>0&& image.getHeight()>0) {
+                    image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
+                            image.getHeight(), false));
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
