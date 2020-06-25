@@ -3,6 +3,7 @@ package de.uni_ulm.uberuniulm.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -78,9 +79,27 @@ public class RideOverviewHeaderFragment extends Fragment {
 
         if(userId.equals(userData.get(0))){
             markBttn.setVisibility(View.INVISIBLE);
-            bookBttn.setVisibility(View.INVISIBLE);
-        }else {
+            bookBttn.setImageResource(R.drawable.ic_edit_gray);
+            bookBttn.setContentDescription("edit");
+            bookBttn.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                            intent.putExtra("USER", mapActivity.getRideData().first);
+                            intent.putExtra("RIDE", mapActivity.getRideData().second);
+                            intent.putExtra("VIEWTYPE", "EDITOFFER");
+                            startActivity(intent);
+                        }
+                    });
 
+
+        }else {
+            if(ride.getObservers().contains(userId)){
+                markBttn.setImageResource(R.drawable.ic_mark_offer);
+            }else{
+                markBttn.setImageResource(R.drawable.ic_mark_offer_deselected);
+            }
 
             bookBttn.setOnClickListener(
                     new View.OnClickListener() {
@@ -120,6 +139,20 @@ public class RideOverviewHeaderFragment extends Fragment {
                             alert.show();
                         }
                     });
+
+            markBttn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(ride.getObservers().contains(userId)){
+                        ride.getObservers().remove(userId);
+                        markBttn.setImageResource(R.drawable.ic_mark_offer_deselected);
+                    }else{
+                        ride.getObservers().add(userId);
+                        mapActivity.markRide();
+                        markBttn.setImageResource(R.drawable.ic_mark_offer);
+                    }
+                }
+            });
         }
 
         dateText.setText(ride.getDate()+ " "+ ride.getTime());

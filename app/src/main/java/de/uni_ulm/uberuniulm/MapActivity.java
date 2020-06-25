@@ -90,13 +90,16 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
     private static final int MAX_ROUTE_ALTERNATIVES=2;
     private static final RouteType[] ROUTETYPES_LIST={RouteType.FASTEST,RouteType.SHORTEST};
 
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+
     private List<String>  waypoints;
     private List<LatLng> waypointList;
     private long currrentlySelectedRoute;
     private Boolean waypointsInitiated=false;
     private WaypointArrayAdapter waypointArrayAdapter;
     private AutoCompleteTextView atvWaypointLocation;
-    private String viewType;
+    private String viewType, userId;
 
     private Icon departureIcon, destinationIcon, waypointIcon;
 
@@ -152,9 +155,6 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         wayPointPosition=DEFAULT_DEPARTURE_LATLNG;
         waypointArrayAdapter = new WaypointArrayAdapter(this);
 
-        if(viewType.equals("EDITOFFER")){
-            fragment.setUpExistingOffer(ride);
-        }
     }
 
     public SearchApi getSearchApi(){
@@ -170,14 +170,16 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         if(route!=null){
             final SharedPreferences pref = new ObscuredSharedPreferences(
                         MapActivity.this, MapActivity.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
-            String userId = pref.getString("UserKey", "");
+            userId = pref.getString("UserKey", "");
 
             int zIndex = pref.getInt("RideId", 0);
 
-            OfferedRide offer=new OfferedRide(route.getCoordinates(), price, date, time, places, places, departure, destination, userId, zIndex);
+            ArrayList<String> observers= new ArrayList<>();
 
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference();
+            OfferedRide offer=new OfferedRide(route.getCoordinates(), price, date, time, places, places, departure, destination, userId, zIndex, waypointList, observers);
+
+            database = FirebaseDatabase.getInstance();
+            myRef = database.getReference();
 
             if(viewType.equals("EDITOFFER")){
                 myRef.child(userId).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(offer);
@@ -215,8 +217,18 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
 
         if(viewType.equals("RIDEOVERVIEW")|| viewType.equals("EDITOFFER")){
             route=tomtomMap.addRoute(new RouteBuilder(ride.getRoute()).startIcon(departureIcon).endIcon(destinationIcon).style(RouteStyle.DEFAULT_ROUTE_STYLE));
+            if(ride.getWaypoints().size()>0) {
+                waypointList = ride.getWaypoints();
+                waypoints=new ArrayList<>();
+                for (int i = 0; i < waypointList.size(); i++) {
+                    waypoints.add(waypointList.get(i).getLatitudeAsString()+ "; "+ waypointList.get(i).getLongitudeAsString());
+                    SimpleMarkerBalloon balloon = new SimpleMarkerBalloon(waypoints.get(i));
+                    MarkerBuilder markerBuilder = new MarkerBuilder(waypointList.get(i))
+                            .markerBalloon(balloon);
 
-
+                    Marker m = tomtomMap.addMarker(markerBuilder);
+                }
+            }
         }
 
     }
@@ -526,16 +538,26 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         }
     }
 
+    public void markRide(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+
+        //myRef.child(userData.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).child("observers").setValue(userId);
+    }
+
     public void closeMapView(){
         this.cancel();
     }
 
     public void setWayPointPosition(LatLng waypoint){
         this.wayPointPosition=waypoint;
+        waypointList.add(waypoint);
     }
 
     public Pair<ArrayList,OfferedRide> getRideData(){
         Pair<ArrayList, OfferedRide> rideData= new Pair<>(userData, ride);
         return rideData;
     }
+
+    public String getViewType(){return viewType;}
 }

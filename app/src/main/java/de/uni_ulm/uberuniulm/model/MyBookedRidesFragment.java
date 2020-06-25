@@ -146,8 +146,10 @@ public class MyBookedRidesFragment extends Fragment {
                                 long places_open = (long) values.get(5);
                                 String departure = values.get(2).toString();
                                 String destination = values.get(3).toString();
+                                List<LatLng> waypoints= null;
+                                ArrayList<String> observers= new ArrayList<>();
 
-                                OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex);
+                                OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
                                 ArrayList<Object> userData = new ArrayList();
                                 userData.add(userId);
                                 userData.add(username);

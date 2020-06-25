@@ -119,11 +119,6 @@ public class NewOfferHeaderFragment extends Fragment {
         timeFormatter = new SimpleDateFormat("HH:mm");
         timeTextField.setText(timeFormatter.format(cal.getTime()));
 
-        Button btnRouteShow = fragmentView.findViewById(R.id.newOfferActivityGoBttn);
-        btnRouteShow.setOnClickListener(v -> {
-            mapActivity.drawRoute(latLngDeparture, latLngDestination);
-        });
-
         dateTextField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -231,6 +226,10 @@ public class NewOfferHeaderFragment extends Fragment {
             }
         });
 
+        if(mapActivity.getViewType().equals("EDITOFFER")){
+            setUpExistingOffer(mapActivity.getRideData().second);
+        }
+
         if(notInitiated) {
             initSearchFieldsWithDefaultValues();
             notInitiated=false;
@@ -241,8 +240,6 @@ public class NewOfferHeaderFragment extends Fragment {
 
 
     public void setUpExistingOffer(OfferedRide ride){
-        placesTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityPlacesTextField);
-        priceTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityPriceTextField);
         dateTextField.setText(ride.getDate());
         timeTextField.setText(ride.getTime());
         startTextField.setText(ride.getDeparture());
@@ -327,10 +324,19 @@ public class NewOfferHeaderFragment extends Fragment {
             String item = (String) parent.getItemAtPosition(position);
             if (autoCompleteTextView == atvDepartureLocation) {
                 latLngDeparture = searchResultsMap.get(item);
+                if(latLngDestination!=null && latLngDestination!=DEFAULT_DESTINATION_LATLNG){
+                    mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                }
             } else if (autoCompleteTextView == atvDestinationLocation) {
                 latLngDestination = searchResultsMap.get(item);
+                if(latLngDeparture!=null && latLngDeparture!=DEFAULT_DEPARTURE_LATLNG){
+                    mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                }
             }else if(autoCompleteTextView == atvWaypointLocation){
                 mapActivity.setWayPointPosition(searchResultsMap.get(item));
+                if(latLngDeparture!=null && latLngDeparture!=DEFAULT_DEPARTURE_LATLNG&& latLngDestination!=null && latLngDestination!=DEFAULT_DESTINATION_LATLNG){
+                    mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                }
             }
             mapActivity.hideKeyboard(view);
         });

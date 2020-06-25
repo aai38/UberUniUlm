@@ -97,6 +97,8 @@ public class OfferedRide implements Serializable {
     private int places;
     private int places_open;
     private ArrayList<User> bookedUsers;
+    private List<LatLng> waypoints;
+    private ArrayList<String> observers;
 
 
     private String key;
@@ -117,11 +119,19 @@ public class OfferedRide implements Serializable {
         this.zIndex = zIndex;
     }
 
+    public List<LatLng> getWaypoints(){return waypoints;}
+
+    public void setWaypoints(List<LatLng> waypoints){this.waypoints=waypoints;}
+
+    public void setObservers(ArrayList<String> observers){ this.observers=observers;}
+
+    public ArrayList<String> getObservers(){return observers;}
+
     private String userId;
     private int zIndex;
 
 
-    public OfferedRide(List<LatLng> route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex) {
+    public OfferedRide(List<LatLng> route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex, List<LatLng> waypoints, ArrayList<String> observers) {
         this.route = route;
         this.price = price;
         this.date = date;
@@ -133,6 +143,8 @@ public class OfferedRide implements Serializable {
         this.destination = destination;
         this.userId = userId;
         this.zIndex = zIndex;
+        this.waypoints=waypoints;
+        this.observers=observers;
     }
 
     /*public OfferedRide(HashMap route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex) {

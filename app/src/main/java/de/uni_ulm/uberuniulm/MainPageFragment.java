@@ -264,27 +264,40 @@ public class MainPageFragment extends Fragment {
                                 coordinates= new ArrayList<>();
                             }
 
+                            List<LatLng> waypoints=new ArrayList<>();
+                            try {
+                                List<HashMap> waypointsHash = (List<HashMap>) values.get(values.size()-2);
+                                for(HashMap waypoint : waypointsHash){
+                                    LatLng coord=new LatLng((Double)waypoint.get("latitude"), (Double) waypoint.get("longitude"));
+                                    waypoints.add(coord);
+                                }
+                            }catch(ClassCastException e){
+                                waypoints= new ArrayList<>();
+                            }
+
                             long price = (long) (values.get(6));
                             String date =  values.get(1).toString();
                             String time;
                             String userkey;
                             long zIndex;
-                            if(values.size()==11){
+                            if(values.size()==13){
                                  time= values.get(8).toString();
                                  userkey = values.get(9).toString();
-                                 zIndex = (long) values.get(10);
+                                 zIndex = (long) values.get(12);
                             }else{
                                 time= values.get(8).toString();
                                 userkey = values.get(9).toString();
-                                zIndex = (long) values.get(10);
+                                zIndex = (long) values.get(values.size()-1);
                             }
                             long places = (long) values.get(4);
                             long places_open = (long) values.get(5);
                             String departure = values.get(2).toString();
                             String destination = values.get(3).toString();
 
+                            ArrayList<String> observers= new ArrayList<>();
 
-                            offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int) zIndex);
+
+                            offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
                             userData.add((float) rating);
                             offeredRides.add(new Pair(userData, offeredRide));
                             adapter.notifyDataSetChanged();
@@ -352,13 +365,66 @@ public class MainPageFragment extends Fragment {
 
             @Override
             public void onEditClicked(int position){
-                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
-                Pair clickedRidePair = offeredRides.get(position);
-                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
-                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
-                intent.putExtra("RIDE", clickedRide);
-                intent.putExtra("VIEWTYPE", "EDITOFFER");
-                startActivity(intent);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("Edit your offer");
+                dialog.setItems(getResources().getStringArray(R.array.editoptions),new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int pos) {
+                        if(pos==0){
+                            Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                            Pair clickedRidePair = offeredRides.get(pos);
+                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                            intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                            intent.putExtra("RIDE", clickedRide);
+                            intent.putExtra("VIEWTYPE", "EDITOFFER");
+                            startActivity(intent);
+                        }else{
+                            AlertDialog.Builder dialogWarning = new AlertDialog.Builder(getActivity());
+                            dialogWarning.setTitle("Warning!");
+                            Pair clickedRidePair = offeredRides.get(pos);
+                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                            if(clickedRide.getPlaces()>clickedRide.getPlaces_open()) {
+                                dialogWarning.setMessage("Do you really want to delete this ride? The people who booked your trip will be notified.");
+                            }else{
+                                dialogWarning.setMessage("Do you really want to delete this ride?");
+                            }
+                            dialogWarning.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogWarning, int which) {
+                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    DatabaseReference myRef = database.getReference();
+                                    myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).second.getzIndex())).removeValue();
+                                    //TODO remove from booked rides and notify person
+                                    offeredRides.remove(position);
+                                    adapter.notifyDataSetChanged();
+
+                                    dialogWarning.dismiss();
+                                }
+                            });
+
+                            dialogWarning.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogWarning, int which) {
+                                    dialogWarning.dismiss();
+                                }
+                            });
+
+                            dialogWarning.show();
+                        }
+                    }
+
+                });
+                dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = dialog.create();
+                alert.show();
+
             }
         });
         
