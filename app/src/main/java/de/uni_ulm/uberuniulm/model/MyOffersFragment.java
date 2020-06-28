@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -151,6 +152,25 @@ public class MyOffersFragment extends Fragment {
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
+            }
+
+            @Override
+            public void onMarkClicked(View view, int position){
+                Boolean notMarkedYet=offeredRides.get(position).second.getObservers().contains(userId);
+                OfferedRide ride=offeredRides.get(position).second;
+                if (!userId.equals(ride.getUserId())) {
+                    TextView markBttn = (TextView) view;
+                    if (notMarkedYet) {
+                        ride.markRide(userId);
+                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                    } else {
+                        ride.unmarkRide(userId);
+                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                    }
+
+                    myRef.child(offeredRides.get(position).first.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override

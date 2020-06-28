@@ -9,6 +9,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -83,11 +84,19 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
 
         SharedPreferences pref = new ObscuredSharedPreferences(mContext, mContext.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         String userId = pref.getString("UserKey", "");
+        viewHolder.markBttn.setContentDescription("mark");
 
         if(userId.equals(userID)){
             viewHolder.book.setImageResource(R.drawable.ic_edit_gray);
             viewHolder.book.setContentDescription("edit");
+            viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+            viewHolder.markBttn.setText(offeredRide.getObservers().size());
         }else{
+            if(offeredRide.getObservers().contains(userId)){
+                viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+            }else{
+                viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+            }
             viewHolder.book.setImageResource(android.R.drawable.ic_dialog_email);
             viewHolder.book.setContentDescription("book");
         }
@@ -183,6 +192,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
         ImageView picture;
         RatingBar rating;
         ImageButton book;
+        Button markBttn;
         private WeakReference<ClickListener> listenerRef;
 
         public OfferViewHolder(@NonNull View convertView) {
@@ -200,20 +210,23 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             txtPrice = (TextView) convertView.findViewById(R.id.TextViewPrice);
             txtTime = (TextView) convertView.findViewById(R.id.TextViewTime);
             book = (ImageButton) convertView.findViewById(R.id.bookingButton);
+            markBttn = (Button) convertView.findViewById(R.id.markBttn);
 
             book.setOnClickListener(this);
+            markBttn.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if (view.getId() == book.getId()) {
-                Log.d("listener", book.getId() + "");
                 if(book.getContentDescription().equals("edit")){
                     listenerRef.get().onEditClicked(getAdapterPosition());
                 }else {
                     listenerRef.get().onPositionClicked(getAdapterPosition());
                 }
-            } else {
+            }else if(view.getId() == markBttn.getId()) {
+                listenerRef.get().onMarkClicked(view, getAdapterPosition());
+            } else{
                 listenerRef.get().onOfferClicked(getAdapterPosition());
             }
         }

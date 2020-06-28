@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -244,10 +245,10 @@ public class MainPageFragment extends Fragment {
                     userData.add(user.getKey());
                     userData.add(user.child("username").getValue());
                     for (DataSnapshot ride : usersOfferedRides.getChildren()) {
-                        ArrayList<Object> values = new ArrayList();
-                        values.add(dataSnapshot.getKey());
+                        HashMap<String, Object> values = new HashMap<>();
+                        values.put("snapKey", dataSnapshot.getKey());
                         for (DataSnapshot rideValue : ride.getChildren()) {
-                            values.add(rideValue.getValue());
+                            values.put(rideValue.getKey(), rideValue.getValue());
                         }
 
                         if(values.size()==0) {
@@ -255,7 +256,7 @@ public class MainPageFragment extends Fragment {
                         } else {
                             List<LatLng> coordinates=new ArrayList<>();
                             try {
-                                List<HashMap> coordinatesHash = (List<HashMap>) values.get(7);
+                                List<HashMap> coordinatesHash = (List<HashMap>) values.get("route");
                                 for(HashMap coordinate : coordinatesHash){
                                     LatLng coord=new LatLng((Double)coordinate.get("latitude"), (Double) coordinate.get("longitude"));
                                     coordinates.add(coord);
@@ -266,36 +267,41 @@ public class MainPageFragment extends Fragment {
 
                             List<LatLng> waypoints=new ArrayList<>();
                             try {
-                                List<HashMap> waypointsHash = (List<HashMap>) values.get(values.size()-2);
-                                for(HashMap waypoint : waypointsHash){
-                                    LatLng coord=new LatLng((Double)waypoint.get("latitude"), (Double) waypoint.get("longitude"));
-                                    waypoints.add(coord);
+                                List<HashMap> waypointsHash = (List<HashMap>) values.get("waypoints");
+                                if(waypointsHash!=null) {
+                                    for (HashMap waypoint : waypointsHash) {
+                                        LatLng coord = new LatLng((Double) waypoint.get("latitude"), (Double) waypoint.get("longitude"));
+                                        waypoints.add(coord);
+                                    }
                                 }
                             }catch(ClassCastException e){
                                 waypoints= new ArrayList<>();
                             }
 
-                            long price = (long) (values.get(6));
-                            String date =  values.get(1).toString();
-                            String time;
-                            String userkey;
-                            long zIndex;
-                            if(values.size()==13){
-                                 time= values.get(8).toString();
-                                 userkey = values.get(9).toString();
-                                 zIndex = (long) values.get(12);
-                            }else{
-                                time= values.get(8).toString();
-                                userkey = values.get(9).toString();
-                                zIndex = (long) values.get(values.size()-1);
+                            String date =  values.get("date").toString();
+                            String time= values.get("time").toString();
+                            String userkey = values.get("userId").toString();
+                            long zIndex= (long) values.get("zIndex");
+                            long price= (long) (values.get("price"));
+                            long places= (long)values.get("places");
+                            long places_open = (long) values.get("places_open");
+
+                            List<String> observers=new ArrayList<>();
+                            try {
+                                List<String> observersHash = (List<String>) values.get("observers");
+                                if(observersHash!=null) {
+                                    for (String observer : observersHash) {
+                                        observers.add(observer);
+                                    }
+                                }
+                            }catch(ClassCastException e){
+                                e.printStackTrace();
+                                observers= new ArrayList<>();
                             }
-                            long places = (long) values.get(4);
-                            long places_open = (long) values.get(5);
-                            String departure = values.get(2).toString();
-                            String destination = values.get(3).toString();
 
-                            ArrayList<String> observers= new ArrayList<>();
 
+                            String departure = values.get("departure").toString();
+                            String destination = values.get("destination").toString();
 
                             offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
                             userData.add((float) rating);
@@ -361,6 +367,26 @@ public class MainPageFragment extends Fragment {
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
+            }
+
+            @Override
+            public void onMarkClicked(View view, int position){
+                OfferedRide ride=offeredRides.get(position).second;
+                Boolean notMarkedYet=ride.getObservers().contains(userId);
+                    if (!userId.equals(ride.getUserId())) {
+                        Log.d("TEST", "STAGE 1");
+                        Button markBttn = (Button) view;
+                        if (notMarkedYet) {
+                            ride.unmarkRide(userId);
+                            markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                        } else {
+                            ride.markRide(userId);
+                            markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                        }
+
+                        myRef.child(offeredRides.get(position).first.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                        adapter.notifyDataSetChanged();
+                    }
             }
 
             @Override

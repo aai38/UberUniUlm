@@ -538,11 +538,20 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         }
     }
 
-    public void markRide(){
+    public void markRide(Boolean notMarkedYet){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
+        final SharedPreferences pref = new ObscuredSharedPreferences(
+                MapActivity.this, MapActivity.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+        userId = pref.getString("UserKey", "");
 
-        //myRef.child(userData.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).child("observers").setValue(userId);
+        if(notMarkedYet) {
+            ride.markRide(userId);
+        }else{
+            ride.unmarkRide(userId);
+        }
+        
+        myRef.child(userData.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
     }
 
     public void closeMapView(){

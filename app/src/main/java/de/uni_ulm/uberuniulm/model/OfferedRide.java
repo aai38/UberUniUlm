@@ -1,5 +1,7 @@
 package de.uni_ulm.uberuniulm.model;
 
+import android.util.Log;
+
 import com.tomtom.online.sdk.common.location.LatLng;
 
 import java.io.Serializable;
@@ -98,7 +100,7 @@ public class OfferedRide implements Serializable {
     private int places_open;
     private ArrayList<User> bookedUsers;
     private List<LatLng> waypoints;
-    private ArrayList<String> observers;
+    private List<String> observers;
 
 
     private String key;
@@ -123,15 +125,26 @@ public class OfferedRide implements Serializable {
 
     public void setWaypoints(List<LatLng> waypoints){this.waypoints=waypoints;}
 
-    public void setObservers(ArrayList<String> observers){ this.observers=observers;}
+    public void setObservers(List<String> observers){ this.observers=observers;}
 
-    public ArrayList<String> getObservers(){return observers;}
+    public List<String> getObservers(){return observers;}
+
+    public void markRide(String userId){
+        observers.add(userId);
+    }
+
+    public void unmarkRide(String userId){
+        Log.d("observers", observers.toString()+ " "+ String.valueOf(observers.indexOf(userId))+ " " + userId);
+        observers.remove(userId);
+    }
+
+
 
     private String userId;
     private int zIndex;
 
 
-    public OfferedRide(List<LatLng> route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex, List<LatLng> waypoints, ArrayList<String> observers) {
+    public OfferedRide(List<LatLng> route, int price, String date, String time, int places, int places_open, String departure, String destination, String userId, int zIndex, List<LatLng> waypoints, List<String> observers) {
         this.route = route;
         this.price = price;
         this.date = date;

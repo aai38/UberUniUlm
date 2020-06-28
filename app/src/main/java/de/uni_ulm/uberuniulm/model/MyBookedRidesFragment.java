@@ -9,6 +9,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -76,21 +77,16 @@ public class MyBookedRidesFragment extends Fragment {
 
                 Log.i("onDataChange2", dataSnapshot.getKey() + " " + String.valueOf(dataSnapshot.child(userId).child("obookedRides").getChildrenCount()));
                 for (DataSnapshot ride : dataSnapshot.child(userId).child("obookedRides").getChildren()) {
-                    ArrayList<Object> values = new ArrayList();
+                    HashMap<String, Object> values = new HashMap<>();
                     for (DataSnapshot rideValue : ride.getChildren()) {
-                        values.add(rideValue.getValue());
-                        Log.e("values", values.toString());
+                        values.put(rideValue.getKey(),rideValue.getValue());
                     }
 
                     if (values.size() == 0) {
                         Log.i("onDataChange", "no values");
-                    } else if (values.size() == 1) {
-                        Log.i("anything wrong", "only one value");
-
                     } else {
-                                                             //Route route = (Route) values.get(0);
-                        userIdBooking = values.get(0).toString();
-                        zIndexBooking = (long) values.get(1);
+                        userIdBooking = values.get("userKey").toString();
+                        zIndexBooking = (long) values.get("zIndex");
                         BookedRide bookedRide = new BookedRide(userIdBooking, (int) zIndexBooking);
                         bookedRidesData.add(bookedRide);
                         Log.e("bookedRidesData", bookedRidesData.toString());
@@ -102,52 +98,69 @@ public class MyBookedRidesFragment extends Fragment {
                 } else {
                     String username = (String) dataSnapshot.child(userId).child("username").getValue();
                     for (int i = 0; i < bookedRidesData.size(); i++) {
+                        Log.d("BOOKED RIDES DATA", bookedRidesData.toString());
                         String index = ""+bookedRidesData.get(i).getzIndex();
                         DataSnapshot ride = dataSnapshot.child(bookedRidesData.get(i).getUserKey()).child("offeredRides").child(index);
-                            ArrayList<Object> values = new ArrayList();
-                            values.add(dataSnapshot.getValue());
+                            HashMap<String, Object> values = new HashMap<>();
+                            //values.put("datakey",dataSnapshot.getValue());
 
                             for (DataSnapshot rideValue : ride.getChildren()) {
-                                values.add(rideValue.getValue());
+                                values.put(ride.getKey(), rideValue.getValue());
                                 Log.e("values", values.toString());
                             }
 
                             if (values.size() == 0) {
                                 Log.i("onDataChange", "no values");
-                            } else {
-                                                                     //Route route = (Route) values.get(0);
+                            } else if (values.size() == 1) {
+                                Log.d("BOOKED RIDES", values.toString());
+                            }else{
                                 List<LatLng> coordinates=new ArrayList<>();
                                 try {
-                                    List<HashMap> coordinatesHash = (List<HashMap>) values.get(7);
-                                    for(HashMap coordinate : coordinatesHash){
-                                        LatLng coord=new LatLng((Double)coordinate.get("latitude"), (Double) coordinate.get("longitude"));
-                                        coordinates.add(coord);
+                                    List<HashMap> coordinatesHash = (List<HashMap>) values.get("route");
+                                    if(coordinatesHash!=null) {
+                                        for (HashMap coordinate : coordinatesHash) {
+                                            LatLng coord = new LatLng((Double) coordinate.get("latitude"), (Double) coordinate.get("longitude"));
+                                            coordinates.add(coord);
+                                        }
                                     }
                                 }catch(ClassCastException e){
-                                    Log.d("YEAH", "OBVIOUSLY");
                                     coordinates= new ArrayList<>();
                                 }
-                                Log.e("TAG", "values" + values.get(3).toString());
-                                long price = (long) (values.get(6));
-                                String date = values.get(1).toString();
-                                String time;
-                                String userkey;
-                                long zIndex;
-                                if (values.size() == 11) {
-                                    time = values.get(8).toString();
-                                    userkey = values.get(9).toString();
-                                    zIndex = (long) values.get(10);
-                                } else {
-                                    time = values.get(7).toString();
-                                    userkey = values.get(8).toString();
-                                    zIndex = (long) values.get(9);
-                                }
-                                long places = (long) values.get(4);
-                                long places_open = (long) values.get(5);
-                                String departure = values.get(2).toString();
-                                String destination = values.get(3).toString();
+                                long price = (long) (values.get("price"));
+                                String date = values.get("date").toString();
+                                String time = values.get("time").toString();
+                                String userkey= values.get("userId").toString();
+                                long zIndex= (long) values.get("zIndex");
+                                long places = (long) values.get("places");
+                                long places_open = (long) values.get("places_open");
+                                String departure = values.get("departure").toString();
+                                String destination = values.get("destination").toString();
                                 List<LatLng> waypoints= null;
-                                ArrayList<String> observers= new ArrayList<>();
+                                List<String> observers= new ArrayList<>();
+
+                                try {
+                                    List<String> observersHash = (List<String>) values.get("observers");
+                                    if(observersHash!=null) {
+                                        for (String observer : observersHash) {
+                                            observers.add(observer);
+                                        }
+                                    }
+                                }catch(ClassCastException e){
+                                    e.printStackTrace();
+                                    observers= new ArrayList<>();
+                                }
+
+                                try {
+                                    List<HashMap> waypointsHash = (List<HashMap>) values.get("waypoints");
+                                    if(waypointsHash!=null) {
+                                        for (HashMap waypoint : waypointsHash) {
+                                            LatLng coord = new LatLng((Double) waypoint.get("latitude"), (Double) waypoint.get("longitude"));
+                                            waypoints.add(coord);
+                                        }
+                                    }
+                                }catch(ClassCastException e){
+                                    waypoints= new ArrayList<>();
+                                }
 
                                 OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
                                 ArrayList<Object> userData = new ArrayList();
@@ -185,6 +198,25 @@ public class MyBookedRidesFragment extends Fragment {
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
+            }
+
+            @Override
+            public void onMarkClicked(View view, int position){
+                Boolean notMarkedYet=bookedRides.get(position).second.getObservers().contains(userId);
+                OfferedRide ride=bookedRides.get(position).second;
+                if (!userId.equals(ride.getUserId())) {
+                    TextView markBttn = (TextView) view;
+                    if (!notMarkedYet) {
+                        ride.markRide(userId);
+                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                    } else {
+                        ride.unmarkRide(userId);
+                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                    }
+
+                    myRef.child(bookedRides.get(position).first.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override

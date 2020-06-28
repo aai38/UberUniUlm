@@ -144,11 +144,10 @@ public class RideOverviewHeaderFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     if(ride.getObservers().contains(userId)){
-                        ride.getObservers().remove(userId);
+                        mapActivity.markRide(false);
                         markBttn.setImageResource(R.drawable.ic_mark_offer_deselected);
                     }else{
-                        ride.getObservers().add(userId);
-                        mapActivity.markRide();
+                        mapActivity.markRide(true);
                         markBttn.setImageResource(R.drawable.ic_mark_offer);
                     }
                 }
