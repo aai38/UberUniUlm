@@ -35,7 +35,7 @@ public class FilterDistance implements LocationListener {
 
     }
 
-    private Location getCurrentLocation(){
+    public Location getCurrentLocation(){
         String[] permissions= new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION};
         checkPermission(permissions,  0);
         Location location= DEFAULT__LATLNG.toLocation();

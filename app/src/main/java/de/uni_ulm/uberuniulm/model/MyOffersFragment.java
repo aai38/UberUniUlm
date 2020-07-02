@@ -74,60 +74,82 @@ public class MyOffersFragment extends Fragment {
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.i("onDataChange2", dataSnapshot.getKey()+" "+String.valueOf(dataSnapshot.child("offeredRides").getChildrenCount()));
+                Log.i("onDataChange2", dataSnapshot.getKey() + " " + String.valueOf(dataSnapshot.child("offeredRides").getChildrenCount()));
                 String username = (String) dataSnapshot.child(userId).child("username").getValue();
-                    for (DataSnapshot ride : dataSnapshot.child("offeredRides").getChildren()) {
-                        ArrayList<Object> values = new ArrayList();
-                        values.add(dataSnapshot.getKey());
-                        for (DataSnapshot rideValue : ride.getChildren()) {
-                            values.add(rideValue.getValue());
-                        }
+                for (DataSnapshot ride : dataSnapshot.child("offeredRides").getChildren()) {
+                    HashMap<String, Object> values = new HashMap<>();
+                    values.put("dataKey", dataSnapshot.getKey());
+                    for (DataSnapshot rideValue : ride.getChildren()) {
+                        values.put(rideValue.getKey(), rideValue.getValue());
+                    }
 
-                        if(values.size()==0) {
+                    if (values.size() == 0) {
+                        Log.i("onDataChange", "no values");
+                    } else {
+                        List<LatLng> coordinates = new ArrayList<>();
+
+                        if (values.size() == 0) {
                             Log.i("onDataChange", "no values");
                         } else {
-                            List<LatLng> coordinates=new ArrayList<>();
                             try {
-                                List<HashMap> coordinatesHash = (List<HashMap>) values.get(7);
-                                for(HashMap coordinate : coordinatesHash){
-                                    LatLng coord=new LatLng((Double)coordinate.get("latitude"), (Double) coordinate.get("longitude"));
+                                List<HashMap> coordinatesHash = (List<HashMap>) values.get("route");
+                                for (HashMap coordinate : coordinatesHash) {
+                                    LatLng coord = new LatLng((Double) coordinate.get("latitude"), (Double) coordinate.get("longitude"));
                                     coordinates.add(coord);
                                 }
-                            }catch(ClassCastException e){
-                                coordinates= new ArrayList<>();
+                            } catch (ClassCastException e) {
+                                coordinates = new ArrayList<>();
                             }
-                            Log.i("TAG", "values" + values.get(3).toString());
-                            long price = (long) (values.get(6));
-                            String date =  values.get(1).toString();
-                            String time;
-                            String userkey;
-                            long zIndex;
-                            if(values.size()==11){
-                                time= values.get(8).toString();
-                                userkey = values.get(9).toString();
-                                zIndex = (long) values.get(10);
-                            }else{
-                                time= values.get(7).toString();
-                                userkey = values.get(8).toString();
-                                zIndex = (long) values.get(9);
-                            }
-                            long places = (long) values.get(4);
-                            long places_open = (long) values.get(5);
-                            String departure = values.get(2).toString();
-                            String destination = values.get(3).toString();
-                            List<LatLng> waypoints=null;
-                            ArrayList<String> observers= new ArrayList<>();
 
-                            OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int)zIndex, waypoints, observers);
+                            List<LatLng> waypoints = new ArrayList<>();
+                            try {
+                                List<HashMap> waypointsHash = (List<HashMap>) values.get("waypoints");
+                                if (waypointsHash != null) {
+                                    for (HashMap waypoint : waypointsHash) {
+                                        LatLng coord = new LatLng((Double) waypoint.get("latitude"), (Double) waypoint.get("longitude"));
+                                        waypoints.add(coord);
+                                    }
+                                }
+                            } catch (ClassCastException e) {
+                                waypoints = new ArrayList<>();
+                            }
+
+                            String date = values.get("date").toString();
+                            String time = values.get("time").toString();
+                            String userkey = values.get("userId").toString();
+                            long zIndex = (long) values.get("zIndex");
+                            long price = (long) (values.get("price"));
+                            long places = (long) values.get("places");
+                            long places_open = (long) values.get("places_open");
+
+                            List<String> observers = new ArrayList<>();
+                            try {
+                                List<String> observersHash = (List<String>) values.get("observers");
+                                if (observersHash != null) {
+                                    for (String observer : observersHash) {
+                                        observers.add(observer);
+                                    }
+                                }
+                            } catch (ClassCastException e) {
+                                e.printStackTrace();
+                                observers = new ArrayList<>();
+                            }
+
+
+                            String departure = values.get("departure").toString();
+                            String destination = values.get("destination").toString();
+
+                            OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
                             ArrayList<Object> userData = new ArrayList();
                             userData.add(userId);
                             userData.add(username);
-                            Float rating= -2.0f;
+                            Float rating = -2.0f;
                             userData.add(rating);
-                            offeredRides.add(new Pair(userData,offeredRide));
+                            offeredRides.add(new Pair(userData, offeredRide));
                             adapter.notifyDataSetChanged();
                         }
                     }
+                }
             }
 
             @Override

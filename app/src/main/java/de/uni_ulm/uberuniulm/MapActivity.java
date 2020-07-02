@@ -491,6 +491,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
 
     public void onCloseWaypointDialogButton(View view){
         onAddWaypointDialogButton(view);
+        fragment.updateCheck();
         LinearLayout fragmentContainer= findViewById(R.id.newOfferFragmentContainer);
         fragmentContainer.setVisibility(View.INVISIBLE);
 
@@ -510,8 +511,6 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
             View listItem = convertView;
             if(listItem == null)
                 listItem = LayoutInflater.from(MapActivity.this).inflate(R.layout.item_waypoint,parent,false);
-
-            String currentWaypoint= waypoints.get(position);
 
             TextView waypointName = (TextView)listItem.findViewById(R.id.waypointNameTextfield);
             waypointName.setText(waypoints.get(position));
@@ -560,7 +559,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
 
     public void setWayPointPosition(LatLng waypoint){
         this.wayPointPosition=waypoint;
-        waypointList.add(waypoint);
+        //waypointList.add(waypoint);
     }
 
     public Pair<ArrayList,OfferedRide> getRideData(){

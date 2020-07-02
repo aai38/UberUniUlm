@@ -142,7 +142,10 @@
             android:layout_width="27dp"
             android:layout_height="35dp"
             android:background="@drawable/ic_mark_offer_deselected"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/TextViewPlaces"

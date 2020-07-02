@@ -113,7 +113,7 @@
                     android:id="@+id/newOfferActivityStartEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="AutoCompleteTextView" />
+                    android:hint="@string/newOffer_departure_field_hint" />
 
                 <TextView
                     android:id="@+id/newOfferWaypointEditText"
@@ -154,7 +154,7 @@
                         android:id="@+id/newOfferActivityDestinationEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="AutoCompleteTextView" />
+                        android:hint="@string/newOffer_destination_field_hint" />
                 </LinearLayout>
 
             </LinearLayout>

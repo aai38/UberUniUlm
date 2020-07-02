@@ -6,11 +6,13 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +61,9 @@ import de.uni_ulm.uberuniulm.MainPage;
 import de.uni_ulm.uberuniulm.MapActivity;
 import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.model.OfferedRide;
+import de.uni_ulm.uberuniulm.model.ParkingSpot;
+import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.model.filter.FilterDistance;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -80,6 +85,7 @@ public class NewOfferHeaderFragment extends Fragment {
     private SearchApi searchApi;
     private static final int SEARCH_FUZZY_LVL_MIN = 2;
     private ArrayAdapter<String> searchAdapter;
+    private ParkingSpots spots;
     private LatLng latLngCurrentPosition, latLngDeparture, latLngDestination;
     private static final int AUTOCOMPLETE_SEARCH_DELAY_MILLIS = 600;
     private static final int AUTOCOMPLETE_SEARCH_THRESHOLD = 2;
@@ -93,6 +99,7 @@ public class NewOfferHeaderFragment extends Fragment {
     private final Handler searchTimerHandler = new Handler();
 
     private Map<String, LatLng> searchResultsMap;
+    private ArrayList<ParkingSpot> parkingSpots;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -119,55 +126,58 @@ public class NewOfferHeaderFragment extends Fragment {
         timeFormatter = new SimpleDateFormat("HH:mm");
         timeTextField.setText(timeFormatter.format(cal.getTime()));
 
+        getParkingSpots();
+        latLngCurrentPosition=DEFAULT_DEPARTURE_LATLNG;
+
         dateTextField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                    mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            String date = dayOfMonth + "/" + month + "/" + year;
+                            cal.set(year, month, dayOfMonth);
+                            dateTextField.setText(monthFormatter.format(cal.getTime()));
+                        }
+                    };
 
-
-                mDateSetListener = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String date = dayOfMonth + "/" + month + "/" + year;
-                        cal.set(year, month, dayOfMonth);
-                        dateTextField.setText(monthFormatter.format(cal.getTime()));
-                    }
-                };
-
-                DatePickerDialog dialog = new DatePickerDialog(
-                        mapActivity, R.style.spinnerDatePickerStyle,
-                        mDateSetListener,
-                        year, month, day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapActivity.getColor(R.color.colorSlightlyTransparentBlack)));
-                dialog.show();
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
-                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
-            }
+                    DatePickerDialog dialog = new DatePickerDialog(
+                            mapActivity, R.style.spinnerDatePickerStyle,
+                            mDateSetListener,
+                            year, month, day);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapActivity.getColor(R.color.colorSlightlyTransparentBlack)));
+                    dialog.show();
+                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                    dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                }
         });
 
 
 
-        timeTextField.setOnClickListener(new View.OnClickListener() {
+        timeTextField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View view) {
-                int hour = cal.get(Calendar.HOUR_OF_DAY);
-                int minute = cal.get(Calendar.MINUTE);
-                mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        if (view.isShown()) {
-                            cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                            cal.set(Calendar.MINUTE, minute);
-                            String time = hourOfDay + ":" + minute;
-                            timeTextField.setText(time);
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    int hour = cal.get(Calendar.HOUR_OF_DAY);
+                    int minute = cal.get(Calendar.MINUTE);
+                    mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                            if (view.isShown()) {
+                                cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                cal.set(Calendar.MINUTE, minute);
+                                String time = hourOfDay + ":" + minute;
+                                timeTextField.setText(time);
+                            }
                         }
-                    }
-                };
-                TimePickerDialog timePickerDialog = new TimePickerDialog(mapActivity, R.style.timePickerStyle, mTimeSetListener, hour, minute, true);
-                timePickerDialog.setTitle("Choose departure:");
-                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapActivity.getColor(R.color.colorSlightlyTransparentBlack)));
-                timePickerDialog.show();
-                timePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
-                timePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                    };
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(mapActivity, R.style.timePickerStyle, mTimeSetListener, hour, minute, true);
+                    timePickerDialog.setTitle("Choose departure:");
+                    timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapActivity.getColor(R.color.colorSlightlyTransparentBlack)));
+                    timePickerDialog.show();
+                    timePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                    timePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                }
             }
         });
 
@@ -264,18 +274,62 @@ public class NewOfferHeaderFragment extends Fragment {
 
     private void initDepartureWithDefaultValue() {
         latLngDeparture = DEFAULT_DEPARTURE_LATLNG;
-        mapActivity.setAddressForLocation(latLngDeparture, atvDepartureLocation);
     }
 
     private void initDestinationWithDefaultValue() {
         latLngDestination = DEFAULT_DESTINATION_LATLNG;
-        mapActivity.setAddressForLocation(latLngDestination, atvDestinationLocation);
     }
 
     private void initWhereSection() {
         searchAutocompleteList = new ArrayList<>();
         searchResultsMap = new HashMap<>();
         searchAdapter = new ArrayAdapter<String>(mapActivity, android.R.layout.simple_dropdown_item_1line, searchAutocompleteList);
+
+        atvDepartureLocation.setThreshold(0);
+
+        atvDepartureLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View textView, boolean hasFocus) {
+                if(hasFocus){
+                    if (!searchResultsMap.containsKey("Current position")) {
+                        String currentLocationTitle = "Current position";
+                        searchAutocompleteList.add(currentLocationTitle);
+                        searchResultsMap.put(currentLocationTitle, latLngCurrentPosition);
+                    }
+
+                    supposeSpots();
+                    searchAdapter.addAll(searchAutocompleteList);
+                    searchAdapter.getFilter().filter("");
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            atvDepartureLocation.showDropDown();
+                        }
+                    }, 100);
+                    atvDepartureLocation.showDropDown();
+                }
+            }
+        });
+
+        atvDestinationLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View textView, boolean hasFocus) {
+                if(hasFocus){
+                    supposeSpots();
+                    searchAdapter.addAll(searchAutocompleteList);
+                    searchAdapter.getFilter().filter("");
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            atvDepartureLocation.showDropDown();
+                        }
+                    }, 100);
+                    atvDepartureLocation.showDropDown();
+                }
+            }
+        });
 
         setTextWatcherToAutoCompleteField(atvDepartureLocation);
         setTextWatcherToAutoCompleteField(atvDestinationLocation);
@@ -301,9 +355,24 @@ public class NewOfferHeaderFragment extends Fragment {
         }
     }
 
+
+
     public void setTextWatcherToAutoCompleteField(final AutoCompleteTextView autoCompleteTextView) {
         autoCompleteTextView.setAdapter(searchAdapter);
         autoCompleteTextView.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (autoCompleteTextView == atvDepartureLocation && latLngCurrentPosition != null && !searchResultsMap.containsKey("Current position")) {
+                    String currentLocationTitle = "Current position";
+                    searchAutocompleteList.add(currentLocationTitle);
+                    searchResultsMap.put(currentLocationTitle, latLngCurrentPosition);
+                }
+
+                supposeSpots();
+                searchAdapter.addAll(searchAutocompleteList);
+                searchAdapter.getFilter().filter("");
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchTimerHandler.removeCallbacks(searchRunnable);
@@ -317,28 +386,53 @@ public class NewOfferHeaderFragment extends Fragment {
                         searchAdapter.clear();
                         searchTimerHandler.postDelayed(searchRunnable, AUTOCOMPLETE_SEARCH_DELAY_MILLIS);
                     }
+                }else{
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            autoCompleteTextView.showDropDown();
+                        }
+                    }, 100);
                 }
             }
         });
         autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
-            String item = (String) parent.getItemAtPosition(position);
-            if (autoCompleteTextView == atvDepartureLocation) {
-                latLngDeparture = searchResultsMap.get(item);
-                if(latLngDestination!=null && latLngDestination!=DEFAULT_DESTINATION_LATLNG){
-                    mapActivity.drawRoute(latLngDeparture, latLngDestination);
+            if(autoCompleteTextView.getText().equals("")){
+                if (autoCompleteTextView == atvDepartureLocation) {
+                    latLngDeparture = parkingSpots.get(position).getPosition();
+                    if (latLngDestination != null && latLngDestination != DEFAULT_DESTINATION_LATLNG) {
+                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                    }
+                } else if (autoCompleteTextView == atvDestinationLocation) {
+                    latLngDestination = parkingSpots.get(position).getPosition();
+                    if (latLngDeparture != null && latLngDeparture != DEFAULT_DEPARTURE_LATLNG) {
+                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                    }
                 }
-            } else if (autoCompleteTextView == atvDestinationLocation) {
-                latLngDestination = searchResultsMap.get(item);
-                if(latLngDeparture!=null && latLngDeparture!=DEFAULT_DEPARTURE_LATLNG){
-                    mapActivity.drawRoute(latLngDeparture, latLngDestination);
+            }else {
+                String item = (String) parent.getItemAtPosition(position);
+                if (autoCompleteTextView == atvDepartureLocation) {
+                    if(item.equals("Current position")){
+                        FilterDistance posFilter=new FilterDistance(getContext());
+                        Location loc= posFilter.getCurrentLocation();
+                        latLngDeparture=new LatLng(loc.getLatitude(), loc.getLongitude());
+                    }else {
+                        latLngDeparture = searchResultsMap.get(item);
+                    }
+                    if (latLngDestination != null && latLngDestination != DEFAULT_DESTINATION_LATLNG) {
+                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                    }
+                } else if (autoCompleteTextView == atvDestinationLocation) {
+                    latLngDestination = searchResultsMap.get(item);
+                    if (latLngDeparture != null && latLngDeparture != DEFAULT_DEPARTURE_LATLNG) {
+                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                    }
+                } else if (autoCompleteTextView == atvWaypointLocation) {
+                    mapActivity.setWayPointPosition(searchResultsMap.get(item));
                 }
-            }else if(autoCompleteTextView == atvWaypointLocation){
-                mapActivity.setWayPointPosition(searchResultsMap.get(item));
-                if(latLngDeparture!=null && latLngDeparture!=DEFAULT_DEPARTURE_LATLNG&& latLngDestination!=null && latLngDestination!=DEFAULT_DESTINATION_LATLNG){
-                    mapActivity.drawRoute(latLngDeparture, latLngDestination);
-                }
+                mapActivity.hideKeyboard(view);
             }
-            mapActivity.hideKeyboard(view);
         });
     }
 
@@ -365,11 +459,20 @@ public class NewOfferHeaderFragment extends Fragment {
                         if (!fuzzySearchResponse.getResults().isEmpty()) {
                             searchAutocompleteList.clear();
                             searchResultsMap.clear();
-                            if (autoCompleteTextView == atvDepartureLocation && latLngCurrentPosition != null) {
+                            if (autoCompleteTextView == atvDepartureLocation && latLngCurrentPosition != null && !searchResultsMap.containsKey("Current position")) {
                                 String currentLocationTitle = "Current position";
                                 searchAutocompleteList.add(currentLocationTitle);
                                 searchResultsMap.put(currentLocationTitle, latLngCurrentPosition);
                             }
+
+                            ArrayList<ParkingSpot> spotResults= spots.getSpotsBySubString(searchWord);
+                            if(spotResults!=null && spotResults.size()>0){
+                                for(ParkingSpot spot: spotResults) {
+                                    searchAutocompleteList.add(spot.getName() + " (" + spot.getDescription()+")");
+                                    searchResultsMap.put(spot.getName() + " (" + spot.getDescription()+")", spot.getPosition());
+                                }
+                            }
+
                             for (FuzzySearchResult result : fuzzySearchResponse.getResults()) {
                                 String addressString = result.getAddress().getFreeformAddress();
                                 searchAutocompleteList.add(addressString);
@@ -386,5 +489,31 @@ public class NewOfferHeaderFragment extends Fragment {
                         Toast.makeText(mapActivity, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    public void updateCheck(){
+        if(latLngDeparture!=null && latLngDeparture!=DEFAULT_DEPARTURE_LATLNG&& latLngDestination!=null && latLngDestination!=DEFAULT_DESTINATION_LATLNG){
+            mapActivity.drawRoute(latLngDeparture, latLngDestination);
+        }
+    }
+
+
+    private void supposeSpots(){
+
+        for(ParkingSpot spot: parkingSpots) {
+            searchAutocompleteList.add(spot.getName() + " (" + spot.getDescription()+")");
+            searchResultsMap.put(spot.getName() + " (" + spot.getDescription()+")", spot.getPosition());
+        }
+    }
+
+
+    private void getParkingSpots(){
+        spots = new ParkingSpots();
+        parkingSpots=new ArrayList<>();
+        parkingSpots.add(spots.getSpotByName("P10"));
+        parkingSpots.add(spots.getSpotByName("P17"));
+        parkingSpots.add(spots.getSpotByName("P24"));
+        parkingSpots.add(spots.getSpotByName("P41"));
+        parkingSpots.add(spots.getSpotByName("P43"));
     }
 }

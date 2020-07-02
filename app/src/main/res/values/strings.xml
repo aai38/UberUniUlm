@@ -28,6 +28,8 @@
     <string name="newOffer_time_title">Time</string>
     <string name="newOffer_start_title">Start location</string>
     <string name="newOffer_destination_title">Destination</string>
+    <string name="newOffer_destination_field_hint">Enter your destination</string>
+    <string name="newOffer_departure_field_hint">Enter yout departure</string>
     <string name="newOffer_waypoint_link">Add waypoint</string>
     <string name="newOffer_date_inthepast_error">Error: date is in the past!</string>
     <string name="newOffer_date_invalid_error">Error: date is not valid. Must be of format dd/mm/yyy.</string>
