@@ -1,19 +1,13 @@
-package de.uni_ulm.uberuniulm;
+package de.uni_ulm.uberuniulm.ui.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,11 +32,11 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.MainPage;
+import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 
 public class ProfileFragment extends Fragment {
     public View fragmentView;

@@ -4,8 +4,7 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 
-import de.uni_ulm.uberuniulm.model.OfferedRide;
-import de.uni_ulm.uberuniulm.ui.OfferListAdapter;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 
 public class FilterOfferer {
     public FilterOfferer(){

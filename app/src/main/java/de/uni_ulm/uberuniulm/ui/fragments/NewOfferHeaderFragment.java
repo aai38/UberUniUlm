@@ -1,29 +1,23 @@
-package de.uni_ulm.uberuniulm.ui;
+package de.uni_ulm.uberuniulm.ui.fragments;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -40,15 +34,9 @@ import com.tomtom.online.sdk.search.SearchApi;
 import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchQueryBuilder;
 import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchResponse;
 import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchResult;
-import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderFullAddress;
-import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchQueryBuilder;
-import com.tomtom.online.sdk.search.data.reversegeocoder.ReverseGeocoderSearchResponse;
-
-import org.joda.time.Hours;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -57,12 +45,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import de.uni_ulm.uberuniulm.MainPage;
-import de.uni_ulm.uberuniulm.MapActivity;
+import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
-import de.uni_ulm.uberuniulm.model.OfferedRide;
-import de.uni_ulm.uberuniulm.model.ParkingSpot;
-import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpot;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpots;
 import de.uni_ulm.uberuniulm.model.filter.FilterDistance;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -74,7 +61,7 @@ public class NewOfferHeaderFragment extends Fragment {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private ImageButton confirmBttn, closeBttn;
-    private MapActivity mapActivity;
+    private MapPage mapPage;
     private AutoCompleteTextView atvDepartureLocation;
     private AutoCompleteTextView atvDestinationLocation;
     private AutoCompleteTextView atvWaypointLocation;
@@ -104,7 +91,7 @@ public class NewOfferHeaderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_new_ride_header, container, false);
-        mapActivity = (MapActivity) getActivity();
+        mapPage = (MapPage) getActivity();
 
         startTextField =(EditText)  fragmentView.findViewById(R.id.newOfferActivityStartEditText);
         goalTextField = (EditText) fragmentView.findViewById(R.id.newOfferActivityDestinationEditText);
@@ -142,10 +129,10 @@ public class NewOfferHeaderFragment extends Fragment {
                     };
 
                     DatePickerDialog dialog = new DatePickerDialog(
-                            mapActivity, R.style.spinnerDatePickerStyle,
+                            mapPage, R.style.spinnerDatePickerStyle,
                             mDateSetListener,
                             year, month, day);
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapActivity.getColor(R.color.colorSlightlyTransparentBlack)));
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapPage.getColor(R.color.colorSlightlyTransparentBlack)));
                     dialog.show();
                     dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
                     dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -171,9 +158,9 @@ public class NewOfferHeaderFragment extends Fragment {
                             }
                         }
                     };
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(mapActivity, R.style.timePickerStyle, mTimeSetListener, hour, minute, true);
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(mapPage, R.style.timePickerStyle, mTimeSetListener, hour, minute, true);
                     timePickerDialog.setTitle("Choose departure:");
-                    timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapActivity.getColor(R.color.colorSlightlyTransparentBlack)));
+                    timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(mapPage.getColor(R.color.colorSlightlyTransparentBlack)));
                     timePickerDialog.show();
                     timePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
                     timePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -206,15 +193,15 @@ public class NewOfferHeaderFragment extends Fragment {
                     cal.set(Calendar.HOUR_OF_DAY, timeParsed.getHours());
                     cal.set(Calendar.MINUTE, timeParsed.getMinutes());
                     if(cal.getTime().before(today)){
-                        Toast.makeText(mapActivity, getResources().getString(R.string.newOffer_date_inthepast_error), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mapPage, getResources().getString(R.string.newOffer_date_inthepast_error), Toast.LENGTH_SHORT).show();
                     }else{
                         String departure = startTextField.getText().toString();
                         String destination = goalTextField.getText().toString();
-                        mapActivity.onNewOfferActivityConfirmBttn(price, date, time, places, departure, destination);
+                        mapPage.onNewOfferActivityConfirmBttn(price, date, time, places, departure, destination);
                     }
 
                 } catch (ParseException e) {
-                    Toast.makeText(mapActivity, getResources().getString(R.string.newOffer_date_invalid_error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mapPage, getResources().getString(R.string.newOffer_date_invalid_error), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
                 }
@@ -224,7 +211,7 @@ public class NewOfferHeaderFragment extends Fragment {
         closeBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapActivity.closeMapView();
+                mapPage.closeMapView();
             }
         });
 
@@ -232,12 +219,12 @@ public class NewOfferHeaderFragment extends Fragment {
         newWayPointButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapActivity.addWaypoint();
+                mapPage.addWaypoint();
             }
         });
 
-        if(mapActivity.getViewType().equals("EDITOFFER")){
-            setUpExistingOffer(mapActivity.getRideData().second);
+        if(mapPage.getViewType().equals("EDITOFFER")){
+            setUpExistingOffer(mapPage.getRideData().second);
         }
 
         if(notInitiated) {
@@ -283,7 +270,7 @@ public class NewOfferHeaderFragment extends Fragment {
     private void initWhereSection() {
         searchAutocompleteList = new ArrayList<>();
         searchResultsMap = new HashMap<>();
-        searchAdapter = new ArrayAdapter<String>(mapActivity, android.R.layout.simple_dropdown_item_1line, searchAutocompleteList);
+        searchAdapter = new ArrayAdapter<String>(mapPage, android.R.layout.simple_dropdown_item_1line, searchAutocompleteList);
 
         atvDepartureLocation.setThreshold(0);
 
@@ -336,13 +323,13 @@ public class NewOfferHeaderFragment extends Fragment {
     }
 
     private void initLocationSource() {
-        AndroidPermissionChecker permissionChecker = AndroidPermissionChecker.createLocationChecker(mapActivity);
+        AndroidPermissionChecker permissionChecker = AndroidPermissionChecker.createLocationChecker(mapPage);
         if(permissionChecker.ifNotAllPermissionGranted()) {
-            ActivityCompat.requestPermissions(mapActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+            ActivityCompat.requestPermissions(mapPage, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
         }
         LocationSourceFactory locationSourceFactory = new LocationSourceFactory();
-        locationSource = locationSourceFactory.createDefaultLocationSource(mapActivity, mapActivity,  LocationRequest.create()
+        locationSource = locationSourceFactory.createDefaultLocationSource(mapPage, mapPage,  LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setFastestInterval(2000)
                 .setInterval(5000));
@@ -402,12 +389,12 @@ public class NewOfferHeaderFragment extends Fragment {
                 if (autoCompleteTextView == atvDepartureLocation) {
                     latLngDeparture = parkingSpots.get(position).getPosition();
                     if (latLngDestination != null && latLngDestination != DEFAULT_DESTINATION_LATLNG) {
-                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                        mapPage.drawRoute(latLngDeparture, latLngDestination);
                     }
                 } else if (autoCompleteTextView == atvDestinationLocation) {
                     latLngDestination = parkingSpots.get(position).getPosition();
                     if (latLngDeparture != null && latLngDeparture != DEFAULT_DEPARTURE_LATLNG) {
-                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                        mapPage.drawRoute(latLngDeparture, latLngDestination);
                     }
                 }
             }else {
@@ -421,17 +408,17 @@ public class NewOfferHeaderFragment extends Fragment {
                         latLngDeparture = searchResultsMap.get(item);
                     }
                     if (latLngDestination != null && latLngDestination != DEFAULT_DESTINATION_LATLNG) {
-                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                        mapPage.drawRoute(latLngDeparture, latLngDestination);
                     }
                 } else if (autoCompleteTextView == atvDestinationLocation) {
                     latLngDestination = searchResultsMap.get(item);
                     if (latLngDeparture != null && latLngDeparture != DEFAULT_DEPARTURE_LATLNG) {
-                        mapActivity.drawRoute(latLngDeparture, latLngDestination);
+                        mapPage.drawRoute(latLngDeparture, latLngDestination);
                     }
                 } else if (autoCompleteTextView == atvWaypointLocation) {
-                    mapActivity.setWayPointPosition(searchResultsMap.get(item));
+                    mapPage.setWayPointPosition(searchResultsMap.get(item));
                 }
-                mapActivity.hideKeyboard(view);
+                mapPage.hideKeyboard(view);
             }
         });
     }
@@ -447,7 +434,7 @@ public class NewOfferHeaderFragment extends Fragment {
 
 
     private void searchAddress(final String searchWord, final AutoCompleteTextView autoCompleteTextView) {
-        mapActivity.getSearchApi().search(new FuzzySearchQueryBuilder(searchWord)
+        mapPage.getSearchApi().search(new FuzzySearchQueryBuilder(searchWord)
                 .withLanguage(Locale.getDefault().toLanguageTag())
                 .withTypeAhead(true)
                 .withMinFuzzyLevel(SEARCH_FUZZY_LVL_MIN).build())
@@ -486,14 +473,14 @@ public class NewOfferHeaderFragment extends Fragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(mapActivity, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mapPage, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     public void updateCheck(){
         if(latLngDeparture!=null && latLngDeparture!=DEFAULT_DEPARTURE_LATLNG&& latLngDestination!=null && latLngDestination!=DEFAULT_DESTINATION_LATLNG){
-            mapActivity.drawRoute(latLngDeparture, latLngDestination);
+            mapPage.drawRoute(latLngDeparture, latLngDestination);
         }
     }
 

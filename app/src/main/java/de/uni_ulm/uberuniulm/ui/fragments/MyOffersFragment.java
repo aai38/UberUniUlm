@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.model;
+package de.uni_ulm.uberuniulm.ui.fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -33,132 +33,51 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import de.uni_ulm.uberuniulm.MapActivity;
-import de.uni_ulm.uberuniulm.ui.OfferListAdapter;
+import de.uni_ulm.uberuniulm.MapPage;
+import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import de.uni_ulm.uberuniulm.model.ride.RideLoader;
+import de.uni_ulm.uberuniulm.ui.main.OfferListAdapter;
 import de.uni_ulm.uberuniulm.R;
-import de.uni_ulm.uberuniulm.ui.ClickListener;
+import de.uni_ulm.uberuniulm.ui.main.ClickListener;
 
 public class MyOffersFragment extends Fragment {
     public View fragmentView;
     private RecyclerView myoffersRecyclerView;
     private static OfferListAdapter adapter;
-    private DatabaseReference myRef;
     private ArrayList<Pair<ArrayList, OfferedRide>> offeredRides;
-    private FirebaseAuth mAuth;
-    private AutoCompleteTextView atvWaypointLocation;
+    private String userId;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_offers, container, false);
-        fragmentView.findViewById(R.id.startActivityRegisterProfileImage);
 
         myoffersRecyclerView = (RecyclerView) fragmentView.findViewById(R.id.recyclerViewMyOffers);
         myoffersRecyclerView.setHasFixedSize(true);
         myoffersRecyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
         offeredRides = new ArrayList();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser= mAuth.getCurrentUser();
-
 
         SharedPreferences pref = new ObscuredSharedPreferences(
                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("UserKey", Context.MODE_PRIVATE));
-        String userId = pref.getString("UserKey", "");
-        myRef = database.getReference().child(userId);
-        Log.i("onDataChange1", "no values");
+        userId = pref.getString("UserKey", "");
 
+        RideLoader rideLoader= new RideLoader(getContext());
+        rideLoader.getUsersOfferedRides(this);
+        return fragmentView;
+    }
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.i("onDataChange2", dataSnapshot.getKey() + " " + String.valueOf(dataSnapshot.child("offeredRides").getChildrenCount()));
-                String username = (String) dataSnapshot.child(userId).child("username").getValue();
-                for (DataSnapshot ride : dataSnapshot.child("offeredRides").getChildren()) {
-                    HashMap<String, Object> values = new HashMap<>();
-                    values.put("dataKey", dataSnapshot.getKey());
-                    for (DataSnapshot rideValue : ride.getChildren()) {
-                        values.put(rideValue.getKey(), rideValue.getValue());
-                    }
+    public void updateOffers(ArrayList<Pair<ArrayList, OfferedRide>> rides){
+        offeredRides= rides;
+        if(adapter!=null){
+            adapter.notifyDataSetChanged();
+        }else{
+            setOfferAdapter();
+        }
+    }
 
-                    if (values.size() == 0) {
-                        Log.i("onDataChange", "no values");
-                    } else {
-                        List<LatLng> coordinates = new ArrayList<>();
-
-                        if (values.size() == 0) {
-                            Log.i("onDataChange", "no values");
-                        } else {
-                            try {
-                                List<HashMap> coordinatesHash = (List<HashMap>) values.get("route");
-                                for (HashMap coordinate : coordinatesHash) {
-                                    LatLng coord = new LatLng((Double) coordinate.get("latitude"), (Double) coordinate.get("longitude"));
-                                    coordinates.add(coord);
-                                }
-                            } catch (ClassCastException e) {
-                                coordinates = new ArrayList<>();
-                            }
-
-                            List<LatLng> waypoints = new ArrayList<>();
-                            try {
-                                List<HashMap> waypointsHash = (List<HashMap>) values.get("waypoints");
-                                if (waypointsHash != null) {
-                                    for (HashMap waypoint : waypointsHash) {
-                                        LatLng coord = new LatLng((Double) waypoint.get("latitude"), (Double) waypoint.get("longitude"));
-                                        waypoints.add(coord);
-                                    }
-                                }
-                            } catch (ClassCastException e) {
-                                waypoints = new ArrayList<>();
-                            }
-
-                            String date = values.get("date").toString();
-                            String time = values.get("time").toString();
-                            String userkey = values.get("userId").toString();
-                            long zIndex = (long) values.get("zIndex");
-                            long price = (long) (values.get("price"));
-                            long places = (long) values.get("places");
-                            long places_open = (long) values.get("places_open");
-
-                            List<String> observers = new ArrayList<>();
-                            try {
-                                List<String> observersHash = (List<String>) values.get("observers");
-                                if (observersHash != null) {
-                                    for (String observer : observersHash) {
-                                        observers.add(observer);
-                                    }
-                                }
-                            } catch (ClassCastException e) {
-                                e.printStackTrace();
-                                observers = new ArrayList<>();
-                            }
-
-
-                            String departure = values.get("departure").toString();
-                            String destination = values.get("destination").toString();
-
-                            OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
-                            ArrayList<Object> userData = new ArrayList();
-                            userData.add(userId);
-                            userData.add(username);
-                            Float rating = -2.0f;
-                            userData.add(rating);
-                            offeredRides.add(new Pair(userData, offeredRide));
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-        });
-
+    private void setOfferAdapter(){
         adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {
             @Override
             public void onPositionClicked(int position) {
@@ -167,7 +86,7 @@ public class MyOffersFragment extends Fragment {
 
             @Override
             public void onOfferClicked(int position){
-                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                 Pair clickedRidePair = offeredRides.get(position);
                 OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
                 intent.putExtra("USER", (ArrayList) clickedRidePair.first);
@@ -189,7 +108,9 @@ public class MyOffersFragment extends Fragment {
                         ride.unmarkRide(userId);
                         markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
                     }
-
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference();
+                    myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).second.getzIndex())).removeValue();
                     myRef.child(offeredRides.get(position).first.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
                     adapter.notifyDataSetChanged();
                 }
@@ -204,7 +125,7 @@ public class MyOffersFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int pos) {
                         if(pos==0){
-                            Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                            Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                             Pair clickedRidePair = offeredRides.get(position);
                             OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
                             intent.putExtra("USER", (ArrayList) clickedRidePair.first);
@@ -260,7 +181,5 @@ public class MyOffersFragment extends Fragment {
             }
         });
         myoffersRecyclerView.setAdapter(adapter);
-
-        return fragmentView;
     }
 }

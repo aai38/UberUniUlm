@@ -20,10 +20,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import de.uni_ulm.uberuniulm.model.OfferedRide;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 
 import static android.content.Context.LOCATION_SERVICE;
-import static androidx.core.content.ContextCompat.getSystemService;
 
 public class FilterDistance implements LocationListener {
     private LocationManager locationManager;

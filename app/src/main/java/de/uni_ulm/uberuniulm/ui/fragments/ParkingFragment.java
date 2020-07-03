@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm;
+package de.uni_ulm.uberuniulm.ui.fragments;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -25,8 +25,9 @@ import com.tomtom.online.sdk.search.SearchApi;
 
 import java.util.ArrayList;
 
-import de.uni_ulm.uberuniulm.model.ParkingSpot;
-import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpot;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpots;
 import de.uni_ulm.uberuniulm.ui.map.TypedBallonViewAdapter;
 
 public class ParkingFragment extends Fragment implements OnMapReadyCallback, TomtomMapCallback.OnMapLongClickListener {

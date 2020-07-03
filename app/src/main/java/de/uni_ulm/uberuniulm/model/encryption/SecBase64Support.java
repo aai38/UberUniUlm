@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.model;
+package de.uni_ulm.uberuniulm.model.encryption;
 
 /*
  * Copyright (C) 2010 The Android Open Source Project

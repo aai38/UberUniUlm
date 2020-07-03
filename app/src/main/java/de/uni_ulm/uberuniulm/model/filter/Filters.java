@@ -1,16 +1,12 @@
 package de.uni_ulm.uberuniulm.model.filter;
 
 import android.content.Context;
-import android.util.Log;
-import android.util.Pair;
 
 import com.tomtom.online.sdk.common.location.LatLng;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.R;
-import de.uni_ulm.uberuniulm.model.OfferedRide;
 
 public class Filters {
     Boolean userNameFilterSet=false, priceFilterSet=false, placesFilterSet=false, distanceFilterSet=false, dateFilterSet=false;

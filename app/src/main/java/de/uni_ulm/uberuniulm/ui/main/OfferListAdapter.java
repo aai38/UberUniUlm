@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.ui;
+package de.uni_ulm.uberuniulm.ui.main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -27,8 +27,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.R;
-import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
-import de.uni_ulm.uberuniulm.model.OfferedRide;
+import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 import de.uni_ulm.uberuniulm.model.filter.Filters;
 
 public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.OfferViewHolder>  implements View.OnClickListener{

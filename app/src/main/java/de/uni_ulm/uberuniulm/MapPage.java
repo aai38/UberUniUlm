@@ -66,17 +66,17 @@ import java.util.List;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import de.uni_ulm.uberuniulm.ui.NewOfferHeaderFragment;
-import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
-import de.uni_ulm.uberuniulm.model.OfferedRide;
-import de.uni_ulm.uberuniulm.model.ParkingSpots;
-import de.uni_ulm.uberuniulm.ui.RideOverviewHeaderFragment;
+import de.uni_ulm.uberuniulm.ui.fragments.NewOfferHeaderFragment;
+import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpots;
+import de.uni_ulm.uberuniulm.ui.fragments.RideOverviewHeaderFragment;
 import de.uni_ulm.uberuniulm.ui.map.TypedBallonViewAdapter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class MapActivity extends AppCompatActivity implements LocationUpdateListener, NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, TomtomMapCallback.OnMapLongClickListener{
+public class MapPage extends AppCompatActivity implements LocationUpdateListener, NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, TomtomMapCallback.OnMapLongClickListener{
     private TomtomMap tomtomMap;
     private SearchApi searchApi;
     private LatLng latLngCurrentPosition, latLngDeparture, latLngDestination, wayPointPosition;
@@ -120,9 +120,9 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         searchApi=OnlineSearchApi.create(this);
         routingApi=OnlineRoutingApi.create(this);
 
-        departureIcon=Icon.Factory.fromResources(MapActivity.this, R.drawable.ic_map_route_departure);
-        destinationIcon=Icon.Factory.fromResources(MapActivity.this, R.drawable.ic_map_route_destination);
-        waypointIcon=Icon.Factory.fromResources(MapActivity.this, R.drawable.ic_markedlocation);
+        departureIcon=Icon.Factory.fromResources(MapPage.this, R.drawable.ic_map_route_departure);
+        destinationIcon=Icon.Factory.fromResources(MapPage.this, R.drawable.ic_map_route_destination);
+        waypointIcon=Icon.Factory.fromResources(MapPage.this, R.drawable.ic_markedlocation);
 
         waypoints=new ArrayList<>();
 
@@ -162,14 +162,14 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
     }
 
     public void cancel(){
-        Intent intent = new Intent(MapActivity.this, MainPage.class);
+        Intent intent = new Intent(MapPage.this, MainPage.class);
         startActivity(intent);
     }
 
     public void onNewOfferActivityConfirmBttn(int price, String date, String time, int places, String departure, String destination){
         if(route!=null){
             final SharedPreferences pref = new ObscuredSharedPreferences(
-                        MapActivity.this, MapActivity.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+                        MapPage.this, MapPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
             userId = pref.getString("UserKey", "");
 
             int zIndex = pref.getInt("RideId", 0);
@@ -189,7 +189,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
                 editor.putInt("RideId", zIndex +1);
                 editor.apply();
             }
-            Intent intent = new Intent(MapActivity.this, MainPage.class);
+            Intent intent = new Intent(MapPage.this, MainPage.class);
             startActivity(intent);
 
         }else{
@@ -263,7 +263,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
                             processFirstResult(response.getAddresses().get(0).getPosition());
                         }
                         else {
-                            Toast.makeText(MapActivity.this, getString(R.string.geocode_no_results), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapPage.this, getString(R.string.geocode_no_results), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -318,7 +318,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
     }
 
     private void handleApiError(Throwable e) {
-        Toast.makeText(MapActivity.this, getString(R.string.api_response_error, e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+        Toast.makeText(MapPage.this, getString(R.string.api_response_error, e.getLocalizedMessage()), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -393,7 +393,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(MapActivity.this, "Error setting address", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MapPage.this, "Error setting address", Toast.LENGTH_LONG).show();
                         Log.e("newOfferActivity", "Error setting address", e);
                     }
                 });
@@ -510,7 +510,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View listItem = convertView;
             if(listItem == null)
-                listItem = LayoutInflater.from(MapActivity.this).inflate(R.layout.item_waypoint,parent,false);
+                listItem = LayoutInflater.from(MapPage.this).inflate(R.layout.item_waypoint,parent,false);
 
             TextView waypointName = (TextView)listItem.findViewById(R.id.waypointNameTextfield);
             waypointName.setText(waypoints.get(position));
@@ -541,7 +541,7 @@ public class MapActivity extends AppCompatActivity implements LocationUpdateList
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
         final SharedPreferences pref = new ObscuredSharedPreferences(
-                MapActivity.this, MapActivity.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+                MapPage.this, MapPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         userId = pref.getString("UserKey", "");
 
         if(notMarkedYet) {

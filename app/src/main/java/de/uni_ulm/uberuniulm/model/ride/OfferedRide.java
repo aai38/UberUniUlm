@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.model;
+package de.uni_ulm.uberuniulm.model.ride;
 
 import android.util.Log;
 
@@ -7,6 +7,9 @@ import com.tomtom.online.sdk.common.location.LatLng;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpot;
+import de.uni_ulm.uberuniulm.model.User;
 
 public class OfferedRide implements Serializable {
     public String getDestination() {

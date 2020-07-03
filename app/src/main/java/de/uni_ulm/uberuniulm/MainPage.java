@@ -3,7 +3,6 @@ package de.uni_ulm.uberuniulm;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +28,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.provider.MediaStore;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,10 +49,11 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import de.uni_ulm.uberuniulm.model.MyBookedRidesFragment;
-import de.uni_ulm.uberuniulm.model.MyOffersFragment;
-import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
-import de.uni_ulm.uberuniulm.model.OfferedRide;
+import de.uni_ulm.uberuniulm.ui.fragments.MyBookedRidesFragment;
+import de.uni_ulm.uberuniulm.ui.fragments.MyOffersFragment;
+import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.ui.fragments.ProfileFragment;
+import de.uni_ulm.uberuniulm.ui.fragments.WatchListFragment;
 import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
@@ -237,6 +236,10 @@ public class MainPage extends AppCompatActivity
             fragmentTransaction.commit();
 
 
+        }else if (id == R.id.watch) {
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.mainPageContentContainer, new WatchListFragment());
+            fragmentTransaction.commit();
         } else if (id == R.id.logout) {
             SharedPreferences pref= new ObscuredSharedPreferences(this, this.getSharedPreferences("UserKey", 0));
             pref.edit().putBoolean("StayLoggedIn", false).apply();
@@ -257,7 +260,7 @@ public class MainPage extends AppCompatActivity
     }
 
     public void onMyRidesNewRideBttn(View view){
-        Intent intent = new Intent(MainPage.this, MapActivity.class);
+        Intent intent = new Intent(MainPage.this, MapPage.class);
         intent.putExtra("VIEWTYPE", "NEWOFFER");
         startActivity(intent);
     }

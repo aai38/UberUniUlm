@@ -9,8 +9,8 @@ import com.tomtom.online.sdk.map.BaseMarkerBalloon;
 import com.tomtom.online.sdk.map.Marker;
 
 import de.uni_ulm.uberuniulm.R;
-import de.uni_ulm.uberuniulm.model.ParkingSpot;
-import de.uni_ulm.uberuniulm.model.ParkingSpots;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpot;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpots;
 
 public class TypedBallonViewAdapter extends BaseBalloonViewAdapter<BaseMarkerBalloon> {
     /**

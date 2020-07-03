@@ -2,6 +2,9 @@ package de.uni_ulm.uberuniulm.model;
 
 import java.util.ArrayList;
 
+import de.uni_ulm.uberuniulm.model.ride.BookedRide;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+
 public class User {
     public ArrayList<BookedRide> getBookedRides() {
         return bookedRides;

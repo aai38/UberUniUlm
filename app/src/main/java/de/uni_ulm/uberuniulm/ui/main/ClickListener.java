@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.ui;
+package de.uni_ulm.uberuniulm.ui.main;
 
 import android.view.View;
 

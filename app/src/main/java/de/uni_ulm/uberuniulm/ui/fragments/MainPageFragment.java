@@ -1,6 +1,5 @@
-package de.uni_ulm.uberuniulm;
+package de.uni_ulm.uberuniulm.ui.fragments;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -8,16 +7,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,7 +33,6 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,27 +41,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.security.Permission;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import de.uni_ulm.uberuniulm.model.BookedRide;
-import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
-import de.uni_ulm.uberuniulm.model.OfferedRide;
-import de.uni_ulm.uberuniulm.model.ParkingSpots;
-import de.uni_ulm.uberuniulm.ui.ClickListener;
-import de.uni_ulm.uberuniulm.ui.OfferListAdapter;
-
-import static androidx.core.content.ContextCompat.getSystemService;
+import de.uni_ulm.uberuniulm.MapPage;
+import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.model.ride.BookedRide;
+import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpots;
+import de.uni_ulm.uberuniulm.model.ride.RideLoader;
+import de.uni_ulm.uberuniulm.ui.main.ClickListener;
+import de.uni_ulm.uberuniulm.ui.main.OfferListAdapter;
 
 
 public class MainPageFragment extends Fragment {
@@ -83,25 +71,25 @@ public class MainPageFragment extends Fragment {
     private ArrayList<LinearLayout> filterItems;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_main_page, container, false);
         LinearLayout mapFragment = fragmentView.findViewById(R.id.mainPageFragmentContainer);
         mapFragment.setVisibility(View.VISIBLE);
         SearchView departure = fragmentView.findViewById(R.id.searchViewDeparture);
         SearchView destination = fragmentView.findViewById(R.id.searchViewDestination);
-        ImageButton addFilterBttn= fragmentView.findViewById(R.id.addFilterBttn);
-        filterItems=new ArrayList<>();
+        ImageButton addFilterBttn = fragmentView.findViewById(R.id.addFilterBttn);
+        filterItems = new ArrayList<>();
 
         addFilterBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FrameLayout filterDialog=(FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
+                FrameLayout filterDialog = (FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
                 filterDialog.setVisibility(View.VISIBLE);
                 setUpFilterDialog();
             }
         });
 
-        ImageButton filterConfirmBttn= fragmentView.findViewById(R.id.addFilterConfirmBttn);
+        ImageButton filterConfirmBttn = fragmentView.findViewById(R.id.addFilterConfirmBttn);
         filterConfirmBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,16 +98,16 @@ public class MainPageFragment extends Fragment {
                 String[] filters = getResources().getStringArray(R.array.filters);
                 LinearLayout filterContainer = (LinearLayout) fragmentView.findViewById(R.id.filterOverview);
                 LinearLayout filterItem = null;
-                Boolean itemExists=false;
+                Boolean itemExists = false;
 
-                for(LinearLayout item: filterItems){
-                    if(item.getContentDescription().equals(String.valueOf(filterType))) {
+                for (LinearLayout item : filterItems) {
+                    if (item.getContentDescription().equals(String.valueOf(filterType))) {
                         filterItem = item;
-                        itemExists=true;
+                        itemExists = true;
                     }
                 }
 
-                if(!itemExists){
+                if (!itemExists) {
                     filterItem = (LinearLayout) inflater.inflate(R.layout.filter_overview_item, null, false);
                     filterItem.setContentDescription(filters[filterType]);
                 }
@@ -131,46 +119,46 @@ public class MainPageFragment extends Fragment {
                     String offerorName = usernameTextField.getText().toString();
                     adapter.setUsernameFilter(offerorName);
                     filterItemText.setText(filters[filterType] + ": " + offerorName);
-                }else if(filters[filterType].equals("Date")){
-                    EditText dateTextField= (EditText) fragmentView.findViewById(R.id.addFilterDateTextField);
-                    EditText timeTextField= (EditText) fragmentView.findViewById(R.id.addFilterTimeTextField);
-                    String date=dateTextField.getText().toString();
-                    String time= timeTextField.getText().toString();
+                } else if (filters[filterType].equals("Date")) {
+                    EditText dateTextField = (EditText) fragmentView.findViewById(R.id.addFilterDateTextField);
+                    EditText timeTextField = (EditText) fragmentView.findViewById(R.id.addFilterTimeTextField);
+                    String date = dateTextField.getText().toString();
+                    String time = timeTextField.getText().toString();
                     adapter.setDateFilter(date, time);
-                    filterItemText.setText(filters[filterType] + ": " + date+ " "+ time);
-                }else{
+                    filterItemText.setText(filters[filterType] + ": " + date + " " + time);
+                } else {
                     Spinner filterContentSpinner = fragmentView.findViewById(R.id.addFilterContentSpinner);
                     int filterContent = filterContentSpinner.getSelectedItemPosition();
                     adapter.setFilter(filterType, filterContent);
-                    String filterName=filters[filterType];
-                    if(!filters[filterType].equals("Hide booked up rides")) {
+                    String filterName = filters[filterType];
+                    if (!filters[filterType].equals("Hide booked up rides")) {
                         filterItemText.setText(filters[filterType] + ": " + fragmentView.getResources().getStringArray(getResId(filterName, R.array.class))[filterContent]);
-                    }else{
+                    } else {
                         filterItemText.setText(filters[filterType]);
                     }
                 }
 
-                ImageButton filterItemCloseButton= (ImageButton) filterItem.findViewById(R.id.filterItemCloseBttn);
+                ImageButton filterItemCloseButton = (ImageButton) filterItem.findViewById(R.id.filterItemCloseBttn);
 
                 LinearLayout finalFilterItem = filterItem;
                 filterItemCloseButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        for(LinearLayout item: filterItems){
-                            if(item.getContentDescription().equals(filters[filterType])) {
+                        for (LinearLayout item : filterItems) {
+                            if (item.getContentDescription().equals(filters[filterType])) {
                                 filterItems.remove(item);
                             }
                         }
-                        int filterType= Integer.parseInt(finalFilterItem.getContentDescription().toString());
-                        filterContainer.removeView((ViewGroup)view.getParent());
+                        int filterType = Integer.parseInt(finalFilterItem.getContentDescription().toString());
+                        filterContainer.removeView((ViewGroup) view.getParent());
                         adapter.deleteFilter(filterType);
                     }
                 });
 
-                FrameLayout filterDialog=(FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
+                FrameLayout filterDialog = (FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
                 filterDialog.setVisibility(View.INVISIBLE);
 
-                if(!itemExists){
+                if (!itemExists) {
                     filterItem.setContentDescription(String.valueOf(filterType));
                     filterContainer.addView(filterItem);
                     filterItems.add(filterItem);
@@ -180,11 +168,11 @@ public class MainPageFragment extends Fragment {
         });
 
 
-        ImageButton filterCancelBttn= fragmentView.findViewById(R.id.addFilterCancelBttn);
+        ImageButton filterCancelBttn = fragmentView.findViewById(R.id.addFilterCancelBttn);
         filterCancelBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FrameLayout filterDialog=(FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
+                FrameLayout filterDialog = (FrameLayout) fragmentView.findViewById(R.id.addFilterDialog);
                 filterDialog.setVisibility(View.INVISIBLE);
             }
         });
@@ -229,96 +217,22 @@ public class MainPageFragment extends Fragment {
                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         userId = pref.getString("UserKey", "");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        int ridesTotal = pref.getInt("RideId", 0);
+        RideLoader rideLoader= new RideLoader(getContext());
+        rideLoader.getOfferedRides(this);
 
-        myRef = database.getReference();
+        return fragmentView;
+    }
 
+    public void updateOffers(ArrayList<Pair<ArrayList, OfferedRide>> rides){
+        offeredRides= rides;
+        if(adapter!=null){
+            adapter.notifyDataSetChanged();
+        }else{
+            setOfferAdapter();
+        }
+    }
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot user: dataSnapshot.getChildren()) {
-                    DataSnapshot usersOfferedRides= user.child("offeredRides");
-                    Long rating= (Long) user.child("rating").getValue();
-                    ArrayList userData = new ArrayList();
-                    userData.add(user.getKey());
-                    userData.add(user.child("username").getValue());
-                    for (DataSnapshot ride : usersOfferedRides.getChildren()) {
-                        HashMap<String, Object> values = new HashMap<>();
-                        values.put("snapKey", dataSnapshot.getKey());
-                        for (DataSnapshot rideValue : ride.getChildren()) {
-                            values.put(rideValue.getKey(), rideValue.getValue());
-                        }
-
-                        if(values.size()==0) {
-                            Log.i("onDataChange", "no values");
-                        } else {
-                            List<LatLng> coordinates=new ArrayList<>();
-                            try {
-                                List<HashMap> coordinatesHash = (List<HashMap>) values.get("route");
-                                for(HashMap coordinate : coordinatesHash){
-                                    LatLng coord=new LatLng((Double)coordinate.get("latitude"), (Double) coordinate.get("longitude"));
-                                    coordinates.add(coord);
-                                }
-                            }catch(ClassCastException e){
-                                coordinates= new ArrayList<>();
-                            }
-
-                            List<LatLng> waypoints=new ArrayList<>();
-                            try {
-                                List<HashMap> waypointsHash = (List<HashMap>) values.get("waypoints");
-                                if(waypointsHash!=null) {
-                                    for (HashMap waypoint : waypointsHash) {
-                                        LatLng coord = new LatLng((Double) waypoint.get("latitude"), (Double) waypoint.get("longitude"));
-                                        waypoints.add(coord);
-                                    }
-                                }
-                            }catch(ClassCastException e){
-                                waypoints= new ArrayList<>();
-                            }
-
-                            String date =  values.get("date").toString();
-                            String time= values.get("time").toString();
-                            String userkey = values.get("userId").toString();
-                            long zIndex= (long) values.get("zIndex");
-                            long price= (long) (values.get("price"));
-                            long places= (long)values.get("places");
-                            long places_open = (long) values.get("places_open");
-
-                            List<String> observers=new ArrayList<>();
-                            try {
-                                List<String> observersHash = (List<String>) values.get("observers");
-                                if(observersHash!=null) {
-                                    for (String observer : observersHash) {
-                                        observers.add(observer);
-                                    }
-                                }
-                            }catch(ClassCastException e){
-                                e.printStackTrace();
-                                observers= new ArrayList<>();
-                            }
-
-
-                            String departure = values.get("departure").toString();
-                            String destination = values.get("destination").toString();
-
-                            offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int)places, (int)places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
-                            userData.add((float) rating);
-                            offeredRides.add(new Pair(userData, offeredRide));
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-        });
-
+    private void setOfferAdapter(){
         adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {
             @Override
             public void onPositionClicked(int position) {
@@ -360,7 +274,7 @@ public class MainPageFragment extends Fragment {
 
             @Override
             public void onOfferClicked(int position) {
-                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                 Pair clickedRidePair = offeredRides.get(position);
                 OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
                 intent.putExtra("USER", (ArrayList) clickedRidePair.first);
@@ -398,7 +312,7 @@ public class MainPageFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int pos) {
                         if(pos==0){
-                            Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
+                            Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                             Pair clickedRidePair = offeredRides.get(pos);
                             OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
                             intent.putExtra("USER", (ArrayList) clickedRidePair.first);
@@ -455,8 +369,6 @@ public class MainPageFragment extends Fragment {
         });
         
         offerRecyclerView.setAdapter(adapter);
-
-        return fragmentView;
     }
 
     private void setUpFilterDialog() {

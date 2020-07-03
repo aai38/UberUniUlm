@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.ui;
+package de.uni_ulm.uberuniulm.ui.fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,14 +13,11 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,15 +29,15 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
-import de.uni_ulm.uberuniulm.MapActivity;
+import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
-import de.uni_ulm.uberuniulm.model.BookedRide;
-import de.uni_ulm.uberuniulm.model.ObscuredSharedPreferences;
-import de.uni_ulm.uberuniulm.model.OfferedRide;
+import de.uni_ulm.uberuniulm.model.ride.BookedRide;
+import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 
 public class RideOverviewHeaderFragment extends Fragment {
     public View fragmentView;
-    private MapActivity mapActivity;
+    private MapPage mapPage;
     private TextView userNameText, startGoalText, dateText, carInfoText, priceText;
     private ImageView closeBttn;
     private ImageButton bookBttn, markBttn;
@@ -49,7 +46,7 @@ public class RideOverviewHeaderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_ride_overview, container, false);
-        mapActivity = (MapActivity) getActivity();
+        mapPage = (MapPage) getActivity();
 
         userNameText= fragmentView.findViewById(R.id.rideOverviewUserNameText);
         startGoalText= fragmentView.findViewById(R.id.rideOfferStartGoalText);
@@ -65,11 +62,11 @@ public class RideOverviewHeaderFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mapActivity.closeMapView();
+                        mapPage.closeMapView();
                     }
                 });
 
-        Pair<ArrayList, OfferedRide> rideData=mapActivity.getRideData();
+        Pair<ArrayList, OfferedRide> rideData= mapPage.getRideData();
         ArrayList userData=rideData.first;
         OfferedRide ride=rideData.second;
 
@@ -85,9 +82,9 @@ public class RideOverviewHeaderFragment extends Fragment {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
-                            intent.putExtra("USER", mapActivity.getRideData().first);
-                            intent.putExtra("RIDE", mapActivity.getRideData().second);
+                            Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
+                            intent.putExtra("USER", mapPage.getRideData().first);
+                            intent.putExtra("RIDE", mapPage.getRideData().second);
                             intent.putExtra("VIEWTYPE", "EDITOFFER");
                             startActivity(intent);
                         }
@@ -144,10 +141,10 @@ public class RideOverviewHeaderFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     if(ride.getObservers().contains(userId)){
-                        mapActivity.markRide(false);
+                        mapPage.markRide(false);
                         markBttn.setImageResource(R.drawable.ic_mark_offer_deselected);
                     }else{
-                        mapActivity.markRide(true);
+                        mapPage.markRide(true);
                         markBttn.setImageResource(R.drawable.ic_mark_offer);
                     }
                 }

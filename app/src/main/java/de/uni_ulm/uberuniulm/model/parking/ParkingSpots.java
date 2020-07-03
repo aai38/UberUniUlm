@@ -1,10 +1,10 @@
-package de.uni_ulm.uberuniulm.model;
-
-import android.util.Pair;
+package de.uni_ulm.uberuniulm.model.parking;
 
 import com.tomtom.online.sdk.common.location.LatLng;
 
 import java.util.ArrayList;
+
+import de.uni_ulm.uberuniulm.model.parking.ParkingSpot;
 
 public class ParkingSpots {
     ArrayList<ParkingSpot> parkingSpots;

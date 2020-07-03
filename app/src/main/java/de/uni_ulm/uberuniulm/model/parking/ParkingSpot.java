@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.model;
+package de.uni_ulm.uberuniulm.model.parking;
 
 import com.tomtom.online.sdk.common.location.LatLng;
 

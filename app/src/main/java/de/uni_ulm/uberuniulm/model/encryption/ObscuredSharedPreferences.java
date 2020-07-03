@@ -1,8 +1,7 @@
-package de.uni_ulm.uberuniulm.model;
+package de.uni_ulm.uberuniulm.model.encryption;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.provider.Settings;
-import android.provider.Settings.Secure;
 import android.util.Log;
 
 import java.io.UnsupportedEncodingException;

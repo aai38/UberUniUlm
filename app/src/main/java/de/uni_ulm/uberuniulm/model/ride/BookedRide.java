@@ -1,4 +1,4 @@
-package de.uni_ulm.uberuniulm.model;
+package de.uni_ulm.uberuniulm.model.ride;
 
 import java.sql.Date;
 import java.sql.Time;

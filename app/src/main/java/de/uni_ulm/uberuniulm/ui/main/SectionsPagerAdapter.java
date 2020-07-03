@@ -6,8 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import de.uni_ulm.uberuniulm.MainPageFragment;
-import de.uni_ulm.uberuniulm.ParkingFragment;
+import de.uni_ulm.uberuniulm.ui.fragments.MainPageFragment;
+import de.uni_ulm.uberuniulm.ui.fragments.ParkingFragment;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to

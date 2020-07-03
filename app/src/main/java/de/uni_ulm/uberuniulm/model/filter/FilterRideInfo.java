@@ -1,9 +1,6 @@
 package de.uni_ulm.uberuniulm.model.filter;
 
-import android.util.Log;
 import android.util.Pair;
-
-import org.joda.time.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import de.uni_ulm.uberuniulm.model.OfferedRide;
+import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 
 public class FilterRideInfo {
     public FilterRideInfo(){

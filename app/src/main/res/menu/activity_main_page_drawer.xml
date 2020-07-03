@@ -17,6 +17,9 @@
             android:title="Booked Rides"
             android:id="@+id/booked"/>
         <item
+            android:title="Watch list"
+            android:id="@+id/watch"/>
+        <item
             android:title="Ratings"
             android:id="@+id/ratings"/>
     </group>
