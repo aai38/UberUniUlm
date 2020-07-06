@@ -17,6 +17,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -170,7 +172,15 @@ public class ProfileFragment extends Fragment {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference profileImageRef = storageRef.child("profile_images/"+userId+".jpg");
-        profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        Glide.with(getContext())
+                .load(profileImageRef)
+                .centerCrop()
+                .skipMemoryCache(true) //2
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .placeholder(R.drawable.start_register_profile_photo)
+                .thumbnail(/*sizeMultiplier=*/ 0.25f)
+                .into(imageView);
+        /*profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -181,7 +191,7 @@ public class ProfileFragment extends Fragment {
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getContext(), "can not load image", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
 
         return fragmentView;

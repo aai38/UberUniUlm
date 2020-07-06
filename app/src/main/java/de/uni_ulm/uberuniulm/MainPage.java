@@ -15,6 +15,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
@@ -130,7 +134,15 @@ public class MainPage extends AppCompatActivity
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference profileImageRef = storageRef.child("profile_images/"+userId+".jpg");
-        profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        Glide.with(this)
+                .load(profileImageRef)
+                .centerCrop()
+                .skipMemoryCache(true) //2
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .placeholder(R.drawable.start_register_profile_photo)
+                .transform(new CircleCrop())
+                .into(drawerImage);
+        /*profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -141,7 +153,7 @@ public class MainPage extends AppCompatActivity
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(MainPage.this, "can not load image", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference().child(userId);

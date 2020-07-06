@@ -20,6 +20,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -165,13 +167,22 @@ public class RideOverviewHeaderFragment extends Fragment {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference profileImageRef = storageRef.child("profile_images/"+userData.get(0)+".jpg");
+        ImageView image = (ImageView) profilePhoto;
+        Glide.with(getContext())
+                .load(profileImageRef)
+                .centerCrop()
+                .skipMemoryCache(true) //2
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .placeholder(R.drawable.start_register_profile_photo)
+                .thumbnail(/*sizeMultiplier=*/ 0.25f)
+                .into(profilePhoto);
 
-        final long ONE_MEGABYTE = 1024 * 1024;
+        /*final long ONE_MEGABYTE = 1024 * 1024;
         profileImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                ImageView image = (ImageView) profilePhoto;
+
                 image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
                         image.getHeight(), false));
             }
@@ -179,7 +190,7 @@ public class RideOverviewHeaderFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Exception exception) {
             }
-        });
+        });*/
 
 
         return fragmentView;

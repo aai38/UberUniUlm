@@ -18,6 +18,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -63,13 +66,22 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference profileImageRef = storageRef.child("profile_images/"+userID+".jpg");
+        ImageView image = (ImageView) viewHolder.picture;
+        Glide.with(mContext)
+                .load(profileImageRef)
+                .centerCrop()
+                .skipMemoryCache(true) //2
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .thumbnail(/*sizeMultiplier=*/ 0.25f)
+                .placeholder(R.drawable.start_register_profile_photo)
+                .into( image);
 
-        final long ONE_MEGABYTE = 1024 * 1024;
+        /*final long ONE_MEGABYTE = 1024 * 1024;
         profileImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                ImageView image = (ImageView) viewHolder.picture;
+
                 if(image.getWidth()>0&& image.getHeight()>0) {
                     image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
                             image.getHeight(), false));
@@ -79,7 +91,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             @Override
             public void onFailure(@NonNull Exception exception) {
             }
-        });
+        });*/
         OfferedRide offeredRide = dataSet.get(position).second;
 
         SharedPreferences pref = new ObscuredSharedPreferences(mContext, mContext.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
