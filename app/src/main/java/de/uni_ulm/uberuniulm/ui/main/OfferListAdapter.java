@@ -30,6 +30,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.model.Rating;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 import de.uni_ulm.uberuniulm.model.filter.Filters;
@@ -62,7 +63,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
 
 
         String userID=(String) dataSet.get(position).first.get(0);
-        Float rating= (Float) dataSet.get(position).first.get(2);
+        Rating rating= (Rating) dataSet.get(position).first.get(2);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference profileImageRef = storageRef.child("profile_images/"+userID+".jpg");
@@ -119,10 +120,10 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
         viewHolder.txtTime.setText(offeredRide.getTime().toString());
         viewHolder.txtPrice.setText(offeredRide.getPrice() + "€");
         viewHolder.txtPlaces.setText((offeredRide.getPlaces() - offeredRide.getPlaces_open()) + "/" + offeredRide.getPlaces());
-        if(rating<=0){
+        if(rating.getStars()<=0){
             viewHolder.rating.setRating(0);
         }else{
-            viewHolder.rating.setRating(rating);
+            viewHolder.rating.setRating(rating.getStars());
         }
 
     }

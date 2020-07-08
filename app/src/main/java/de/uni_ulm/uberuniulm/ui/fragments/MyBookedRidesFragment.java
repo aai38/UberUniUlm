@@ -1,6 +1,8 @@
 package de.uni_ulm.uberuniulm.ui.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +11,8 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,7 +23,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +55,7 @@ public class MyBookedRidesFragment extends Fragment {
     private FirebaseAuth mAuth;
     private long zIndexBooking;
     private String userIdBooking;
+    private RatingBar ratingBar;
     FirebaseDatabase database;
     SharedPreferences pref;
     String userId;
@@ -59,6 +68,9 @@ public class MyBookedRidesFragment extends Fragment {
         mybookingsRecyclerView = (RecyclerView) fragmentView.findViewById(R.id.recyclerViewMyBookings);
         mybookingsRecyclerView.setHasFixedSize(true);
         mybookingsRecyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
+
+
+
 
         database = FirebaseDatabase.getInstance();
 
@@ -75,6 +87,58 @@ public class MyBookedRidesFragment extends Fragment {
 
         RideLoader rideLoader= new RideLoader(getContext());
         rideLoader.getBookedRides(this);
+
+        for(int i = 0; i<bookedRides.size(); i++) {
+            final int hold = i;
+            Date date1= null;
+            try {
+                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(bookedRides.get(i).second.getDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if(date1.compareTo(Calendar.getInstance().getTime()) > 0) {
+                final RatingBar ratingBar = new RatingBar(getContext());
+                final EditText editText = new EditText(getContext());
+                editText.setHint("Write your comment here");
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                alert.setMessage("You want to rate this ride?");
+                alert.setTitle("Rating");
+                alert.setView(ratingBar);
+                alert.setView(editText);
+
+
+
+                alert.setPositiveButton("Rate", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference();
+                        rideLoader.setRatedValue(true, hold);
+                        //myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
+
+
+                    }
+                });
+                alert.setNeutralButton("Rate later", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        rideLoader.setRatedValue(false, hold);
+                    }
+                });
+
+                alert.setNegativeButton("Never Rate", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // what ever you want to do with No option.
+                        rideLoader.setRatedValue(true, hold);
+                    }
+                });
+
+                alert.show();
+            }
+        }
+
         return fragmentView;
     }
 

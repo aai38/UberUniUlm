@@ -58,11 +58,11 @@ public class User {
         this.offeredRides = offeredRides;
     }
 
-    public float getRating() {
+    public Rating getRating() {
         return rating;
     }
 
-    public void setRating(float rating) {
+    public void setRating(Rating rating) {
         this.rating = rating;
     }
 
@@ -101,12 +101,12 @@ public class User {
 
 
     private ArrayList<Message> messages;
-    private float rating;
+    private Rating rating;
     //private Settings setting;
     private String username;
 
 
-    public User(ArrayList<BookedRide> bookedRides, String email, String gender,  ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, float rating, String username) {
+    public User(ArrayList<BookedRide> bookedRides, String email, String gender,  ArrayList<OfferedRide> offeredRides, ArrayList<Message> messages, Rating rating, String username) {
         this.bookedRides = bookedRides;
         this.email = email;
         this.gender = gender;

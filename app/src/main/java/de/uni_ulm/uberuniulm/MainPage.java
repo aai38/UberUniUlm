@@ -156,26 +156,16 @@ public class MainPage extends AppCompatActivity
         });*/
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myRef = database.getReference().child(userId);
+        myRef = database.getReference();
         ArrayList values = new ArrayList();
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
 
-                    values.add(childSnapshot.getValue());
-                }
-                if(values.size() == 5) {
-                    drawerText.setText(values.get(4).toString());
-                } else if (values.size() == 6) {
-                    drawerText.setText(values.get(5).toString());
-                } else if (values.size() == 7){
-                    drawerText.setText(values.get(6).toString());
-                }else if (values.size() == 4){
-                    drawerText.setText(values.get(3).toString());
-                } else {
-                    drawerText.setText(values.get(7).toString());
-                }
+
+                String username = dataSnapshot.child(userId).child("username").getValue().toString();
+                drawerText.setText(username);
+
 
 
             }

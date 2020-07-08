@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         MainPage.setFragment(ProfileFragment.this);
         ArrayList<Object> values = new ArrayList<>();
-        myRef = database.getReference().child(userId);
+        myRef = database.getReference();
 
         email = fragmentView.findViewById(R.id.profileEmail);
         username = fragmentView.findViewById(R.id.username);
@@ -143,22 +143,10 @@ public class ProfileFragment extends Fragment {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-
-                    values.add(childSnapshot.getValue());
-                }
-                if(values.size() == 5) {
-                    username.setText(values.get(4).toString());
-                } else if (values.size() == 6) {
-                    username.setText(values.get(5).toString());
-                } else if (values.size() == 7){
-                    username.setText(values.get(6).toString());
-                }else if (values.size() == 4){
-                    username.setText(values.get(3).toString());
-                } else {
-                    username.setText(values.get(7).toString());
-                }
-                email.setText(values.get(0).toString());
+                String usernameString = dataSnapshot.child(userId).child("username").getValue().toString();
+                String emailString = dataSnapshot.child(userId).child("email").getValue().toString();
+                email.setText(emailString);
+                username.setText(usernameString);
 
             }
                 @Override

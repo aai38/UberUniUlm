@@ -25,6 +25,16 @@ public class BookedRide {
 
     private int zIndex;
 
+    public boolean isRated() {
+        return isRated;
+    }
+
+    public void setRated(boolean rated) {
+        isRated = rated;
+    }
+
+    private boolean isRated;
+
     public BookedRide(String userKey, int zIndex) {
         this.userKey = userKey;
         this.zIndex = zIndex;

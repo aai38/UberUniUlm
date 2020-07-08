@@ -141,21 +141,56 @@ public class StartPage  extends AppCompatActivity {
         Editable username= ((EditText) findViewById(R.id.name)).getText();
         Editable password= ((EditText) findViewById(R.id.username)).getText();
 
-        if(tryLogin(username.toString(), password.toString())){
-            if(loggedInCheckBox.isChecked()){
-                pref.edit().putBoolean("StayLoggedIn", true).apply();
-                pref.edit().putString("UserName", username.toString()).apply();
-                pref.edit().putString("UserPassword", password.toString()).apply();
-            }else{
-                pref.edit().putBoolean("StayLoggedIn", false).apply();
-            }
-            Intent intent = new Intent(StartPage.this, MainPage.class);
-            startActivity(intent);
-        } else {
-           /* Log.d("TAG", "signInWithEmail:failure");
-            Toast.makeText(StartPage.this, "Authentication failed.",
-                    Toast.LENGTH_SHORT).show();*/
-        }
+        mAuth.signInWithEmailAndPassword(username.toString(), password.toString())
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        updateUI(user);
+                        logInSuccessful = true;
+                        final String[] userkey = new String[1];
+
+                        ValueEventListener valueEventListener = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for(DataSnapshot child: dataSnapshot.getChildren()){
+                                    if(child.child("email").getValue().equals(username)) {
+                                        userkey[0] = child.getKey();
+                                        editor.putString("UserKey", userkey[0]);
+                                        editor.putInt("RideId", (int) child.child("offeredRides").getChildrenCount());
+                                        editor.apply();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.i("SHAREDPREFERROR", "Could not load userkey");
+                            }
+                        };
+
+                        Query userkeyQuery= FirebaseDatabase.getInstance().getReference().orderByChild("email").equalTo(username.toString());
+                        userkeyQuery.addListenerForSingleValueEvent(valueEventListener);
+
+                        if(loggedInCheckBox.isChecked()){
+                            pref.edit().putBoolean("StayLoggedIn", true).apply();
+                            pref.edit().putString("UserName", username.toString()).apply();
+                            pref.edit().putString("UserPassword", password.toString()).apply();
+                        }else{
+                            pref.edit().putBoolean("StayLoggedIn", false).apply();
+                        }
+                        Intent intent = new Intent(StartPage.this, MainPage.class);
+                        startActivity(intent);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("TAG", "signInWithEmail:failure", task.getException());
+                        Toast.makeText(StartPage.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                        updateUI(null);
+                        logInSuccessful = false;
+                    }
+                });
+
     }
 
     public void onStartActivityLoginRegisterBttn(View v){
@@ -321,56 +356,6 @@ public class StartPage  extends AppCompatActivity {
     }
 
     public void onStartActivityRegisterBttn(View v){
-        if(checkRegistration()){
-            Intent intent = new Intent(StartPage.this, MainPage.class);
-            startActivity(intent);
-        }
-    }
-
-    private Boolean tryLogin(String username, String password){
-        mAuth.signInWithEmailAndPassword(username, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        updateUI(user);
-                        logInSuccessful = true;
-                        final String[] userkey = new String[1];
-
-                        ValueEventListener valueEventListener = new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for(DataSnapshot child: dataSnapshot.getChildren()){
-                                    if(child.child("email").getValue().equals(username)) {
-                                        userkey[0] = child.getKey();
-                                        editor.putString("UserKey", userkey[0]);
-                                        editor.putInt("RideId", (int) child.child("offeredRides").getChildrenCount());
-                                        editor.apply();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Log.i("SHAREDPREFERROR", "Could not load userkey");
-                            }
-                        };
-
-                        Query userkeyQuery= FirebaseDatabase.getInstance().getReference().orderByChild("email").equalTo(username);
-                        userkeyQuery.addListenerForSingleValueEvent(valueEventListener);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("TAG", "signInWithEmail:failure", task.getException());
-                        Toast.makeText(StartPage.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
-                        updateUI(null);
-                        logInSuccessful = false;
-                    }
-                });
-        return logInSuccessful;
-    }
-
-    private Boolean checkRegistration(){
         Editable username= ((EditText) findViewById(R.id.startActivityRegisterNameTextInput)).getText();
         Editable mailAdress= ((EditText) findViewById(R.id.startActivityRegisterMailTextInput)).getText();
         Editable password= ((EditText) findViewById(R.id.startActivityRegisterPasswordTextInput)).getText();
@@ -382,13 +367,12 @@ public class StartPage  extends AppCompatActivity {
                             Log.d("TAG", "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
-                            isValid = true;
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference();
 
                             ArrayList offeredRide = new ArrayList<OfferedRide>();
                             ArrayList bookedRide = new ArrayList<BookedRide>();
-                            User exampleUser = new User(bookedRide, mailAdress.toString(), gender.toString(),  offeredRide, null, -1, username.toString());
+                            User exampleUser = new User(bookedRide, mailAdress.toString(), gender.toString(),  offeredRide, null, null, username.toString());
                             //myRef.push().setValue(exampleUser);
                             //String key = myRef.getKey();
 
@@ -403,6 +387,8 @@ public class StartPage  extends AppCompatActivity {
                             editor.putString("UserKey", key);
                             editor.putInt("RideId", 0);
                             editor.apply();
+                            Intent intent = new Intent(StartPage.this, MainPage.class);
+                            startActivity(intent);
 
                         } else {
                             TextView passwordHintText= (TextView) findViewById(R.id.startActivityRegisterPasswordInstruction);
@@ -411,15 +397,15 @@ public class StartPage  extends AppCompatActivity {
                             Toast.makeText(StartPage.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
-                            isValid = false;
+
                         }
                     }
                 });
 
 
-
-        return isValid;
     }
+
+
 
     private Boolean uploadProfilePhoto(String userKey){
         FirebaseStorage storage = FirebaseStorage.getInstance();

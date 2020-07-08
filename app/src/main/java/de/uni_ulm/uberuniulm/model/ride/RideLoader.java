@@ -33,6 +33,7 @@ public class RideLoader {
     private ArrayList<OfferedRide> offers;
     private DataSnapshot dataSnapshot;
     private ParseType parseType;
+    private ArrayList bookings = new ArrayList();
 
     private String userId;
 
@@ -81,7 +82,7 @@ public class RideLoader {
     }
 
     public void getBookedRides(MyBookedRidesFragment bookFrag){
-        ArrayList<BookedRide> bookings= new ArrayList<>();
+        bookings= new ArrayList<>();
         parseType=ParseType.BOOKEDRIDES;
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -194,6 +195,12 @@ public class RideLoader {
         });
 
         return ridesParsed;
+    }
+
+    public void setRatedValue(boolean isRated, int position) {
+        BookedRide ratedRide = (BookedRide) bookings.get(position);
+        ratedRide.setRated(isRated);
+        myRef.child(userId).child("obookedRides").child(String.valueOf(position)).setValue(ratedRide);
     }
 
     private void parseData(ArrayList userData, HashMap<String, Object> values){
