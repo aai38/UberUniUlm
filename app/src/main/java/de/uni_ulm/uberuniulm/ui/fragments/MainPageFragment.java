@@ -84,6 +84,9 @@ public class MainPageFragment extends Fragment {
         ImageButton addFilterBttn = fragmentView.findViewById(R.id.addFilterBttn);
         filterItems = new ArrayList<>();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+
         addFilterBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -265,8 +268,6 @@ public class MainPageFragment extends Fragment {
                                             Date date= Calendar.getInstance().getTime();
                                             SimpleDateFormat formatter= new SimpleDateFormat("dd/MM/yyyy");
 
-                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                            DatabaseReference myRef = database.getReference();
                                             myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).setValue(formatter.format(date));
                                             BookedRide bookedRide = new BookedRide(clickedRide.getUserId(), clickedRide.getzIndex());
                                             final SharedPreferences pref = new ObscuredSharedPreferences(
