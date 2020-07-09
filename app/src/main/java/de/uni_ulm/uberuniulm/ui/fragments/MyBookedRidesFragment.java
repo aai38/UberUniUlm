@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -33,10 +34,13 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.uni_ulm.uberuniulm.MapPage;
+import de.uni_ulm.uberuniulm.model.Rating;
 import de.uni_ulm.uberuniulm.model.ride.BookedRide;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
@@ -51,10 +55,12 @@ public class MyBookedRidesFragment extends Fragment {
     private static OfferListAdapter adapter;
     private DatabaseReference myRef;
     ArrayList<Pair<ArrayList, OfferedRide>> bookedRides;
+    private FragmentTransaction fragmentTransaction;
     ArrayList<BookedRide> bookedRidesData = new ArrayList<>();
     private FirebaseAuth mAuth;
     private long zIndexBooking;
     private String userIdBooking;
+    private RideLoader rideLoader;
     private RatingBar ratingBar;
     FirebaseDatabase database;
     SharedPreferences pref;
@@ -63,12 +69,12 @@ public class MyBookedRidesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         fragmentView = inflater.inflate(R.layout.fragment_bookings, container, false);
 
         mybookingsRecyclerView = (RecyclerView) fragmentView.findViewById(R.id.recyclerViewMyBookings);
         mybookingsRecyclerView.setHasFixedSize(true);
         mybookingsRecyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
-
 
 
 
@@ -85,59 +91,10 @@ public class MyBookedRidesFragment extends Fragment {
         bookedRides = new ArrayList();
 
 
-        RideLoader rideLoader= new RideLoader(getContext());
+        rideLoader= new RideLoader(getContext());
         rideLoader.getBookedRides(this);
 
-        for(int i = 0; i<bookedRides.size(); i++) {
-            final int hold = i;
-            Date date1= null;
-            try {
-                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(bookedRides.get(i).second.getDate());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if(date1.compareTo(Calendar.getInstance().getTime()) > 0) {
-                final RatingBar ratingBar = new RatingBar(getContext());
-                final EditText editText = new EditText(getContext());
-                editText.setHint("Write your comment here");
 
-                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
-
-                alert.setMessage("You want to rate this ride?");
-                alert.setTitle("Rating");
-                alert.setView(ratingBar);
-                alert.setView(editText);
-
-
-
-                alert.setPositiveButton("Rate", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference myRef = database.getReference();
-                        rideLoader.setRatedValue(true, hold);
-                        //myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
-
-
-                    }
-                });
-                alert.setNeutralButton("Rate later", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        rideLoader.setRatedValue(false, hold);
-                    }
-                });
-
-                alert.setNegativeButton("Never Rate", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // what ever you want to do with No option.
-                        rideLoader.setRatedValue(true, hold);
-                    }
-                });
-
-                alert.show();
-            }
-        }
 
         return fragmentView;
     }
@@ -201,4 +158,64 @@ public class MyBookedRidesFragment extends Fragment {
         });
         mybookingsRecyclerView.setAdapter(adapter);
     }
+    public void lookForRating(ArrayList<Pair<ArrayList, OfferedRide>> bookedRides, ArrayList<BookedRide> bookedRide) {
+
+        Log.e("sizeinmethod",""+ bookedRides.size());
+        for(int i = 0; i<bookedRides.size(); i++) {
+            final int hold = i;
+            Date date1= null;
+            try {
+                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(bookedRides.get(i).second.getDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Log.e("date1", date1.toString());
+            Log.e("date2", Calendar.getInstance().getTime().toString());
+            if(date1.compareTo(Calendar.getInstance().getTime()) < 0 && !bookedRide.get(i).isRated()) {
+                Log.e("time is less", "");
+                final RatingBar ratingBar = new RatingBar(getContext());
+                final EditText editText = new EditText(getContext());
+                editText.setHint("Write your comment here");
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                alert.setMessage("You want to rate this ride?");
+                alert.setTitle("Rating");
+                alert.setView(ratingBar);
+                alert.setView(editText);
+
+
+
+                alert.setPositiveButton("Rate", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference();
+                        rideLoader.setRatedValue(true, hold);
+                        Rating rating = new Rating (ratingBar.getNumStars(), editText.getText().toString());
+                        myRef.child(userId).child("Rating").setValue(rating);
+
+
+                    }
+                });
+                alert.setNeutralButton("Rate later", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        rideLoader.setRatedValue(false, hold);
+                    }
+                });
+
+                alert.setNegativeButton("Never Rate", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // what ever you want to do with No option.
+                        rideLoader.setRatedValue(true, hold);
+                    }
+                });
+
+                alert.show();
+            }
+        }
+    }
+
+
 }

@@ -175,7 +175,6 @@ public class MainPage extends AppCompatActivity
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
-        ArrayList values = new ArrayList();
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -247,8 +246,10 @@ public class MainPage extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.booked) {
             fragmentTransaction = fragmentManager.beginTransaction();
+
             fragmentTransaction.replace(R.id.mainPageContentContainer, new MyBookedRidesFragment());
             fragmentTransaction.commit();
+
         } else if (id == R.id.offers) {
 
             fragmentTransaction = fragmentManager.beginTransaction();

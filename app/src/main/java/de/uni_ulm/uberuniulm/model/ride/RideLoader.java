@@ -84,19 +84,22 @@ public class RideLoader {
     public void getBookedRides(MyBookedRidesFragment bookFrag){
         bookings= new ArrayList<>();
         parseType=ParseType.BOOKEDRIDES;
-
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        boolean rate = false;
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HashMap<String, Object> valuesBookings = new HashMap<>();
                 for (DataSnapshot ride : dataSnapshot.child(userId).child("obookedRides").getChildren()) {
                     String userIdBooking = ride.child("userKey").getValue().toString();
                     long zIndexBooking= (long) ride.child("zIndex").getValue();
+                    boolean rated = (boolean) ride.child("rated").getValue();
+
 
                     if (userIdBooking==null ) {
                         Log.e("onDataChange", "no booked rides found");
                     } else {
                         BookedRide bookedRide = new BookedRide(userIdBooking, (int) zIndexBooking);
+                        bookedRide.setRated(rated);
                         valuesBookings.put(userIdBooking, (int) zIndexBooking);
                         bookings.add(bookedRide);
                         Log.i("bookedRidesData", bookings.toString());
@@ -124,6 +127,7 @@ public class RideLoader {
                     }
 
                 bookFrag.updateOffers(ridesParsed);
+                bookFrag.lookForRating(ridesParsed, bookings);
             }
 
             @Override
@@ -131,6 +135,7 @@ public class RideLoader {
 
             }
         });
+
     }
 
     public ArrayList<Pair<ArrayList, OfferedRide>> getWatchedRides(WatchListFragment watchFrag){

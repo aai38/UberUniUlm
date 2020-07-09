@@ -271,11 +271,11 @@ public class MainPageFragment extends Fragment {
                                             BookedRide bookedRide = new BookedRide(clickedRide.getUserId(), clickedRide.getzIndex());
                                             final SharedPreferences pref = new ObscuredSharedPreferences(
                                                     fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
-                                            int zIndex = pref.getInt("BookedRideId", 0);
+                                            int obookedRideId = pref.getInt("obookedRideId", 0);
 
-                                            myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
+                                            myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRideId)).setValue(bookedRide);
                                             SharedPreferences.Editor editor = pref.edit();
-                                            editor.putInt("BookedRideId", zIndex + 1);
+                                            editor.putInt("BookedRideId", obookedRideId + 1);
                                             editor.apply();
                                             adapter.notifyDataSetChanged();
                                         }else{
@@ -324,15 +324,15 @@ public class MainPageFragment extends Fragment {
                                         DatabaseReference myRef = database.getReference();
                                         final SharedPreferences pref = new ObscuredSharedPreferences(
                                                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
-                                        int zIndex = pref.getInt("BookedRideId", 0);
+                                        int obookedRidesId = pref.getInt("oBookedRidesId", 0);
 
                                         //TODO hier eigentlich Benachrichtigung an Fahrer
-                                        myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).removeValue();
+                                        myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRidesId)).removeValue();
                                         myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).removeValue();
                                         clickedRide.getBookedUsers().remove(userId);
 
                                         SharedPreferences.Editor editor = pref.edit();
-                                        editor.putInt("BookedRideId", zIndex - 1);
+                                        editor.putInt("BookedRideId", obookedRidesId - 1);
                                         editor.apply();
                                         adapter.notifyDataSetChanged();
                                     }
