@@ -62,6 +62,7 @@ public class RideLoader {
                     ArrayList userData = new ArrayList();
                     userData.add(user.getKey());
                     userData.add(user.child("username").getValue());
+                    userData.add(user.child("Rating").getValue());
                     for (DataSnapshot ride : usersOfferedRides.getChildren()) {
                         HashMap<String, Object> values = new HashMap<>();
                         values.put("snapKey", dataSnapshot.getKey());
@@ -84,7 +85,6 @@ public class RideLoader {
     public void getBookedRides(MyBookedRidesFragment bookFrag){
         bookings= new ArrayList<>();
         parseType=ParseType.BOOKEDRIDES;
-        boolean rate = false;
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -137,6 +137,7 @@ public class RideLoader {
         });
 
     }
+
 
     public ArrayList<Pair<ArrayList, OfferedRide>> getWatchedRides(WatchListFragment watchFrag){
         parseType= ParseType.WATCHING;

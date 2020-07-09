@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.model.Rating;
@@ -113,18 +114,22 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             viewHolder.book.setImageResource(android.R.drawable.ic_dialog_email);
             viewHolder.book.setContentDescription("book");
         }
-
+        Log.e("value", dataSet.get(position).first.get(2).toString());
         viewHolder.txtDestination.setText(offeredRide.getDestination());
         viewHolder.txtDeparture.setText(offeredRide.getDeparture());
         viewHolder.txtDate.setText(offeredRide.getDate().toString());
         viewHolder.txtTime.setText(offeredRide.getTime().toString());
         viewHolder.txtPrice.setText(offeredRide.getPrice() + "€");
         viewHolder.txtPlaces.setText((offeredRide.getPlaces() - offeredRide.getPlaces_open()) + "/" + offeredRide.getPlaces());
-        /*if(rating.getStars()<=0){
+        HashMap rating = (HashMap) dataSet.get(position).first.get(2);
+        long ratingValue = (long)rating.get("stars");
+        if(rating != null) {
+            viewHolder.rating.setRating(Float.valueOf(ratingValue));
+        }
+        else {
             viewHolder.rating.setRating(0);
-        }else{
-            viewHolder.rating.setRating(rating.getStars());
-        }*/
+        }
+
 
     }
 

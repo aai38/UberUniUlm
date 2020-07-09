@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
@@ -43,6 +45,7 @@ public class RideOverviewHeaderFragment extends Fragment {
     private TextView userNameText, startGoalText, dateText, carInfoText, priceText;
     private ImageView closeBttn;
     private ImageButton bookBttn, markBttn;
+    private RatingBar ratingBar;
     private com.mikhaellopez.circularimageview.CircularImageView profilePhoto;
 
     @Override
@@ -58,6 +61,7 @@ public class RideOverviewHeaderFragment extends Fragment {
         closeBttn= fragmentView.findViewById(R.id.rideOverviewCloseBttn);
         markBttn= fragmentView.findViewById(R.id.rideOverviewMarkButton);
         bookBttn= fragmentView.findViewById(R.id.rideOverviewBookingButton);
+        ratingBar = fragmentView.findViewById(R.id.ratingView);
 
 
         closeBttn.setOnClickListener(
@@ -160,6 +164,15 @@ public class RideOverviewHeaderFragment extends Fragment {
 
         priceText= fragmentView.findViewById(R.id.rideOverviewPriceText);
         priceText.setText(ride.getPrice()+"€");
+
+        HashMap rating = (HashMap) userData.get(2);
+        long ratingValue = (long)rating.get("stars");
+        if(rating != null) {
+            ratingBar.setRating(Float.valueOf(ratingValue));
+        }
+        else {
+            ratingBar.setRating(0);
+        }
 
 
         userNameText.setText((String) userData.get(1));

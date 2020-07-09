@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -17,24 +16,16 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.tomtom.online.sdk.common.location.LatLng;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -93,7 +84,6 @@ public class MyBookedRidesFragment extends Fragment {
 
         rideLoader= new RideLoader(getContext());
         rideLoader.getBookedRides(this);
-
 
 
         return fragmentView;
@@ -173,47 +163,48 @@ public class MyBookedRidesFragment extends Fragment {
             Log.e("date2", Calendar.getInstance().getTime().toString());
             if(date1.compareTo(Calendar.getInstance().getTime()) < 0 && !bookedRide.get(i).isRated()) {
                 Log.e("time is less", "");
-                final RatingBar ratingBar = new RatingBar(getContext());
-                final EditText editText = new EditText(getContext());
-                editText.setHint("Write your comment here");
 
-                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
-
-                alert.setMessage("You want to rate this ride?");
-                alert.setTitle("Rating");
-                alert.setView(ratingBar);
-                alert.setView(editText);
-
-
-
-                alert.setPositiveButton("Rate", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Rating");
+                builder.setMessage("Please rate this ride");
+                // set the custom layout
+                final View customLayout = getLayoutInflater().inflate(R.layout.rating_dialogue, null);
+                builder.setView(customLayout);
+                // add a button
+                builder.setPositiveButton("Rate", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // send data from the AlertDialog to the Activity
+                        EditText editText = customLayout.findViewById(R.id.editTextRating);
+                        RatingBar ratingBar = customLayout.findViewById(R.id.ratingBar);
 
                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                         DatabaseReference myRef = database.getReference();
                         rideLoader.setRatedValue(true, hold);
-                        Rating rating = new Rating (ratingBar.getNumStars(), editText.getText().toString());
-                        myRef.child(userId).child("Rating").setValue(rating);
-
+                        Rating rating = new Rating ((int)ratingBar.getRating(), editText.getText().toString());
+                        myRef.child(bookedRide.get(hold).getUserKey()).child("Rating").setValue(rating);
 
                     }
                 });
-                alert.setNeutralButton("Rate later", new DialogInterface.OnClickListener() {
+
+                builder.setNeutralButton("Rate later", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         rideLoader.setRatedValue(false, hold);
                     }
                 });
-
-                alert.setNegativeButton("Never Rate", new DialogInterface.OnClickListener() {
+                // create and show the alert dialog
+                builder.setNegativeButton("Never Rate", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         // what ever you want to do with No option.
                         rideLoader.setRatedValue(true, hold);
                     }
                 });
 
-                alert.show();
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
+
         }
     }
 
