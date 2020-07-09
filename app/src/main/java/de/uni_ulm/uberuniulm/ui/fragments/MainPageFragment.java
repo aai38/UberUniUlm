@@ -33,6 +33,7 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,11 +46,14 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import de.uni_ulm.uberuniulm.MainPage;
 import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.StartPage;
 import de.uni_ulm.uberuniulm.model.ride.BookedRide;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
@@ -236,40 +240,127 @@ public class MainPageFragment extends Fragment {
         adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {
             @Override
             public void onPositionClicked(int position) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
 
-                alert.setMessage("You want to book this ride?");
-                alert.setTitle("Book Ride");
+                Pair clickedRidePair = offeredRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+
+                Log.d("TESTPRINT MAINFRAG", clickedRide.getBookedUsers().toString());
+                if(!clickedRide.getBookedUsers().contains(userId)) {
+                    dialog.setItems(getResources().getStringArray(R.array.bookoptions),new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int pos) {
+                            if (pos == 0) {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                                alert.setMessage("You want to book this ride?");
+                                alert.setTitle("Book Ride");
 
 
-                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Pair clickedRidePair = offeredRides.get(position);
-                        OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference myRef = database.getReference();
-                        BookedRide bookedRide = new BookedRide(clickedRide.getUserId(), clickedRide.getzIndex());
-                        final SharedPreferences pref = new ObscuredSharedPreferences(
-                                fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
-                        int zIndex = pref.getInt("BookedRideId", 0);
+                                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
 
-                        //hier eigentlich Benachrichtigung an Fahrer
-                        myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
+                                        //TODO hier eigentlich Benachrichtigung an Fahrer
+                                        if(clickedRide.getPlaces_open()>0) {
+                                            Date date= Calendar.getInstance().getTime();
+                                            SimpleDateFormat formatter= new SimpleDateFormat("dd/MM/yyyy");
 
-                        SharedPreferences.Editor editor = pref.edit();
-                        editor.putInt("BookedRideId", zIndex +1);
-                        editor.apply();
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference myRef = database.getReference();
+                                            myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).setValue(formatter.format(date));
+                                            BookedRide bookedRide = new BookedRide(clickedRide.getUserId(), clickedRide.getzIndex());
+                                            final SharedPreferences pref = new ObscuredSharedPreferences(
+                                                    fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
+                                            int zIndex = pref.getInt("BookedRideId", 0);
 
-                    }
-                });
+                                            myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
+                                            SharedPreferences.Editor editor = pref.edit();
+                                            editor.putInt("BookedRideId", zIndex + 1);
+                                            editor.apply();
+                                            adapter.notifyDataSetChanged();
+                                        }else{
+                                            Toast.makeText(fragmentView.getContext(), "Oops, looks like somebody was a little faster than you.", Toast.LENGTH_LONG)
+                                                    .show();
+                                        }
+                                    }
+                                });
 
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // what ever you want to do with No option.
-                    }
-                });
+                                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        //TODO what ever you want to do with No option.
+                                    }
+                                });
 
-                alert.show();
+                                alert.show();
+                            } else {
+                                //TODO open message dialog
+                            }
+                        }});
+
+                    dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = dialog.create();
+                    alert.show();
+
+                }else{
+                    dialog.setItems(getResources().getStringArray(R.array.cancelbookingoptions),new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int pos) {
+                            if (pos == 0) {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                                alert.setMessage("Do you really want to cancel your booking?");
+                                alert.setTitle("Book Ride");
+
+
+                                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        DatabaseReference myRef = database.getReference();
+                                        final SharedPreferences pref = new ObscuredSharedPreferences(
+                                                fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
+                                        int zIndex = pref.getInt("BookedRideId", 0);
+
+                                        //TODO hier eigentlich Benachrichtigung an Fahrer
+                                        myRef.child(userId).child("obookedRides").child(String.valueOf(zIndex)).removeValue();
+                                        myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).removeValue();
+                                        clickedRide.getBookedUsers().remove(userId);
+
+                                        SharedPreferences.Editor editor = pref.edit();
+                                        editor.putInt("BookedRideId", zIndex - 1);
+                                        editor.apply();
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
+
+                                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        //TODO what ever you want to do with No option.
+                                    }
+                                });
+
+                                alert.show();
+                            } else {
+                                //TODO open message activity
+                            }
+                        }});
+
+                    dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = dialog.create();
+                    alert.show();
+
+                }
             }
 
             @Override
@@ -288,7 +379,6 @@ public class MainPageFragment extends Fragment {
                 OfferedRide ride=offeredRides.get(position).second;
                 Boolean notMarkedYet=ride.getObservers().contains(userId);
                     if (!userId.equals(ride.getUserId())) {
-                        Log.d("TEST", "STAGE 1");
                         Button markBttn = (Button) view;
                         if (notMarkedYet) {
                             ride.unmarkRide(userId);

@@ -227,6 +227,7 @@ public class RideLoader {
         String departure = values.get("departure").toString();
         String destination = values.get("destination").toString();
         List<LatLng> waypoints = new ArrayList<>();
+        List<String> bookedUsers = new ArrayList<>();
         List<String> observers = new ArrayList<>();
 
         try {
@@ -253,7 +254,19 @@ public class RideLoader {
             waypoints = new ArrayList<>();
         }
 
+        try {
+            HashMap<String, String> bookedUsersHash = (HashMap<String, String>) values.get("bookedUsers");
+            if (bookedUsersHash != null) {
+                    bookedUsers= new ArrayList<String>(bookedUsersHash.keySet());
+            }
+        } catch (ClassCastException e) {
+            Log.d("DATA TRIGGER3", "TEST");
+            bookedUsers = new ArrayList<>();
+        }
+
         OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
+        offeredRide.setBookedUsers((ArrayList) bookedUsers);
+        Log.d("DATA TRIGGER", "TEST");
         Float rating = -2.0f;
         userData.add(rating);
 

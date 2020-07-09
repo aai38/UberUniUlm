@@ -19,8 +19,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
@@ -41,6 +43,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,6 +56,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import de.uni_ulm.uberuniulm.model.notifications.NotificationManager;
 import de.uni_ulm.uberuniulm.ui.fragments.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
@@ -118,6 +122,20 @@ public class MainPage extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        FirebaseMessaging.getInstance().subscribeToTopic("NEWS")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Successfuly subscribed";
+                        if (!task.isSuccessful()) {
+                            msg = "Could not subscribe";
+                        }
+                        Log.d("TOPIC SUBSCRIPTION", msg);
+                        Toast.makeText(MainPage.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
         hideKeyboard(this);
 

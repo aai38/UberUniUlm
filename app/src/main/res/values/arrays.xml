@@ -12,6 +12,14 @@
         <item>Edit</item>
         <item>Delete</item>
     </string-array>
+    <string-array name="bookoptions">
+        <item>Book ride</item>
+        <item>Send message</item>
+    </string-array>
+    <string-array name="cancelbookingoptions">
+        <item>Cancel booking</item>
+        <item>Send message</item>
+    </string-array>
     <string-array
         name="Distance">
         <item>50m</item>

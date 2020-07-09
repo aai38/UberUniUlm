@@ -16,6 +16,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import de.uni_ulm.uberuniulm.model.notifications.NotificationManager;
 import de.uni_ulm.uberuniulm.model.ride.BookedRide;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
@@ -120,6 +122,7 @@ public class StartPage  extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     Log.d("RE-AUTHENTICATION", user.getEmail());
+                                    NotificationManager notificationManager= new NotificationManager(getApplicationContext());
                                     Intent intent = new Intent(StartPage.this, MainPage.class);
                                     startActivity(intent);
                                 }
@@ -179,6 +182,7 @@ public class StartPage  extends AppCompatActivity {
                         }else{
                             pref.edit().putBoolean("StayLoggedIn", false).apply();
                         }
+                        NotificationManager notificationManager= new NotificationManager(this);
                         Intent intent = new Intent(StartPage.this, MainPage.class);
                         startActivity(intent);
                     } else {
@@ -387,6 +391,7 @@ public class StartPage  extends AppCompatActivity {
                             editor.putString("UserKey", key);
                             editor.putInt("RideId", 0);
                             editor.apply();
+                            NotificationManager notificationManager= new NotificationManager(StartPage.this);
                             Intent intent = new Intent(StartPage.this, MainPage.class);
                             startActivity(intent);
 
@@ -401,8 +406,6 @@ public class StartPage  extends AppCompatActivity {
                         }
                     }
                 });
-
-
     }
 
 

@@ -51,4 +51,5 @@
     <string name="addFilterDialog_title">Add Filter</string>
 
 
+    <string name="notification_token_msg" translatable="false">InstanceID Token: %s</string>
 </resources>

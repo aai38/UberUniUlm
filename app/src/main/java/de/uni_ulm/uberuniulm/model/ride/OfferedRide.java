@@ -84,11 +84,11 @@ public class OfferedRide implements Serializable {
         this.places_open = places_open;
     }
 
-    public ArrayList<User> getBookedUsers() {
+    public ArrayList<String> getBookedUsers() {
         return bookedUsers;
     }
 
-    public void setBookedUsers(ArrayList<User> bookedUsers) {
+    public void setBookedUsers(ArrayList<String> bookedUsers) {
         this.bookedUsers = bookedUsers;
     }
 
@@ -101,7 +101,7 @@ public class OfferedRide implements Serializable {
     private String time;
     private int places;
     private int places_open;
-    private ArrayList<User> bookedUsers;
+    private ArrayList<String> bookedUsers;
     private List<LatLng> waypoints;
     private List<String> observers;
 
