@@ -103,6 +103,7 @@ public class MyBookedRidesFragment extends Fragment {
         bookedRides= rides;
         if(adapter!=null){
             adapter.notifyDataSetChanged();
+            mybookingsRecyclerView.setAdapter(adapter);
         }else{
             setOfferAdapter();
         }

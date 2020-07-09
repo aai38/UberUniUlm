@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,7 @@ public class WatchListFragment extends Fragment {
         observedRides = rides;
         if(adapter!=null){
             adapter.notifyDataSetChanged();
+            watchListRecyclerView.setAdapter(adapter);
         }else{
             setOfferAdapter();
         }

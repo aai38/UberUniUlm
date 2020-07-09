@@ -72,6 +72,7 @@ public class MyOffersFragment extends Fragment {
         offeredRides= rides;
         if(adapter!=null){
             adapter.notifyDataSetChanged();
+            myoffersRecyclerView.setAdapter(adapter);
         }else{
             setOfferAdapter();
         }

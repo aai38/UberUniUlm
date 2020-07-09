@@ -154,7 +154,6 @@ public class RideLoader {
                             if(observer.getValue().equals(userId)){
                                 for (DataSnapshot rideValue : ride.getChildren()) {
                                     values.put(rideValue.getKey(), rideValue.getValue());
-                                    Log.d("WATCHED", rideValue.getKey().toString()+" "+ rideValue.getValue());
                                 }
                                 parseData(userData, values);
                             }
@@ -265,13 +264,11 @@ public class RideLoader {
                     bookedUsers= new ArrayList<String>(bookedUsersHash.keySet());
             }
         } catch (ClassCastException e) {
-            Log.d("DATA TRIGGER3", "TEST");
             bookedUsers = new ArrayList<>();
         }
 
         OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
         offeredRide.setBookedUsers((ArrayList) bookedUsers);
-        Log.d("DATA TRIGGER", "TEST");
         Float rating = -2.0f;
         userData.add(rating);
 

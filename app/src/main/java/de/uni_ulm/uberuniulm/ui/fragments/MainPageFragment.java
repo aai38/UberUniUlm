@@ -234,6 +234,7 @@ public class MainPageFragment extends Fragment {
         offeredRides= rides;
         if(adapter!=null){
             adapter.notifyDataSetChanged();
+            offerRecyclerView.setAdapter(adapter);
         }else{
             setOfferAdapter();
         }

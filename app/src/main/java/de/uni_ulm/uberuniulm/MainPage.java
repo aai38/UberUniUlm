@@ -258,6 +258,7 @@ public class MainPage extends AppCompatActivity
 
 
         }else if (id == R.id.watch) {
+            Log.d("TEST2", "GOT HERE");
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.mainPageContentContainer, new WatchListFragment());
             fragmentTransaction.commit();
