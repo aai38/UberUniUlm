@@ -39,13 +39,14 @@ import de.uni_ulm.uberuniulm.model.ride.RideLoader;
 import de.uni_ulm.uberuniulm.ui.main.OfferListAdapter;
 import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.ui.main.ClickListener;
+import kotlin.Triple;
 
 public class MyBookedRidesFragment extends Fragment {
     public View fragmentView;
     private RecyclerView mybookingsRecyclerView;
     private static OfferListAdapter adapter;
     private DatabaseReference myRef;
-    ArrayList<Pair<ArrayList, OfferedRide>> bookedRides;
+    ArrayList<Triple<ArrayList, OfferedRide, Float>> bookedRides;
     private FragmentTransaction fragmentTransaction;
     ArrayList<BookedRide> bookedRidesData = new ArrayList<>();
     private FirebaseAuth mAuth;
@@ -89,7 +90,7 @@ public class MyBookedRidesFragment extends Fragment {
         return fragmentView;
     }
 
-    public void updateOffers(ArrayList<Pair<ArrayList, OfferedRide>> rides){
+    public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
         bookedRides= rides;
         if(adapter!=null){
             adapter.notifyDataSetChanged();
@@ -109,9 +110,9 @@ public class MyBookedRidesFragment extends Fragment {
             @Override
             public void onOfferClicked(int position) {
                 Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                Pair clickedRidePair = bookedRides.get(position);
-                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
-                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                Triple clickedRidePair = bookedRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
@@ -119,8 +120,8 @@ public class MyBookedRidesFragment extends Fragment {
 
             @Override
             public void onMarkClicked(View view, int position){
-                Boolean notMarkedYet=bookedRides.get(position).second.getObservers().contains(userId);
-                OfferedRide ride=bookedRides.get(position).second;
+                Boolean notMarkedYet=bookedRides.get(position).getSecond().getObservers().contains(userId);
+                OfferedRide ride=bookedRides.get(position).getSecond();
                 if (!userId.equals(ride.getUserId())) {
                     TextView markBttn = (TextView) view;
                     if (!notMarkedYet) {
@@ -131,7 +132,7 @@ public class MyBookedRidesFragment extends Fragment {
                         markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
                     }
 
-                    myRef.child(bookedRides.get(position).first.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                    myRef.child(bookedRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -139,9 +140,9 @@ public class MyBookedRidesFragment extends Fragment {
             @Override
             public void onEditClicked(int position){
                 Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                Pair clickedRidePair = bookedRides.get(position);
-                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
-                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                Triple clickedRidePair = bookedRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "EDITOFFER");
                 startActivity(intent);
@@ -149,14 +150,14 @@ public class MyBookedRidesFragment extends Fragment {
         });
         mybookingsRecyclerView.setAdapter(adapter);
     }
-    public void lookForRating(ArrayList<Pair<ArrayList, OfferedRide>> bookedRides, ArrayList<BookedRide> bookedRide) {
+    public void lookForRating(ArrayList<Triple<ArrayList, OfferedRide, Float>> bookedRides, ArrayList<BookedRide> bookedRide) {
 
         Log.e("sizeinmethod",""+ bookedRides.size());
         for(int i = 0; i<bookedRides.size(); i++) {
             final int hold = i;
             Date date1= null;
             try {
-                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(bookedRides.get(i).second.getDate());
+                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(bookedRides.get(i).getSecond().getDate());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -183,7 +184,10 @@ public class MyBookedRidesFragment extends Fragment {
                         DatabaseReference myRef = database.getReference();
                         rideLoader.setRatedValue(true, hold);
                         Rating rating = new Rating ((int)ratingBar.getRating(), editText.getText().toString());
-                        myRef.child(bookedRide.get(hold).getUserKey()).child("Rating").setValue(rating);
+
+                        DatabaseReference ref = myRef.child(bookedRide.get(hold).getUserKey()).child("Rating").push();
+                        String key = ref.getKey();
+                        ref.setValue(rating);
 
                     }
                 });

@@ -40,12 +40,13 @@ import de.uni_ulm.uberuniulm.model.ride.RideLoader;
 import de.uni_ulm.uberuniulm.ui.main.OfferListAdapter;
 import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.ui.main.ClickListener;
+import kotlin.Triple;
 
 public class MyOffersFragment extends Fragment {
     public View fragmentView;
     private RecyclerView myoffersRecyclerView;
     private static OfferListAdapter adapter;
-    private ArrayList<Pair<ArrayList, OfferedRide>> offeredRides;
+    private ArrayList<Triple<ArrayList, OfferedRide, Float>> offeredRides;
     private String userId;
 
 
@@ -68,7 +69,7 @@ public class MyOffersFragment extends Fragment {
         return fragmentView;
     }
 
-    public void updateOffers(ArrayList<Pair<ArrayList, OfferedRide>> rides){
+    public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
         offeredRides= rides;
         if(adapter!=null){
             adapter.notifyDataSetChanged();
@@ -88,9 +89,9 @@ public class MyOffersFragment extends Fragment {
             @Override
             public void onOfferClicked(int position){
                 Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                Pair clickedRidePair = offeredRides.get(position);
-                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
-                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                Triple clickedRidePair = offeredRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
@@ -98,8 +99,8 @@ public class MyOffersFragment extends Fragment {
 
             @Override
             public void onMarkClicked(View view, int position){
-                Boolean notMarkedYet=offeredRides.get(position).second.getObservers().contains(userId);
-                OfferedRide ride=offeredRides.get(position).second;
+                Boolean notMarkedYet=offeredRides.get(position).getSecond().getObservers().contains(userId);
+                OfferedRide ride=offeredRides.get(position).getSecond();
                 if (!userId.equals(ride.getUserId())) {
                     TextView markBttn = (TextView) view;
                     if (notMarkedYet) {
@@ -111,8 +112,8 @@ public class MyOffersFragment extends Fragment {
                     }
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference();
-                    myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).second.getzIndex())).removeValue();
-                    myRef.child(offeredRides.get(position).first.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                    myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).getSecond().getzIndex())).removeValue();
+                    myRef.child(offeredRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -127,17 +128,17 @@ public class MyOffersFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int pos) {
                         if(pos==0){
                             Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                            Pair clickedRidePair = offeredRides.get(position);
-                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
-                            intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                            Triple clickedRidePair = offeredRides.get(position);
+                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                            intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                             intent.putExtra("RIDE", clickedRide);
                             intent.putExtra("VIEWTYPE", "EDITOFFER");
                             startActivity(intent);
                         }else{
                             AlertDialog.Builder dialogWarning = new AlertDialog.Builder(getActivity());
                             dialogWarning.setTitle("Warning!");
-                            Pair clickedRidePair = offeredRides.get(pos);
-                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
+                            Triple clickedRidePair = offeredRides.get(pos);
+                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
                             if(clickedRide.getPlaces()>clickedRide.getPlaces_open()) {
                                 dialogWarning.setMessage("Do you really want to delete this ride? The people who booked your trip will be notified.");
                             }else{
@@ -148,7 +149,7 @@ public class MyOffersFragment extends Fragment {
                                 public void onClick(DialogInterface dialogWarning, int which) {
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     DatabaseReference myRef = database.getReference();
-                                    myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).second.getzIndex())).removeValue();
+                                    myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).getSecond().getzIndex())).removeValue();
                                     //TODO remove from booked rides and notify person
                                     offeredRides.remove(position);
                                     adapter.notifyDataSetChanged();

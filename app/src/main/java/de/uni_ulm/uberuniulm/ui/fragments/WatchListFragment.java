@@ -27,12 +27,13 @@ import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 import de.uni_ulm.uberuniulm.model.ride.RideLoader;
 import de.uni_ulm.uberuniulm.ui.main.ClickListener;
 import de.uni_ulm.uberuniulm.ui.main.OfferListAdapter;
+import kotlin.Triple;
 
 public class WatchListFragment extends Fragment {
     public View fragmentView;
     private RecyclerView watchListRecyclerView;
     private static OfferListAdapter adapter;
-    private ArrayList<Pair<ArrayList, OfferedRide>> observedRides;
+    private ArrayList<Triple<ArrayList, OfferedRide, Float>> observedRides;
     private String userId;
 
 
@@ -55,7 +56,7 @@ public class WatchListFragment extends Fragment {
         return fragmentView;
     }
 
-    public void updateOffers(ArrayList<Pair<ArrayList, OfferedRide>> rides){
+    public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
         observedRides = rides;
         if(adapter!=null){
             adapter.notifyDataSetChanged();
@@ -75,9 +76,9 @@ public class WatchListFragment extends Fragment {
             @Override
             public void onOfferClicked(int position){
                 Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                Pair clickedRidePair = observedRides.get(position);
-                OfferedRide clickedRide = (OfferedRide) clickedRidePair.second;
-                intent.putExtra("USER", (ArrayList) clickedRidePair.first);
+                Triple clickedRidePair = observedRides.get(position);
+                OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
@@ -90,8 +91,8 @@ public class WatchListFragment extends Fragment {
 
             @Override
             public void onMarkClicked(View view, int position){
-                Boolean notMarkedYet= observedRides.get(position).second.getObservers().contains(userId);
-                OfferedRide ride= observedRides.get(position).second;
+                Boolean notMarkedYet= observedRides.get(position).getSecond().getObservers().contains(userId);
+                OfferedRide ride= observedRides.get(position).getSecond();
                 if (!userId.equals(ride.getUserId())) {
                     TextView markBttn = (TextView) view;
                     if (notMarkedYet) {
@@ -103,8 +104,8 @@ public class WatchListFragment extends Fragment {
                     }
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference();
-                    myRef.child(userId).child("offeredRides").child(String.valueOf(observedRides.get(position).second.getzIndex())).removeValue();
-                    myRef.child(observedRides.get(position).first.get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                    myRef.child(userId).child("offeredRides").child(String.valueOf(observedRides.get(position).getSecond().getzIndex())).removeValue();
+                    myRef.child(observedRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
                     adapter.notifyDataSetChanged();
                 }
             }

@@ -166,8 +166,9 @@ public class RideOverviewHeaderFragment extends Fragment {
         priceText.setText(ride.getPrice()+"€");
 
         HashMap rating = (HashMap) userData.get(2);
-        long ratingValue = (long)rating.get("stars");
+
         if(rating != null) {
+            long ratingValue = (long)rating.get("stars");
             ratingBar.setRating(Float.valueOf(ratingValue));
         }
         else {

@@ -35,16 +35,17 @@ import de.uni_ulm.uberuniulm.model.Rating;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
 import de.uni_ulm.uberuniulm.model.filter.Filters;
+import kotlin.Triple;
 
 public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.OfferViewHolder>  implements View.OnClickListener{
 
-    private ArrayList<Pair<ArrayList,OfferedRide>> dataSet;
+    private ArrayList<Triple<ArrayList,OfferedRide, Float>> dataSet;
     private final ClickListener listener;
     Context mContext;
     Filters filters;
-    private ArrayList<Pair<ArrayList,OfferedRide>> dataSetCopy = new ArrayList<>();
+    private ArrayList<Triple<ArrayList,OfferedRide, Float>> dataSetCopy = new ArrayList<>();
 
-    public OfferListAdapter(Context mContext, ArrayList<Pair<ArrayList,OfferedRide>> offeredRides, ClickListener listener) {
+    public OfferListAdapter(Context mContext, ArrayList<Triple<ArrayList,OfferedRide, Float>> offeredRides, ClickListener listener) {
         this.listener = listener;
         this.mContext = mContext;
         filters= new Filters(mContext);
@@ -63,7 +64,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     public void onBindViewHolder(@NonNull OfferViewHolder viewHolder, int position) {
 
 
-        String userID=(String) dataSet.get(position).first.get(0);
+        String userID=(String) dataSet.get(position).getFirst().get(0);
         //Rating rating= (Rating) dataSet.get(position).first.get(2);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -94,7 +95,7 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             public void onFailure(@NonNull Exception exception) {
             }
         });*/
-        OfferedRide offeredRide = dataSet.get(position).second;
+        OfferedRide offeredRide = dataSet.get(position).getSecond();
 
         SharedPreferences pref = new ObscuredSharedPreferences(mContext, mContext.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         String userId = pref.getString("UserKey", "");
@@ -114,21 +115,17 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             viewHolder.book.setImageResource(android.R.drawable.ic_dialog_email);
             viewHolder.book.setContentDescription("book");
         }
-        Log.e("value", dataSet.get(position).first.get(2).toString());
         viewHolder.txtDestination.setText(offeredRide.getDestination());
         viewHolder.txtDeparture.setText(offeredRide.getDeparture());
         viewHolder.txtDate.setText(offeredRide.getDate().toString());
         viewHolder.txtTime.setText(offeredRide.getTime().toString());
         viewHolder.txtPrice.setText(offeredRide.getPrice() + "€");
         viewHolder.txtPlaces.setText((offeredRide.getPlaces() - offeredRide.getPlaces_open()) + "/" + offeredRide.getPlaces());
-        HashMap rating = (HashMap) dataSet.get(position).first.get(2);
-        long ratingValue = (long)rating.get("stars");
-        if(rating != null) {
-            viewHolder.rating.setRating(Float.valueOf(ratingValue));
-        }
-        else {
-            viewHolder.rating.setRating(0);
-        }
+
+
+
+        viewHolder.rating.setRating(dataSet.get(position).getThird());
+
 
 
     }
@@ -140,9 +137,9 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             dataSet.addAll(dataSetCopy);
         } else{
             text = text.toLowerCase();
-            for(Pair item: dataSetCopy){
-                Log.e("item", item.second.toString());
-                OfferedRide offeredRide = (OfferedRide) item.second;
+            for(Triple item: dataSetCopy){
+                Log.e("item", item.getSecond().toString());
+                OfferedRide offeredRide = (OfferedRide) item.getSecond();
                 if(offeredRide.getDeparture().toLowerCase().contains(text)){
                     dataSet.add(item);
                     Log.e("dataset", dataSet.toString());
@@ -180,9 +177,9 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             dataSet.addAll(dataSetCopy);
         } else{
             text = text.toLowerCase();
-            for(Pair item: dataSetCopy){
-                Log.e("item", item.second.toString());
-                OfferedRide offeredRide = (OfferedRide) item.second;
+            for(Triple item: dataSetCopy){
+                Log.e("item", item.getSecond().toString());
+                OfferedRide offeredRide = (OfferedRide) item.getSecond();
                 if(offeredRide.getDestination().toLowerCase().contains(text)){
                     dataSet.add(item);
                     Log.e("dataset", dataSet.toString());
