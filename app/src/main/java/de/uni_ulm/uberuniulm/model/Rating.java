@@ -2,19 +2,19 @@ package de.uni_ulm.uberuniulm.model;
 
 public class Rating {
 
-    private int stars;
+    private float stars;
     private String comment;
 
-    public Rating(int stars, String comment) {
+    public Rating(float stars, String comment) {
         this.stars = stars;
         this.comment = comment;
     }
 
-    public int getStars() {
+    public float getStars() {
         return stars;
     }
 
-    public void setStars(int stars) {
+    public void setStars(float stars) {
         this.stars = stars;
     }
 

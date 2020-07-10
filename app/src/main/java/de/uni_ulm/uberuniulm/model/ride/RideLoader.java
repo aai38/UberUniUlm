@@ -24,6 +24,7 @@ import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.ui.fragments.MainPageFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyOffersFragment;
+import de.uni_ulm.uberuniulm.ui.fragments.RatingsFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.WatchListFragment;
 import kotlin.Triple;
 
@@ -109,12 +110,12 @@ public class RideLoader {
                 DataSnapshot usersRating = dataSnapshot.child(userId).child("Rating");
                 for (DataSnapshot ratings : usersRating.getChildren()) {
 
-                    for (DataSnapshot ratingValue : ratings.getChildren()) {
-                        total += (float) ratingValue.child("stars").getValue();
-                        number +=1;
-                    }
+                    long ratingValue = (long)ratings.child("stars").getValue();
+                    total += Float.valueOf(ratingValue);
+                    number +=1;
+
                 }
-                rating = number / total;
+                rating = total /number;
                 for (DataSnapshot ride : dataSnapshot.child(userId).child("obookedRides").getChildren()) {
                     String userIdBooking = ride.child("userKey").getValue().toString();
                     long zIndexBooking= (long) ride.child("zIndex").getValue();
@@ -182,12 +183,12 @@ public class RideLoader {
                     DataSnapshot usersRating = user.child("Rating");
                     for (DataSnapshot ratings : usersRating.getChildren()) {
 
-                        for (DataSnapshot ratingValue : ratings.getChildren()) {
-                            total += (float) ratingValue.child("stars").getValue();
-                            number +=1;
-                        }
+                        long ratingValue = (long)ratings.child("stars").getValue();
+                        total += Float.valueOf(ratingValue);
+                        number +=1;
+
                     }
-                    rating = number / total;
+                    rating = total/ number;
 
                     for (DataSnapshot ride : usersOfferedRides.getChildren()) {
                         HashMap<String, Object> values = new HashMap<>();
@@ -230,12 +231,12 @@ public class RideLoader {
                 DataSnapshot usersRating = dataSnapshot.child(userId).child("Rating");
                 for (DataSnapshot ratings : usersRating.getChildren()) {
 
-                    for (DataSnapshot ratingValue : ratings.getChildren()) {
-                        total += (float) ratingValue.child("stars").getValue();
-                        number +=1;
-                    }
+                    long ratingValue = (long)ratings.child("stars").getValue();
+                    total += Float.valueOf(ratingValue);
+                    number +=1;
+
                 }
-                rating = number / total;
+                rating = total/number;
 
                 for (DataSnapshot ride : dataSnapshot.child(userId).child("offeredRides").getChildren()) {
                     HashMap<String, Object> values = new HashMap<>();
@@ -327,6 +328,39 @@ public class RideLoader {
 
 
         ridesParsed.add(new Triple(userData, offeredRide, rating));
+    }
+
+    public void getRatings (RatingsFragment fragment) {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<Rating> ratings = new ArrayList();
+
+
+                    int rating = 0;
+                    DataSnapshot usersRating = dataSnapshot.child(userId).child("Rating");
+                    for (DataSnapshot ratingsValue : usersRating.getChildren()) {
+                        Log.e("childs", ratingsValue.getKey());
+                        String comment = ratingsValue.child("comment").getValue().toString();
+                        long ratingValue = (long) ratingsValue.child("stars").getValue();
+                        Log.e("ratingvalue", ""+ratingValue);
+                        Rating rate = new Rating((float)ratingValue, comment);
+                        ratings.add(rate);
+                    }
+
+
+
+                Log.e("ratings", ratings.toString());
+                fragment.updateRatings(ratings);
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     enum ParseType {

@@ -61,6 +61,7 @@ import de.uni_ulm.uberuniulm.ui.fragments.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.ui.fragments.ProfileFragment;
+import de.uni_ulm.uberuniulm.ui.fragments.RatingsFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.WatchListFragment;
 import de.uni_ulm.uberuniulm.ui.main.SectionsPagerAdapter;
 
@@ -273,7 +274,9 @@ public class MainPage extends AppCompatActivity
             fragmentTransaction.replace(R.id.mainPageContentContainer, new ProfileFragment());
             fragmentTransaction.commit();
         } else if (id == R.id.ratings) {
-
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.mainPageContentContainer, new RatingsFragment());
+            fragmentTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
