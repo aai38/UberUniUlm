@@ -43,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -242,226 +243,246 @@ public class MainPageFragment extends Fragment {
     }
 
     private void setOfferAdapter(){
-        adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {
-            @Override
-            public void onPositionClicked(int position) {
-
-                Triple clickedRidePair = offeredRides.get(position);
-                OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-
-                Log.d("TESTPRINT MAINFRAG", clickedRide.getBookedUsers().toString());
-                if(!clickedRide.getBookedUsers().contains(userId)) {
-                    dialog.setItems(getResources().getStringArray(R.array.bookoptions),new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int pos) {
-                            if (pos == 0) {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
-
-                                alert.setMessage("You want to book this ride?");
-                                alert.setTitle("Book Ride");
-
-
-                                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-
-                                        //TODO hier eigentlich Benachrichtigung an Fahrer
-                                        if(clickedRide.getPlaces_open()>0) {
-                                            Date date= Calendar.getInstance().getTime();
-                                            SimpleDateFormat formatter= new SimpleDateFormat("dd/MM/yyyy");
-
-                                            myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).setValue(formatter.format(date));
-                                            BookedRide bookedRide = new BookedRide(clickedRide.getUserId(), clickedRide.getzIndex());
-                                            final SharedPreferences pref = new ObscuredSharedPreferences(
-                                                    fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
-                                            int obookedRideId = pref.getInt("obookedRideId", 0);
-
-                                            myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRideId)).setValue(bookedRide);
-                                            SharedPreferences.Editor editor = pref.edit();
-                                            editor.putInt("BookedRideId", obookedRideId + 1);
-                                            editor.apply();
-                                            adapter.notifyDataSetChanged();
-                                        }else{
-                                            Toast.makeText(fragmentView.getContext(), "Oops, looks like somebody was a little faster than you.", Toast.LENGTH_LONG)
-                                                    .show();
-                                        }
-                                    }
-                                });
-
-                                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        //TODO what ever you want to do with No option.
-                                    }
-                                });
-
-                                alert.show();
-                            } else {
-                                //TODO open message dialog
-                            }
-                        }});
-
-                    dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog alert = dialog.create();
-                    alert.show();
-
-                }else{
-                    dialog.setItems(getResources().getStringArray(R.array.cancelbookingoptions),new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int pos) {
-                            if (pos == 0) {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
-
-                                alert.setMessage("Do you really want to cancel your booking?");
-                                alert.setTitle("Book Ride");
-
-
-                                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                        DatabaseReference myRef = database.getReference();
-                                        final SharedPreferences pref = new ObscuredSharedPreferences(
-                                                fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
-                                        int obookedRidesId = pref.getInt("oBookedRidesId", 0);
-
-                                        //TODO hier eigentlich Benachrichtigung an Fahrer
-                                        myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRidesId)).removeValue();
-                                        myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).removeValue();
-                                        clickedRide.getBookedUsers().remove(userId);
-
-                                        SharedPreferences.Editor editor = pref.edit();
-                                        editor.putInt("BookedRideId", obookedRidesId - 1);
-                                        editor.apply();
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
-
-                                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        //TODO what ever you want to do with No option.
-                                    }
-                                });
-
-                                alert.show();
-                            } else {
-                                //TODO open message activity
-                            }
-                        }});
-
-                    dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog alert = dialog.create();
-                    alert.show();
-
-                }
+        for (int i = 0; i < offeredRides.size(); i++) {
+            Date date1 = null;
+            try {
+                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(offeredRides.get(i).getSecond().getDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            if (date1.compareTo(Calendar.getInstance().getTime()) < 0) {
+                offeredRides.remove(i);
+            } else {
+                adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {
+                    @Override
+                    public void onPositionClicked(int position) {
 
-            @Override
-            public void onOfferClicked(int position) {
-                Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                Triple clickedRidePair = offeredRides.get(position);
-                OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
-                intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
-                intent.putExtra("RIDE", clickedRide);
-                intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
-                startActivity(intent);
-            }
+                        Triple clickedRidePair = offeredRides.get(position);
+                        OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 
-            @Override
-            public void onMarkClicked(View view, int position){
-                OfferedRide ride=offeredRides.get(position).getSecond();
-                Boolean notMarkedYet=ride.getObservers().contains(userId);
-                    if (!userId.equals(ride.getUserId())) {
-                        Button markBttn = (Button) view;
-                        if (notMarkedYet) {
-                            ride.unmarkRide(userId);
-                            markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                        Log.d("TESTPRINT MAINFRAG", clickedRide.getBookedUsers().toString());
+                        if (!clickedRide.getBookedUsers().contains(userId)) {
+                            dialog.setItems(getResources().getStringArray(R.array.bookoptions), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int pos) {
+                                    if (pos == 0) {
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                                        alert.setMessage("You want to book this ride?");
+                                        alert.setTitle("Book Ride");
+
+
+                                        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int whichButton) {
+
+                                                //TODO hier eigentlich Benachrichtigung an Fahrer
+                                                if (clickedRide.getPlaces_open() > 0) {
+                                                    Date date = Calendar.getInstance().getTime();
+                                                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+                                                    myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).setValue(formatter.format(date));
+                                                    int places = clickedRide.getPlaces_open() - 1;
+                                                    myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("places_open").setValue(places);
+
+                                                    BookedRide bookedRide = new BookedRide(clickedRide.getUserId(), clickedRide.getzIndex());
+                                                    final SharedPreferences pref = new ObscuredSharedPreferences(
+                                                            fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
+                                                    int obookedRideId = pref.getInt("obookedRideId", 0);
+
+                                                    myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRideId)).setValue(bookedRide);
+                                                    SharedPreferences.Editor editor = pref.edit();
+                                                    editor.putInt("BookedRideId", obookedRideId + 1);
+                                                    editor.apply();
+                                                    adapter.notifyDataSetChanged();
+                                                } else {
+                                                    Toast.makeText(fragmentView.getContext(), "Oops, looks like somebody was a little faster than you.", Toast.LENGTH_LONG)
+                                                            .show();
+                                                }
+                                            }
+                                        });
+
+                                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                //TODO what ever you want to do with No option.
+                                            }
+                                        });
+
+                                        alert.show();
+                                    } else {
+                                        //TODO open message dialog
+                                    }
+                                }
+                            });
+
+                            dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            AlertDialog alert = dialog.create();
+                            alert.show();
+
                         } else {
-                            ride.markRide(userId);
-                            markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                            dialog.setItems(getResources().getStringArray(R.array.cancelbookingoptions), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int pos) {
+                                    if (pos == 0) {
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                                        alert.setMessage("Do you really want to cancel your booking?");
+                                        alert.setTitle("Book Ride");
+
+
+                                        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                DatabaseReference myRef = database.getReference();
+                                                final SharedPreferences pref = new ObscuredSharedPreferences(
+                                                        fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
+                                                int obookedRidesId = pref.getInt("oBookedRidesId", 0);
+
+                                                //TODO hier eigentlich Benachrichtigung an Fahrer
+                                                myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRidesId)).removeValue();
+                                                myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).removeValue();
+                                                clickedRide.getBookedUsers().remove(userId);
+
+                                                SharedPreferences.Editor editor = pref.edit();
+                                                editor.putInt("BookedRideId", obookedRidesId - 1);
+                                                editor.apply();
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        });
+
+                                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                //TODO what ever you want to do with No option.
+                                            }
+                                        });
+
+                                        alert.show();
+                                    } else {
+                                        //TODO open message activity
+                                    }
+                                }
+                            });
+
+                            dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            AlertDialog alert = dialog.create();
+                            alert.show();
+
                         }
 
-                        myRef.child(offeredRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
-                        adapter.notifyDataSetChanged();
                     }
-            }
-
-            @Override
-            public void onEditClicked(int position){
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-                dialog.setTitle("Edit your offer");
-                dialog.setItems(getResources().getStringArray(R.array.editoptions),new DialogInterface.OnClickListener() {
 
                     @Override
-                    public void onClick(DialogInterface dialog, int pos) {
-                        if(pos==0){
-                            Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                            Triple clickedRidePair = offeredRides.get(pos);
-                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
-                            intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
-                            intent.putExtra("RIDE", clickedRide);
-                            intent.putExtra("VIEWTYPE", "EDITOFFER");
-                            startActivity(intent);
-                        }else{
-                            AlertDialog.Builder dialogWarning = new AlertDialog.Builder(getActivity());
-                            dialogWarning.setTitle("Warning!");
-                            Triple clickedRidePair = offeredRides.get(pos);
-                            OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
-                            if(clickedRide.getPlaces()>clickedRide.getPlaces_open()) {
-                                dialogWarning.setMessage("Do you really want to delete this ride? The people who booked your trip will be notified.");
-                            }else{
-                                dialogWarning.setMessage("Do you really want to delete this ride?");
+                    public void onOfferClicked(int position) {
+                        Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
+                        Triple clickedRidePair = offeredRides.get(position);
+                        OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                        intent.putExtra("RATING", (float) clickedRidePair.getThird());
+                        intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
+                        intent.putExtra("RIDE", clickedRide);
+                        intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onMarkClicked(View view, int position) {
+                        OfferedRide ride = offeredRides.get(position).getSecond();
+                        Boolean notMarkedYet = ride.getObservers().contains(userId);
+                        if (!userId.equals(ride.getUserId())) {
+                            Button markBttn = (Button) view;
+                            if (notMarkedYet) {
+                                ride.unmarkRide(userId);
+                                markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                            } else {
+                                ride.markRide(userId);
+                                markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
                             }
-                            dialogWarning.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogWarning, int which) {
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference myRef = database.getReference();
-                                    myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).getSecond().getzIndex())).removeValue();
-                                    //TODO remove from booked rides and notify person
-                                    offeredRides.remove(position);
-                                    adapter.notifyDataSetChanged();
 
-                                    dialogWarning.dismiss();
-                                }
-                            });
-
-                            dialogWarning.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogWarning, int which) {
-                                    dialogWarning.dismiss();
-                                }
-                            });
-
-                            dialogWarning.show();
+                            myRef.child(offeredRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                            adapter.notifyDataSetChanged();
                         }
                     }
 
-                });
-                dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
-
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                    public void onEditClicked(int position) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                        dialog.setTitle("Edit your offer");
+                        dialog.setItems(getResources().getStringArray(R.array.editoptions), new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int pos) {
+                                if (pos == 0) {
+                                    Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
+                                    Triple clickedRidePair = offeredRides.get(pos);
+                                    OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                                    intent.putExtra("RATING", (float) clickedRidePair.getThird());
+                                    intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
+                                    intent.putExtra("RIDE", clickedRide);
+                                    intent.putExtra("VIEWTYPE", "EDITOFFER");
+                                    startActivity(intent);
+                                } else {
+                                    AlertDialog.Builder dialogWarning = new AlertDialog.Builder(getActivity());
+                                    dialogWarning.setTitle("Warning!");
+                                    Triple clickedRidePair = offeredRides.get(pos);
+                                    OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                                    if (clickedRide.getPlaces() > clickedRide.getPlaces_open()) {
+                                        dialogWarning.setMessage("Do you really want to delete this ride? The people who booked your trip will be notified.");
+                                    } else {
+                                        dialogWarning.setMessage("Do you really want to delete this ride?");
+                                    }
+                                    dialogWarning.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogWarning, int which) {
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference myRef = database.getReference();
+                                            myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).getSecond().getzIndex())).removeValue();
+                                            //TODO remove from booked rides and notify person
+                                            offeredRides.remove(position);
+                                            adapter.notifyDataSetChanged();
+
+                                            dialogWarning.dismiss();
+                                        }
+                                    });
+
+                                    dialogWarning.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogWarning, int which) {
+                                            dialogWarning.dismiss();
+                                        }
+                                    });
+
+                                    dialogWarning.show();
+                                }
+                            }
+
+                        });
+                        dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog alert = dialog.create();
+                        alert.show();
+
                     }
                 });
-                AlertDialog alert = dialog.create();
-                alert.show();
 
+                offerRecyclerView.setAdapter(adapter);
             }
-        });
-        
-        offerRecyclerView.setAdapter(adapter);
+        }
     }
 
     private void setUpFilterDialog() {

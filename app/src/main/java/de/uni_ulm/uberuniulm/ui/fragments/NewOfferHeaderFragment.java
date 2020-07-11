@@ -224,7 +224,7 @@ public class NewOfferHeaderFragment extends Fragment {
         });
 
         if(mapPage.getViewType().equals("EDITOFFER")){
-            setUpExistingOffer(mapPage.getRideData().second);
+            setUpExistingOffer(mapPage.getRideData().getSecond());
         }
 
         if(notInitiated) {

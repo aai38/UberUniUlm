@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,6 @@ public class RideLoader {
     private FirebaseAuth mAuth;
     FirebaseDatabase database;
     private DatabaseReference myRef;
-    private ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed;
     private ArrayList<OfferedRide> offers;
     private DataSnapshot dataSnapshot;
     private ParseType parseType;
@@ -50,7 +50,6 @@ public class RideLoader {
         userId = pref.getString("UserKey", "");
         myRef = database.getReference();
 
-        ridesParsed= new ArrayList<>();
     }
 
     public void getOfferedRides(MainPageFragment mainFrag){
@@ -59,6 +58,7 @@ public class RideLoader {
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed = new ArrayList();
                 for(DataSnapshot user: dataSnapshot.getChildren()) {
                     float total = 0;
                     float rating = 0;
@@ -83,7 +83,7 @@ public class RideLoader {
                         for (DataSnapshot rideValue : ride.getChildren()) {
                             values.put(rideValue.getKey(), rideValue.getValue());
                         }
-                        parseData(userData, values, rating);
+                        ridesParsed.add(parseData(userData, values, rating));
                     }
                 }
                 mainFrag.updateOffers(ridesParsed);
@@ -103,6 +103,7 @@ public class RideLoader {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HashMap<String, Object> valuesBookings = new HashMap<>();
+                ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed = new ArrayList();
 
                 float total = 0;
                 float rating = 0;
@@ -129,7 +130,6 @@ public class RideLoader {
                         bookedRide.setRated(rated);
                         valuesBookings.put(userIdBooking, (int) zIndexBooking);
                         bookings.add(bookedRide);
-                        Log.i("bookedRidesData", bookings.toString());
                     }
                 }
                     for (DataSnapshot user : dataSnapshot.getChildren()) {
@@ -147,7 +147,7 @@ public class RideLoader {
                                     for (DataSnapshot rideValue : offeredride.getChildren()) {
                                         values.put(rideValue.getKey(), rideValue.getValue());
                                     }
-                                    parseData(userData, values, rating);
+                                    ridesParsed.add(parseData(userData, values, rating));
                                 }
                             }
                         }
@@ -166,16 +166,17 @@ public class RideLoader {
     }
 
 
-    public ArrayList<Triple<ArrayList, OfferedRide, Float>> getWatchedRides(WatchListFragment watchFrag){
+    public void getWatchedRides(WatchListFragment watchFrag){
         parseType= ParseType.WATCHING;
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed = new ArrayList();
                 for(DataSnapshot user: dataSnapshot.getChildren()) {
                     DataSnapshot usersOfferedRides= user.child("offeredRides");
                     ArrayList userData = new ArrayList();
-                    userData.add(dataSnapshot.child(userId).getKey());
-                    userData.add(dataSnapshot.child(userId).child("username").getValue());
+                    userData.add(user.getKey());
+                    userData.add(user.child("username").getValue());
 
                     float total = 0;
                     float rating = 0;
@@ -197,7 +198,7 @@ public class RideLoader {
                                 for (DataSnapshot rideValue : ride.getChildren()) {
                                     values.put(rideValue.getKey(), rideValue.getValue());
                                 }
-                                parseData(userData, values, rating);
+                                ridesParsed.add(parseData(userData, values, rating));
                             }
                         }
 
@@ -212,15 +213,15 @@ public class RideLoader {
             }
         });
 
-        return ridesParsed;
     }
 
-    public ArrayList<Triple<ArrayList, OfferedRide, Float>> getUsersOfferedRides(MyOffersFragment myOffersFragment){
+    public void getUsersOfferedRides(MyOffersFragment myOffersFragment){
         parseType=ParseType.USERSOFFERS;
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed = new ArrayList();
                 ArrayList userData = new ArrayList();
                 userData.add(dataSnapshot.child(userId).getKey());
                 userData.add(dataSnapshot.child(userId).child("username").getValue());
@@ -243,7 +244,7 @@ public class RideLoader {
                     for (DataSnapshot rideValue : ride.getChildren()) {
                         values.put(rideValue.getKey(), rideValue.getValue());
                     }
-                    parseData(userData, values, rating);
+                    ridesParsed.add(parseData(userData, values, rating));
                 }
                 myOffersFragment.updateOffers(ridesParsed);
             }
@@ -254,7 +255,6 @@ public class RideLoader {
             }
         });
 
-        return ridesParsed;
     }
 
     public void setRatedValue(boolean isRated, int position) {
@@ -263,7 +263,7 @@ public class RideLoader {
         myRef.child(userId).child("obookedRides").child(String.valueOf(position)).setValue(ratedRide);
     }
 
-    private void parseData(ArrayList userData, HashMap<String, Object> values, float rating){
+    private Triple<ArrayList, OfferedRide, Float> parseData(ArrayList userData, HashMap<String, Object> values, float rating){
         List<LatLng> coordinates = new ArrayList<>();
         try {
             List<HashMap> coordinatesHash = (List<HashMap>) values.get("route");
@@ -327,7 +327,7 @@ public class RideLoader {
         offeredRide.setBookedUsers((ArrayList) bookedUsers);
 
 
-        ridesParsed.add(new Triple(userData, offeredRide, rating));
+        return new Triple(userData, offeredRide, rating);
     }
 
     public void getRatings (RatingsFragment fragment) {
@@ -340,17 +340,12 @@ public class RideLoader {
                     int rating = 0;
                     DataSnapshot usersRating = dataSnapshot.child(userId).child("Rating");
                     for (DataSnapshot ratingsValue : usersRating.getChildren()) {
-                        Log.e("childs", ratingsValue.getKey());
                         String comment = ratingsValue.child("comment").getValue().toString();
                         long ratingValue = (long) ratingsValue.child("stars").getValue();
-                        Log.e("ratingvalue", ""+ratingValue);
                         Rating rate = new Rating((float)ratingValue, comment);
                         ratings.add(rate);
                     }
 
-
-
-                Log.e("ratings", ratings.toString());
                 fragment.updateRatings(ratings);
 
 

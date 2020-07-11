@@ -27,7 +27,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import de.uni_ulm.uberuniulm.R;
@@ -63,86 +67,64 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     @Override
     public void onBindViewHolder(@NonNull OfferViewHolder viewHolder, int position) {
 
+            String userID = (String) dataSet.get(position).getFirst().get(0);
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            StorageReference profileImageRef = storageRef.child("profile_images/" + userID + ".jpg");
+            ImageView image = (ImageView) viewHolder.picture;
+            Glide.with(mContext)
+                    .load(profileImageRef)
+                    .centerCrop()
+                    .placeholder(R.drawable.start_register_profile_photo)
+                    .skipMemoryCache(true) //2
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .thumbnail(/*sizeMultiplier=*/ 0.2f)
+                    .into(image);
 
-        String userID=(String) dataSet.get(position).getFirst().get(0);
-        //Rating rating= (Rating) dataSet.get(position).first.get(2);
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        StorageReference profileImageRef = storageRef.child("profile_images/"+userID+".jpg");
-        ImageView image = (ImageView) viewHolder.picture;
-        Glide.with(mContext)
-                .load(profileImageRef)
-                .centerCrop()
-                .skipMemoryCache(true) //2
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .thumbnail(/*sizeMultiplier=*/ 0.25f)
-                .placeholder(R.drawable.start_register_profile_photo)
-                .into( image);
+            OfferedRide offeredRide = dataSet.get(position).getSecond();
 
-        /*final long ONE_MEGABYTE = 1024 * 1024;
-        profileImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            SharedPreferences pref = new ObscuredSharedPreferences(mContext, mContext.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
+            String userId = pref.getString("UserKey", "");
+            viewHolder.markBttn.setContentDescription("mark");
 
-                if(image.getWidth()>0&& image.getHeight()>0) {
-                    image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
-                            image.getHeight(), false));
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        });*/
-        OfferedRide offeredRide = dataSet.get(position).getSecond();
-
-        SharedPreferences pref = new ObscuredSharedPreferences(mContext, mContext.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
-        String userId = pref.getString("UserKey", "");
-        viewHolder.markBttn.setContentDescription("mark");
-
-        if(userId.equals(userID)){
-            viewHolder.book.setImageResource(R.drawable.ic_edit_gray);
-            viewHolder.book.setContentDescription("edit");
-            viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
-            viewHolder.markBttn.setText(String.valueOf(offeredRide.getObservers().size()));
-        }else{
-            if(offeredRide.getObservers().contains(userId)){
+            if (userId.equals(userID)) {
+                viewHolder.book.setImageResource(R.drawable.ic_edit_gray);
+                viewHolder.book.setContentDescription("edit");
                 viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
-            }else{
-                viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                viewHolder.markBttn.setText(String.valueOf(offeredRide.getObservers().size()));
+            } else {
+                if (offeredRide.getObservers().contains(userId)) {
+                    viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                } else {
+                    viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                }
+                viewHolder.book.setImageResource(android.R.drawable.ic_dialog_email);
+                viewHolder.book.setContentDescription("book");
             }
-            viewHolder.book.setImageResource(android.R.drawable.ic_dialog_email);
-            viewHolder.book.setContentDescription("book");
-        }
-        viewHolder.txtDestination.setText(offeredRide.getDestination());
-        viewHolder.txtDeparture.setText(offeredRide.getDeparture());
-        viewHolder.txtDate.setText(offeredRide.getDate().toString());
-        viewHolder.txtTime.setText(offeredRide.getTime().toString());
-        viewHolder.txtPrice.setText(offeredRide.getPrice() + "€");
-        viewHolder.txtPlaces.setText((offeredRide.getPlaces() - offeredRide.getPlaces_open()) + "/" + offeredRide.getPlaces());
+            viewHolder.txtDestination.setText(offeredRide.getDestination());
+            viewHolder.txtDeparture.setText(offeredRide.getDeparture());
+            viewHolder.txtDate.setText(offeredRide.getDate().toString());
+            viewHolder.txtTime.setText(offeredRide.getTime().toString());
+            viewHolder.txtPrice.setText(offeredRide.getPrice() + "€");
+            viewHolder.txtPlaces.setText((offeredRide.getPlaces() - offeredRide.getPlaces_open()) + "/" + offeredRide.getPlaces());
 
 
-
-        viewHolder.rating.setRating(dataSet.get(position).getThird());
+            viewHolder.rating.setRating(dataSet.get(position).getThird());
 
 
 
     }
 
     public void filterDeparture(String text) {
-        Log.e("dataSetcopy", dataSetCopy.toString());
         dataSet.clear();
         if(text.isEmpty()){
             dataSet.addAll(dataSetCopy);
         } else{
             text = text.toLowerCase();
             for(Triple item: dataSetCopy){
-                Log.e("item", item.getSecond().toString());
                 OfferedRide offeredRide = (OfferedRide) item.getSecond();
                 if(offeredRide.getDeparture().toLowerCase().contains(text)){
                     dataSet.add(item);
-                    Log.e("dataset", dataSet.toString());
                 }
             }
         }
@@ -171,18 +153,15 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
 
     public void filterDestination(String text) {
 
-        Log.e("dataSetcopy", dataSetCopy.toString());
         dataSet.clear();
         if(text.isEmpty()){
             dataSet.addAll(dataSetCopy);
         } else{
             text = text.toLowerCase();
             for(Triple item: dataSetCopy){
-                Log.e("item", item.getSecond().toString());
                 OfferedRide offeredRide = (OfferedRide) item.getSecond();
                 if(offeredRide.getDestination().toLowerCase().contains(text)){
                     dataSet.add(item);
-                    Log.e("dataset", dataSet.toString());
                 }
             }
         }

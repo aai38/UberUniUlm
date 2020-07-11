@@ -112,6 +112,7 @@ public class MyBookedRidesFragment extends Fragment {
                 Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                 Triple clickedRidePair = bookedRides.get(position);
                 OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                intent.putExtra("RATING", (float) clickedRidePair.getThird());
                 intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
@@ -142,6 +143,7 @@ public class MyBookedRidesFragment extends Fragment {
                 Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                 Triple clickedRidePair = bookedRides.get(position);
                 OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                intent.putExtra("RATING", (float) clickedRidePair.getThird());
                 intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "EDITOFFER");
@@ -152,7 +154,6 @@ public class MyBookedRidesFragment extends Fragment {
     }
     public void lookForRating(ArrayList<Triple<ArrayList, OfferedRide, Float>> bookedRides, ArrayList<BookedRide> bookedRide) {
 
-        Log.e("sizeinmethod",""+ bookedRides.size());
         for(int i = 0; i<bookedRides.size(); i++) {
             final int hold = i;
             Date date1= null;
@@ -161,8 +162,6 @@ public class MyBookedRidesFragment extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Log.e("date1", date1.toString());
-            Log.e("date2", Calendar.getInstance().getTime().toString());
             if(date1.compareTo(Calendar.getInstance().getTime()) < 0 && !bookedRide.get(i).isRated()) {
                 Log.e("time is less", "");
 

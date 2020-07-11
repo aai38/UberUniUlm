@@ -91,6 +91,7 @@ public class MyOffersFragment extends Fragment {
                 Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                 Triple clickedRidePair = offeredRides.get(position);
                 OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                intent.putExtra("RATING", (float) clickedRidePair.getThird());
                 intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
@@ -130,6 +131,7 @@ public class MyOffersFragment extends Fragment {
                             Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
                             Triple clickedRidePair = offeredRides.get(position);
                             OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                            intent.putExtra("RATING", (float) clickedRidePair.getThird());
                             intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                             intent.putExtra("RIDE", clickedRide);
                             intent.putExtra("VIEWTYPE", "EDITOFFER");

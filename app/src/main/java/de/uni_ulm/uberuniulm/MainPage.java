@@ -133,7 +133,7 @@ public class MainPage extends AppCompatActivity
                             msg = "Could not subscribe";
                         }
                         Log.d("TOPIC SUBSCRIPTION", msg);
-                        Toast.makeText(MainPage.this, msg, Toast.LENGTH_SHORT).show();
+                        
                     }
                 });
 

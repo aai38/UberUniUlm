@@ -38,6 +38,7 @@ import de.uni_ulm.uberuniulm.R;
 import de.uni_ulm.uberuniulm.model.ride.BookedRide;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import kotlin.Triple;
 
 public class RideOverviewHeaderFragment extends Fragment {
     public View fragmentView;
@@ -72,9 +73,10 @@ public class RideOverviewHeaderFragment extends Fragment {
                     }
                 });
 
-        Pair<ArrayList, OfferedRide> rideData= mapPage.getRideData();
-        ArrayList userData=rideData.first;
-        OfferedRide ride=rideData.second;
+        Triple<ArrayList, OfferedRide, Float> rideData= mapPage.getRideData();
+        ArrayList userData=rideData.getFirst();
+        OfferedRide ride=rideData.getSecond();
+        float rating = rideData.getThird();
 
         SharedPreferences pref = new ObscuredSharedPreferences(
                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("UserKey", Context.MODE_PRIVATE));
@@ -89,8 +91,9 @@ public class RideOverviewHeaderFragment extends Fragment {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
-                            intent.putExtra("USER", mapPage.getRideData().first);
-                            intent.putExtra("RIDE", mapPage.getRideData().second);
+                            intent.putExtra("USER", mapPage.getRideData().getFirst());
+                            intent.putExtra("RIDE", mapPage.getRideData().getSecond());
+                            intent.putExtra("RATING", mapPage.getRideData().getThird());
                             intent.putExtra("VIEWTYPE", "EDITOFFER");
                             startActivity(intent);
                         }
@@ -165,15 +168,9 @@ public class RideOverviewHeaderFragment extends Fragment {
         priceText= fragmentView.findViewById(R.id.rideOverviewPriceText);
         priceText.setText(ride.getPrice()+"€");
 
-        HashMap rating = (HashMap) userData.get(2);
 
-        if(rating != null) {
-            long ratingValue = (long)rating.get("stars");
-            ratingBar.setRating(Float.valueOf(ratingValue));
-        }
-        else {
-            ratingBar.setRating(0);
-        }
+        ratingBar.setRating(rating);
+
 
 
         userNameText.setText((String) userData.get(1));

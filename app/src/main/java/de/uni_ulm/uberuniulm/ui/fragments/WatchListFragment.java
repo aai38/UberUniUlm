@@ -80,6 +80,7 @@ public class WatchListFragment extends Fragment {
                 OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
                 intent.putExtra("USER", (ArrayList) clickedRidePair.getFirst());
                 intent.putExtra("RIDE", clickedRide);
+                intent.putExtra("RATING", (float)clickedRidePair.getThird());
                 intent.putExtra("VIEWTYPE", "RIDEOVERVIEW");
                 startActivity(intent);
             }

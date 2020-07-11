@@ -75,12 +75,14 @@ import de.uni_ulm.uberuniulm.ui.map.TypedBallonViewAdapter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Triple;
 
 public class MapPage extends AppCompatActivity implements LocationUpdateListener, NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, TomtomMapCallback.OnMapLongClickListener{
     private TomtomMap tomtomMap;
     private SearchApi searchApi;
     private LatLng latLngCurrentPosition, latLngDeparture, latLngDestination, wayPointPosition;
     private Route route;
+    private float rating;
     private ArrayList userData;
     private OfferedRide ride;
     private RoutingApi routingApi;
@@ -133,6 +135,7 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
                 fragment = new NewOfferHeaderFragment();
                 fragmentTransaction.replace(R.id.newOfferActivityHeaderFragmentContainer, fragment);
             }else if(viewType.equals("RIDEOVERVIEW")){
+                rating = (float) getIntent().getExtras().get("RATING");
                 userData= (ArrayList) getIntent().getExtras().get("USER");
                 ride = (OfferedRide) getIntent().getSerializableExtra("RIDE");
                 overviewHeaderFragment = new RideOverviewHeaderFragment();
@@ -562,8 +565,8 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
         //waypointList.add(waypoint);
     }
 
-    public Pair<ArrayList,OfferedRide> getRideData(){
-        Pair<ArrayList, OfferedRide> rideData= new Pair<>(userData, ride);
+    public Triple<ArrayList,OfferedRide, Float> getRideData(){
+        Triple<ArrayList, OfferedRide, Float> rideData= new Triple<>(userData, ride, rating);
         return rideData;
     }
 
