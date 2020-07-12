@@ -1,42 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatPage"
-    android:background="@drawable/backgroundgradient">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/chatPageRecyclerView"
-        android:layout_above="@+id/chatPageInputBar"/>
+    tools:context=".ChatPage">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/chatPageInputBar"
-        android:background="@color/black_semitransparent"
-        android:layout_alignParentBottom="true">
+        android:layout_height="match_parent"
+        android:background="@drawable/backgroundgradient"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chatPageRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/chatPageInputBar" />
+
+        <RelativeLayout
+            android:id="@+id/chatPageInputBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/chatPageTextInputField"
-            android:background="@android:color/transparent"
-            android:textColor="@color/colorPrimary"
-            android:hint="@string/chatPage_hint_text_editfield"
-            android:layout_toStartOf="@+id/chatPageSendButton"
-            android:layout_centerVertical="true"/>
+            android:layout_alignParentBottom="true"
+            android:background="@color/black_semitransparent"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/chatPageTextInputField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/chatPageSendButton"
+                android:background="@android:color/transparent"
+                android:hint="@string/chatPage_hint_text_editfield"
+                android:textColor="@color/colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/chatPageSendButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_send" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/chatPageZoomFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorSemiTransparentBlack"
+        android:onClick="onChatPageZoomView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="invisible">
 
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_send"
-            android:id="@+id/chatPageSendButton"
-            android:layout_alignParentEnd="true" />
-    </RelativeLayout>
-</RelativeLayout>
+            android:id="@+id/chatPageZoomCloseButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:adjustViewBounds="true"
+            android:background="@color/transparent"
+            android:onClick="onChatPageZoomView"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_cancel" />
+
+        <ImageView
+            android:id="@+id/chatPageZoomProfilePhoto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/start_register_profile_photo" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

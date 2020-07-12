@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +75,9 @@ public class ChatPage extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        ConstraintLayout zoomFragment= findViewById(R.id.chatPageZoomFragment);
+        zoomFragment.setVisibility(View.INVISIBLE);
+
         inputField= (EditText) findViewById(R.id.chatPageTextInputField);
         sendButton= (ImageButton) findViewById(R.id.chatPageSendButton);
 
@@ -84,6 +89,25 @@ public class ChatPage extends AppCompatActivity {
         String userId= getIntent().getStringExtra("RECEIVERID");
         String userName= getIntent().getStringExtra("RECEIVERNAME");
         usernameText.setText(userName);
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConstraintLayout zoomFragment= findViewById(R.id.chatPageZoomFragment);
+                ImageView profilePhoto= findViewById(R.id.chatPageZoomProfilePhoto);
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReference();
+                StorageReference profileImageRef = storageRef.child("profile_images/"+senderId+".jpg");
+                Glide.with(ChatPage.this)
+                        .load(profileImageRef)
+                        .centerCrop()
+                        .skipMemoryCache(true) //2
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .placeholder(R.drawable.start_register_profile_photo)
+                        .transform(new CircleCrop())
+                        .into(profilePhoto);
+                zoomFragment.setVisibility(View.VISIBLE);
+            }
+        });
 
         sendButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -146,6 +170,11 @@ public class ChatPage extends AppCompatActivity {
         reference.push().setValue(hashMap);
     }
 
+    public void onChatPageZoomView(View view){
+        ConstraintLayout zoomFragment= findViewById(R.id.chatPageZoomFragment);
+        zoomFragment.setVisibility(View.INVISIBLE);
+    }
+
     private void readMessage(String myid, String userid){
         mChat= new ArrayList<>();
         dataRef= FirebaseDatabase.getInstance().getReference("Chats");
@@ -158,7 +187,6 @@ public class ChatPage extends AppCompatActivity {
                     Chat chat= snapshot.getValue(Chat.class);
                     if(chat.getReceiver().equals(myid) && chat.getSender().equals(userid)|| chat.getReceiver().equals(userid) && chat.getSender().equals(myid)){
                         mChat.add(chat);
-                        Log.d("TESTPRINT", "Sender: "+chat.getSender()+" Receiver: "+ chat.getReceiver()+ " Message: "+ chat.getMessage());
                     }
 
                     messageAdapter= new MessageAdapter(ChatPage.this, mChat);
