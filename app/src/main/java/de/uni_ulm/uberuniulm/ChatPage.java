@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -50,7 +51,6 @@ public class ChatPage extends AppCompatActivity {
     ImageButton sendButton;
     EditText inputField;
 
-    FirebaseUser firebaseUser;
     DatabaseReference dataRef;
 
     MessageAdapter messageAdapter;
@@ -59,6 +59,10 @@ public class ChatPage extends AppCompatActivity {
     RecyclerView recyclerView;
 
     Intent intent;
+
+    ValueEventListener seenListener;
+
+    String senderId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +89,7 @@ public class ChatPage extends AppCompatActivity {
         usernameText= toolbar.findViewById(R.id.chatPageUsernameTextField);
 
         intent= getIntent();
-        String senderId= getIntent().getStringExtra("SENDERID");
+        senderId= getIntent().getStringExtra("SENDERID");
         String userId= getIntent().getStringExtra("RECEIVERID");
         String userName= getIntent().getStringExtra("RECEIVERNAME");
         usernameText.setText(userName);
@@ -133,7 +137,7 @@ public class ChatPage extends AppCompatActivity {
                 usernameText.setText(username);
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference();
-                StorageReference profileImageRef = storageRef.child("profile_images/"+dataRef.getKey()+".jpg");
+                StorageReference profileImageRef = storageRef.child("profile_images/"+senderId+".jpg");
                 Glide.with(ChatPage.this)
                         .load(profileImageRef)
                         .centerCrop()
@@ -151,12 +155,36 @@ public class ChatPage extends AppCompatActivity {
 
             }
         });
+
+        seenChat(userId);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         finish();
         return true;
+    }
+
+    private void seenChat(String userid){
+        dataRef= FirebaseDatabase.getInstance().getReference("Chats");
+        seenListener= dataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Chat chat = snapshot.getValue(Chat.class);
+                    if(chat.getReceiver().equals(senderId)&& chat.getSender().equals(userid)){
+                        HashMap<String, Object> hashMap= new HashMap<>();
+                        hashMap.put("isseen", true);
+                        snapshot.getRef().updateChildren(hashMap);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void sendMessage(String sender, String receiver, String message){
@@ -166,6 +194,7 @@ public class ChatPage extends AppCompatActivity {
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
+        hashMap.put("isseen", false);
 
         reference.push().setValue(hashMap);
     }
@@ -199,5 +228,11 @@ public class ChatPage extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        dataRef.removeEventListener(seenListener);
     }
 }

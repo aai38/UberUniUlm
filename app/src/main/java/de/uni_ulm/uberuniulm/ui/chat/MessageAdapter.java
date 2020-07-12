@@ -65,6 +65,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 .placeholder(R.drawable.start_register_profile_photo)
                 .transform(new CircleCrop())
                 .into(holder.profileImage);
+
+        if(position==chat.size()-1){
+            if(mchat.isIsseen()){
+                holder.isseenText.setText("Seen");
+            }else{
+                holder.isseenText.setText("Delivered");
+            }
+        }else{
+            holder.isseenText.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -75,12 +85,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder{
         public TextView message;
         public ImageView profileImage;
+        public TextView isseenText;
 
         public ViewHolder(View itemView){
             super(itemView);
 
             message= itemView.findViewById(R.id.chatItemMessageText);
             profileImage= itemView.findViewById(R.id.chatItemUserImage);
+            isseenText= itemView.findViewById(R.id.chatItemSeen);
         }
     }
 

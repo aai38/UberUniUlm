@@ -3,6 +3,18 @@ package de.uni_ulm.uberuniulm.model.ride;
 public class Chat {
     String sender, receiver;
     String message;
+    boolean isseen;
+
+    public Chat(String sender, String receiver, String message, boolean isseen){
+        this.sender=sender;
+        this.receiver=receiver;
+        this.message=message;
+        this.isseen=isseen;
+    }
+
+    public Chat(){
+
+    }
 
     public String getSender() {
         return sender;
@@ -28,4 +40,11 @@ public class Chat {
         this.message = message;
     }
 
+    public boolean isIsseen() {
+        return isseen;
+    }
+
+    public void setIsseen(boolean isseen) {
+        this.isseen = isseen;
+    }
 }
