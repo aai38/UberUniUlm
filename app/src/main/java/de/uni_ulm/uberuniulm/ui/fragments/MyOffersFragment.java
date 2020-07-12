@@ -112,7 +112,7 @@ public class MyOffersFragment extends Fragment {
                         markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
                     }
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference();
+                    DatabaseReference myRef = database.getReference().child("Users");
                     myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).getSecond().getzIndex())).removeValue();
                     myRef.child(offeredRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
                     adapter.notifyDataSetChanged();
@@ -150,7 +150,7 @@ public class MyOffersFragment extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialogWarning, int which) {
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference myRef = database.getReference();
+                                    DatabaseReference myRef = database.getReference().child("Users");
                                     myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).getSecond().getzIndex())).removeValue();
                                     //TODO remove from booked rides and notify person
                                     offeredRides.remove(position);

@@ -157,7 +157,8 @@ public class StartPage  extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 for(DataSnapshot child: dataSnapshot.getChildren()){
-                                    if(child.child("email").getValue().equals(username)) {
+                                    Boolean test= child.child("email").getValue().toString().equals(username.toString());
+                                    if(child.child("email").getValue().toString().equals(username.toString())) {
                                         userkey[0] = child.getKey();
                                         editor.putString("UserKey", userkey[0]);
                                         editor.putInt("RideId", (int) child.child("offeredRides").getChildrenCount());
@@ -172,7 +173,7 @@ public class StartPage  extends AppCompatActivity {
                             }
                         };
 
-                        Query userkeyQuery= FirebaseDatabase.getInstance().getReference().orderByChild("email").equalTo(username.toString());
+                        Query userkeyQuery= FirebaseDatabase.getInstance().getReference().child("Users");
                         userkeyQuery.addListenerForSingleValueEvent(valueEventListener);
 
                         if(loggedInCheckBox.isChecked()){
@@ -372,7 +373,7 @@ public class StartPage  extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            DatabaseReference myRef = database.getReference();
+                            DatabaseReference myRef = database.getReference().child("Users");
 
                             ArrayList offeredRide = new ArrayList<OfferedRide>();
                             ArrayList bookedRide = new ArrayList<BookedRide>();

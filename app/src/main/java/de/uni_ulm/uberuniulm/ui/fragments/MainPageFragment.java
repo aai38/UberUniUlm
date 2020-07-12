@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import de.uni_ulm.uberuniulm.ChatPage;
 import de.uni_ulm.uberuniulm.MainPage;
 import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
@@ -87,7 +88,7 @@ public class MainPageFragment extends Fragment {
         filterItems = new ArrayList<>();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
+        myRef = database.getReference().child("Users");
 
         addFilterBttn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,11 +258,11 @@ public class MainPageFragment extends Fragment {
                     @Override
                     public void onPositionClicked(int position) {
 
-                        Triple clickedRidePair = offeredRides.get(position);
-                        OfferedRide clickedRide = (OfferedRide) clickedRidePair.getSecond();
+                        Triple<ArrayList,OfferedRide, Float> clickedRideTriple = offeredRides.get(position);
+                        OfferedRide clickedRide = (OfferedRide) clickedRideTriple.getSecond();
                         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 
-                        Log.d("TESTPRINT MAINFRAG", clickedRide.getBookedUsers().toString());
+
                         if (!clickedRide.getBookedUsers().contains(userId)) {
                             dialog.setItems(getResources().getStringArray(R.array.bookoptions), new DialogInterface.OnClickListener() {
                                 @Override
@@ -310,7 +311,11 @@ public class MainPageFragment extends Fragment {
 
                                         alert.show();
                                     } else {
-                                        //TODO open message dialog
+                                        Intent intent = new Intent(fragmentView.getContext(), ChatPage.class);
+                                        intent.putExtra("SENDERID", userId);
+                                        intent.putExtra("RECEIVERNAME", clickedRideTriple.getFirst().get(1).toString());
+                                        intent.putExtra("RECEIVERID", clickedRideTriple.getFirst().get(0).toString());
+                                        startActivity(intent);
                                     }
                                 }
                             });
@@ -339,7 +344,7 @@ public class MainPageFragment extends Fragment {
                                         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int whichButton) {
                                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                DatabaseReference myRef = database.getReference();
+                                                DatabaseReference myRef = database.getReference().child("Users");
                                                 final SharedPreferences pref = new ObscuredSharedPreferences(
                                                         fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
                                                 int obookedRidesId = pref.getInt("oBookedRidesId", 0);
@@ -364,23 +369,24 @@ public class MainPageFragment extends Fragment {
 
                                         alert.show();
                                     } else {
-                                        //TODO open message activity
+                                        Intent intent = new Intent(fragmentView.getContext(), ChatPage.class);
+                                        intent.putExtra("USERID", userId);
+                                        startActivity(intent);
                                     }
                                 }
                             });
 
                             dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
-
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
                             });
+
                             AlertDialog alert = dialog.create();
                             alert.show();
 
                         }
-
                     }
 
                     @Override
@@ -445,7 +451,7 @@ public class MainPageFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialogWarning, int which) {
                                             FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                            DatabaseReference myRef = database.getReference();
+                                            DatabaseReference myRef = database.getReference().child("Users");
                                             myRef.child(userId).child("offeredRides").child(String.valueOf(offeredRides.get(position).getSecond().getzIndex())).removeValue();
                                             //TODO remove from booked rides and notify person
                                             offeredRides.remove(position);

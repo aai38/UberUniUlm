@@ -16,7 +16,15 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="AppTheme.ChatBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="AppTheme.ChatPopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="windowActionBar">false</item>
+    </style>
 
     <style name="spinnerDatePickerStyle" parent="android:Theme.Material.Dialog">
         <item name="android:datePickerStyle">@style/spinnerDatePicker</item>

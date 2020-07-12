@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:id="@+id/chatToolbar"
+    android:background="@color/colorPrimary">
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/chatPageUserImage"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/start_register_profile_photo"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chatPageUsernameTextField"
+        android:textSize="18sp"
+        android:text="Username"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:layout_marginStart="25dp"/>
+    
+
+</androidx.appcompat.widget.Toolbar >

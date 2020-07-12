@@ -22,6 +22,9 @@
         <item
             android:title="Ratings"
             android:id="@+id/ratings"/>
+        <item
+            android:title="Messages"
+            android:id="@+id/chats"/>
     </group>
 
 

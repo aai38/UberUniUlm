@@ -57,6 +57,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.uni_ulm.uberuniulm.model.notifications.NotificationManager;
+import de.uni_ulm.uberuniulm.ui.fragments.ChatsOverviewFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyOffersFragment;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
@@ -132,8 +133,6 @@ public class MainPage extends AppCompatActivity
                         if (!task.isSuccessful()) {
                             msg = "Could not subscribe";
                         }
-                        Log.d("TOPIC SUBSCRIPTION", msg);
-                        
                     }
                 });
 
@@ -161,31 +160,14 @@ public class MainPage extends AppCompatActivity
                 .placeholder(R.drawable.start_register_profile_photo)
                 .transform(new CircleCrop())
                 .into(drawerImage);
-        /*profileImageRef.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                drawerImage.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(MainPage.this, "can not load image", Toast.LENGTH_SHORT).show();
-            }
-        });*/
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
+        myRef = database.getReference().child("Users");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
                 String username = dataSnapshot.child(userId).child("username").getValue().toString();
                 drawerText.setText(username);
-
-
-
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -259,7 +241,6 @@ public class MainPage extends AppCompatActivity
 
 
         }else if (id == R.id.watch) {
-            Log.d("TEST2", "GOT HERE");
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.mainPageContentContainer, new WatchListFragment());
             fragmentTransaction.commit();
@@ -276,6 +257,10 @@ public class MainPage extends AppCompatActivity
         } else if (id == R.id.ratings) {
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.mainPageContentContainer, new RatingsFragment());
+            fragmentTransaction.commit();
+        }else if(id== R.id.chats){
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.mainPageContentContainer, new ChatsOverviewFragment());
             fragmentTransaction.commit();
         }
 

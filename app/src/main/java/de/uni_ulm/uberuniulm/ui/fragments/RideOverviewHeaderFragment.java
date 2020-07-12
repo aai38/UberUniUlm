@@ -120,7 +120,7 @@ public class RideOverviewHeaderFragment extends Fragment {
                             alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference myRef = database.getReference();
+                                    DatabaseReference myRef = database.getReference().child("Users");
                                     BookedRide bookedRide = new BookedRide(ride.getUserId(), ride.getzIndex());
                                     final SharedPreferences pref = new ObscuredSharedPreferences(
                                             fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
@@ -187,21 +187,6 @@ public class RideOverviewHeaderFragment extends Fragment {
                 .placeholder(R.drawable.start_register_profile_photo)
                 .thumbnail(/*sizeMultiplier=*/ 0.25f)
                 .into(profilePhoto);
-
-        /*final long ONE_MEGABYTE = 1024 * 1024;
-        profileImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
-                        image.getHeight(), false));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        });*/
 
 
         return fragmentView;

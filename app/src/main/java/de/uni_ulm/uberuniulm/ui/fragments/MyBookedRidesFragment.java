@@ -180,7 +180,7 @@ public class MyBookedRidesFragment extends Fragment {
                         RatingBar ratingBar = customLayout.findViewById(R.id.ratingBar);
 
                         FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference myRef = database.getReference();
+                        DatabaseReference myRef = database.getReference().child("Users");
                         rideLoader.setRatedValue(true, hold);
                         Rating rating = new Rating ((int)ratingBar.getRating(), editText.getText().toString());
 

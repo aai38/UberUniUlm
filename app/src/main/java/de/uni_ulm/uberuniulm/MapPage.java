@@ -182,7 +182,7 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
             OfferedRide offer=new OfferedRide(route.getCoordinates(), price, date, time, places, places, departure, destination, userId, zIndex, waypointList, observers);
 
             database = FirebaseDatabase.getInstance();
-            myRef = database.getReference();
+            myRef = database.getReference().child("Users");
 
             if(viewType.equals("EDITOFFER")){
                 myRef.child(userId).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(offer);
@@ -542,7 +542,7 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
 
     public void markRide(Boolean notMarkedYet){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
+        DatabaseReference myRef = database.getReference().child("Users");
         final SharedPreferences pref = new ObscuredSharedPreferences(
                 MapPage.this, MapPage.this.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         userId = pref.getString("UserKey", "");

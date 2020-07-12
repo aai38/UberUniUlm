@@ -52,4 +52,5 @@
 
 
     <string name="notification_token_msg" translatable="false">InstanceID Token: %s</string>
+    <string name="chatPage_hint_text_editfield">Type a message...</string>
 </resources>

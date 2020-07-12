@@ -48,7 +48,7 @@ public class RideLoader {
         SharedPreferences pref = new ObscuredSharedPreferences(
                 context, context.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
         userId = pref.getString("UserKey", "");
-        myRef = database.getReference();
+        myRef = database.getReference().child("Users");
 
     }
 

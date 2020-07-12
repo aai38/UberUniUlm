@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         MainPage.setFragment(ProfileFragment.this);
         ArrayList<Object> values = new ArrayList<>();
-        myRef = database.getReference();
+        myRef = database.getReference().child("Users");
 
         email = fragmentView.findViewById(R.id.profileEmail);
         username = fragmentView.findViewById(R.id.username);
@@ -89,7 +89,7 @@ public class ProfileFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         String usernameString = edittext.getText().toString();
-                        database.getReference().child(userId+ "/username").setValue(usernameString);
+                        myRef.child(userId+ "/username").setValue(usernameString);
                     }
                 });
 
@@ -119,7 +119,7 @@ public class ProfileFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         String emailString = edittext.getText().toString();
-                        database.getReference().child(userId+ "/email").setValue(emailString);
+                        myRef.child(userId+ "/email").setValue(emailString);
                     }
                 });
 

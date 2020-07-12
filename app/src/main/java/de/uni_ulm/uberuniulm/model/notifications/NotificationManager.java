@@ -55,7 +55,7 @@ public class NotificationManager extends FirebaseMessagingService {
 
                         String msg = context.getString(R.string.notification_token_msg, token);
                         database = FirebaseDatabase.getInstance();
-                        myRef = database.getReference();
+                        myRef = database.getReference().child("Users");
                         SharedPreferences pref = new ObscuredSharedPreferences(context, context.getSharedPreferences("UserKey", Context.MODE_PRIVATE));
                         userId = pref.getString("UserKey", "");
                         myRef.child(userId).child("token").setValue(token);

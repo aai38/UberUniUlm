@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChatPage"
+    android:background="@drawable/backgroundgradient">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/chatPageRecyclerView"
+        android:layout_above="@+id/chatPageInputBar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/chatPageInputBar"
+        android:background="@color/black_semitransparent"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/chatPageTextInputField"
+            android:background="@android:color/transparent"
+            android:textColor="@color/colorPrimary"
+            android:hint="@string/chatPage_hint_text_editfield"
+            android:layout_toStartOf="@+id/chatPageSendButton"
+            android:layout_centerVertical="true"/>
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_send"
+            android:id="@+id/chatPageSendButton"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+</RelativeLayout>
