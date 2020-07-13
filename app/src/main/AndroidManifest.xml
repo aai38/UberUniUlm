@@ -36,6 +36,8 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="@string/default_notification_channel_id"/>
+
         <activity
             android:name=".MainPage"
             android:label="@string/app_name"
@@ -66,9 +68,12 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".model.notifications.NotificationManager">
+        <service android:name=".model.notifications.NotificationsManager">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
     </application>

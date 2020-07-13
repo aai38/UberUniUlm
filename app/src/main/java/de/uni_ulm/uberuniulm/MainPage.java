@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -17,7 +16,6 @@ import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -56,7 +54,6 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import de.uni_ulm.uberuniulm.model.notifications.NotificationManager;
 import de.uni_ulm.uberuniulm.ui.fragments.ChatsOverviewFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyOffersFragment;
@@ -75,7 +72,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 
 
 public class MainPage extends AppCompatActivity

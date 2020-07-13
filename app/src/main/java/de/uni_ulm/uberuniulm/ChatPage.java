@@ -100,8 +100,8 @@ public class ChatPage extends AppCompatActivity {
                 ImageView profilePhoto= findViewById(R.id.chatPageZoomProfilePhoto);
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference();
-                StorageReference profileImageRef = storageRef.child("profile_images/"+senderId+".jpg");
-                Glide.with(ChatPage.this)
+                StorageReference profileImageRef = storageRef.child("profile_images/"+userId+".jpg");
+                Glide.with(getApplicationContext())
                         .load(profileImageRef)
                         .centerCrop()
                         .skipMemoryCache(true) //2
@@ -129,7 +129,7 @@ public class ChatPage extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        dataRef= FirebaseDatabase.getInstance().getReference().child("Users").child(senderId);
+        dataRef= FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
         dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -137,8 +137,8 @@ public class ChatPage extends AppCompatActivity {
                 usernameText.setText(username);
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference();
-                StorageReference profileImageRef = storageRef.child("profile_images/"+senderId+".jpg");
-                Glide.with(ChatPage.this)
+                StorageReference profileImageRef = storageRef.child("profile_images/"+userId+".jpg");
+                Glide.with(getApplicationContext())
                         .load(profileImageRef)
                         .centerCrop()
                         .skipMemoryCache(true) //2

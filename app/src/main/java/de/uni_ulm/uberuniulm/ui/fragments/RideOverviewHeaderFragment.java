@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -30,11 +31,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
+import de.uni_ulm.uberuniulm.ChatPage;
 import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
+import de.uni_ulm.uberuniulm.model.notifications.NotificationsManager;
 import de.uni_ulm.uberuniulm.model.ride.BookedRide;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
@@ -111,38 +117,150 @@ public class RideOverviewHeaderFragment extends Fragment {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
 
-                            alert.setMessage("You want to book this ride?");
-                            alert.setTitle("Book Ride");
+                            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 
 
-                            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference myRef = database.getReference().child("Users");
-                                    BookedRide bookedRide = new BookedRide(ride.getUserId(), ride.getzIndex());
-                                    final SharedPreferences pref = new ObscuredSharedPreferences(
-                                            fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
-                                    int zIndex = pref.getInt("BookedRideId", 0);
+                            if (!ride.getBookedUsers().contains(userId)) {
+                                if (ride.getPlaces_open() > 0) {
+                                    dialog.setItems(getResources().getStringArray(R.array.bookoptions), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int pos) {
+                                            if (pos == 0) {
+                                                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
 
-                                    //hier eigentlich Benachrichtigung an Fahrer
-                                    myRef.child((String) userData.get(0)).child("obookedRides").child(String.valueOf(zIndex)).setValue(bookedRide);
+                                                alert.setMessage("You want to book this ride?");
+                                                alert.setTitle("Book Ride");
 
-                                    SharedPreferences.Editor editor = pref.edit();
-                                    editor.putInt("BookedRideId", zIndex + 1);
-                                    editor.apply();
 
+                                                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                        DatabaseReference myRef = database.getReference().child("Users");
+                                                        if (ride.getPlaces_open() > 0) {
+                                                            Date date = Calendar.getInstance().getTime();
+                                                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+                                                            myRef.child(ride.getUserId()).child("offeredRides").child(String.valueOf(ride.getzIndex())).child("bookedUsers").child(userId).setValue(formatter.format(date));
+                                                            int places = ride.getPlaces_open() - 1;
+                                                            myRef.child(ride.getUserId()).child("offeredRides").child(String.valueOf(ride.getzIndex())).child("places_open").setValue(places);
+
+                                                            BookedRide bookedRide = new BookedRide(ride.getUserId(), ride.getzIndex());
+                                                            final SharedPreferences pref = new ObscuredSharedPreferences(
+                                                                    fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
+                                                            int obookedRideId = pref.getInt("obookedRideId", 0);
+
+                                                            myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRideId)).setValue(bookedRide);
+                                                            SharedPreferences.Editor editor = pref.edit();
+                                                            editor.putInt("BookedRideId", obookedRideId + 1);
+                                                            editor.apply();
+                                                            NotificationsManager notificationManager = new NotificationsManager();
+                                                            notificationManager.setUp(getContext());
+                                                            notificationManager.subscribeToTopic(ride.getUserId() + "_" + ride.getzIndex());
+                                                        } else {
+                                                            Toast.makeText(fragmentView.getContext(), "Oops, looks like somebody was a little faster than you.", Toast.LENGTH_LONG)
+                                                                    .show();
+                                                        }
+                                                    }
+                                                });
+
+                                                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                                        //TODO what ever you want to do with No option.
+                                                    }
+                                                });
+
+                                                alert.show();
+                                            } else {
+                                                Intent intent = new Intent(fragmentView.getContext(), ChatPage.class);
+                                                intent.putExtra("SENDERID", userId);
+                                                intent.putExtra("RECEIVERNAME", rideData.getFirst().get(1).toString());
+                                                intent.putExtra("RECEIVERID", rideData.getFirst().get(0).toString());
+                                                startActivity(intent);
+                                            }
+                                        }
+                                    });
+
+                                    dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                    AlertDialog alert = dialog.create();
+                                    alert.show();
+                                } else {
+                                    Intent intent = new Intent(fragmentView.getContext(), ChatPage.class);
+                                    intent.putExtra("SENDERID", userId);
+                                    intent.putExtra("RECEIVERNAME", rideData.getFirst().get(1).toString());
+                                    intent.putExtra("RECEIVERID", rideData.getFirst().get(0).toString());
+                                    startActivity(intent);
                                 }
-                            });
 
-                            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    // what ever you want to do with No option.
-                                }
-                            });
+                            } else {
+                                dialog.setItems(getResources().getStringArray(R.array.cancelbookingoptions), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int pos) {
+                                        if (pos == 0) {
+                                            AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
 
-                            alert.show();
+                                            alert.setMessage("Do you really want to cancel your booking?");
+                                            alert.setTitle("Book Ride");
+
+
+                                            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int whichButton) {
+                                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                    DatabaseReference myRef = database.getReference().child("Users");
+                                                    final SharedPreferences pref = new ObscuredSharedPreferences(
+                                                            fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
+                                                    int obookedRidesId = pref.getInt("oBookedRidesId", 0);
+
+                                                    //TODO hier eigentlich Benachrichtigung an Fahrer
+                                                    myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRidesId)).removeValue();
+                                                    myRef.child(ride.getUserId()).child("offeredRides").child(String.valueOf(ride.getzIndex())).child("bookedUsers").child(userId).removeValue();
+                                                    int places = ride.getPlaces_open() + 1;
+                                                    myRef.child(ride.getUserId()).child("offeredRides").child(String.valueOf(ride.getzIndex())).child("places_open").setValue(places);
+                                                    ride.getBookedUsers().remove(userId);
+
+                                                    SharedPreferences.Editor editor = pref.edit();
+                                                    editor.putInt("BookedRideId", obookedRidesId - 1);
+                                                    editor.apply();
+                                                    NotificationsManager notificationManager = new NotificationsManager();
+                                                    notificationManager.setUp(getContext());
+                                                    notificationManager.unsubscribeTopic(ride.getUserId() + "_" + ride.getzIndex());
+                                                }
+                                            });
+
+                                            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int whichButton) {
+                                                    //TODO what ever you want to do with No option.
+                                                }
+                                            });
+
+                                            alert.show();
+                                        } else {
+                                            Intent intent = new Intent(fragmentView.getContext(), ChatPage.class);
+                                            intent.putExtra("SENDERID", userId);
+                                            intent.putExtra("RECEIVERNAME", rideData.getFirst().get(1).toString());
+                                            intent.putExtra("RECEIVERID", rideData.getFirst().get(0).toString());
+                                            startActivity(intent);
+                                        }
+                                    }
+                                });
+
+                                dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                AlertDialog alert = dialog.create();
+                                alert.show();
+
+                            }
                         }
                     });
 

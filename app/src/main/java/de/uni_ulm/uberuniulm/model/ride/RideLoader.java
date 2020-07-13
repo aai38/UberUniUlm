@@ -1,5 +1,6 @@
 package de.uni_ulm.uberuniulm.model.ride;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import de.uni_ulm.uberuniulm.model.Rating;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
+import de.uni_ulm.uberuniulm.model.notifications.NotificationsManager;
 import de.uni_ulm.uberuniulm.ui.fragments.MainPageFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyBookedRidesFragment;
 import de.uni_ulm.uberuniulm.ui.fragments.MyOffersFragment;
@@ -37,6 +39,7 @@ public class RideLoader {
     private DataSnapshot dataSnapshot;
     private ParseType parseType;
     private ArrayList bookings = new ArrayList();
+    private NotificationsManager notificationsManager;
 
     private String userId;
 
@@ -215,6 +218,52 @@ public class RideLoader {
 
     }
 
+    public void getSpecificRide(String offererId, String zIndex, NotificationsManager notificationManager){
+        parseType= ParseType.WATCHING;
+        ArrayList<Triple<ArrayList, OfferedRide, Float>> rideResult = new ArrayList<>();
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot user : dataSnapshot.getChildren()) {
+                    if (user.getKey().equals(offererId)) {
+                        ArrayList userData = new ArrayList();
+                        userData.add(user.getKey());
+                        userData.add(user.child("username").getValue());
+
+                        float total = 0;
+                        float rating = 0;
+                        int number = 0;
+                        DataSnapshot usersRating = user.child("Rating");
+                        if(usersRating.getChildrenCount()>0) {
+                            for (DataSnapshot ratings : usersRating.getChildren()) {
+
+                                long ratingValue = (long) ratings.child("stars").getValue();
+                                total += Float.valueOf(ratingValue);
+                                number += 1;
+
+                            }
+                            if(number!=0)
+                            rating = total / number;
+                        }
+                        DataSnapshot ride = user.child("offeredRides").child(zIndex);
+                        HashMap<String, Object> values = new HashMap<>();
+                        for (DataSnapshot rideValue : ride.getChildren()) {
+                            values.put(rideValue.getKey(), rideValue.getValue());
+                        }
+                        parseType=ParseType.NOTIFICATION;
+                        notificationsManager=notificationManager;
+                        rideResult.add(parseData(userData, values, rating));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void getUsersOfferedRides(MyOffersFragment myOffersFragment){
         parseType=ParseType.USERSOFFERS;
 
@@ -237,8 +286,8 @@ public class RideLoader {
                     number +=1;
 
                 }
-                rating = total/number;
 
+                rating = total/number;
                 for (DataSnapshot ride : dataSnapshot.child(userId).child("offeredRides").getChildren()) {
                     HashMap<String, Object> values = new HashMap<>();
                     for (DataSnapshot rideValue : ride.getChildren()) {
@@ -326,7 +375,9 @@ public class RideLoader {
         OfferedRide offeredRide = new OfferedRide(coordinates, (int) price, date, time, (int) places, (int) places_open, departure, destination, userkey, (int) zIndex, waypoints, observers);
         offeredRide.setBookedUsers((ArrayList) bookedUsers);
 
-
+        if(parseType==ParseType.NOTIFICATION){
+            notificationsManager.setRideNotification(new Triple(userData, offeredRide, rating));
+        }
         return new Triple(userData, offeredRide, rating);
     }
 
@@ -359,6 +410,6 @@ public class RideLoader {
     }
 
     enum ParseType {
-        BOOKEDRIDES, USERSOFFERS, OFFERS, WATCHING
+        BOOKEDRIDES, USERSOFFERS, OFFERS, WATCHING, NOTIFICATION
     }
 }
