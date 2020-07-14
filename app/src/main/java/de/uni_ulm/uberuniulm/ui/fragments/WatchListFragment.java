@@ -98,10 +98,10 @@ public class WatchListFragment extends Fragment {
                     TextView markBttn = (TextView) view;
                     if (notMarkedYet) {
                         ride.markRide(userId);
-                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                        markBttn.setBackgroundResource(R.drawable.ic_marked);
                     } else {
                         ride.unmarkRide(userId);
-                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                        markBttn.setBackgroundResource(R.drawable.ic_unmarked);
                     }
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference().child("Users");

@@ -62,7 +62,7 @@
             android:adjustViewBounds="true"
             android:padding="5dp"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/alarm2" />
+            app:srcCompat="@drawable/ic_alarm_selected" />
 
     </LinearLayout>
 
@@ -84,7 +84,7 @@
             android:adjustViewBounds="true"
             android:padding="5dp"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/pencil" />
+            app:srcCompat="@drawable/ic_edit" />
 
         <TextView
             android:id="@+id/mapMarkerInfoWarningText"

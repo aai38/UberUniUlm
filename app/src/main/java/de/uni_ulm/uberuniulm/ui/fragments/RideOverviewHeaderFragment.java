@@ -108,9 +108,9 @@ public class RideOverviewHeaderFragment extends Fragment {
 
         }else {
             if(ride.getObservers().contains(userId)){
-                markBttn.setImageResource(R.drawable.ic_mark_offer);
+                markBttn.setImageResource(R.drawable.ic_marked_primary);
             }else{
-                markBttn.setImageResource(R.drawable.ic_mark_offer_deselected);
+                markBttn.setImageResource(R.drawable.ic_unmarked_primary);
             }
 
             bookBttn.setOnClickListener(
@@ -269,10 +269,10 @@ public class RideOverviewHeaderFragment extends Fragment {
                 public void onClick(View view) {
                     if(ride.getObservers().contains(userId)){
                         mapPage.markRide(false);
-                        markBttn.setImageResource(R.drawable.ic_mark_offer_deselected);
+                        markBttn.setImageResource(R.drawable.ic_unmarked_primary);
                     }else{
                         mapPage.markRide(true);
-                        markBttn.setImageResource(R.drawable.ic_mark_offer);
+                        markBttn.setImageResource(R.drawable.ic_marked_primary);
                     }
                 }
             });

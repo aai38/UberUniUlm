@@ -17,11 +17,12 @@
                 android:id="@+id/rideOverviewBookingButton"
                 android:layout_width="39dp"
                 android:layout_height="35dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="5dp"
                 android:adjustViewBounds="true"
                 android:background="@color/transparent"
                 android:scaleType="fitXY"
-                app:srcCompat="@android:drawable/ic_dialog_email" />
+                app:srcCompat="@drawable/ic_book_primary" />
 
             <ImageButton
                 android:id="@+id/rideOverviewMarkButton"
@@ -33,7 +34,7 @@
                 android:background="@color/transparent"
                 android:onClick="onBookRideButton"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_mark_offer_deselected" />
+                app:srcCompat="@drawable/ic_unmarked_primary" />
 
             <ImageView
                 android:id="@+id/rideOverviewCloseBttn"

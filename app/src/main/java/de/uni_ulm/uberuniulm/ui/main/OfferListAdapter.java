@@ -90,15 +90,15 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
             if (userId.equals(userID)) {
                 viewHolder.book.setImageResource(R.drawable.ic_edit_gray);
                 viewHolder.book.setContentDescription("edit");
-                viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                viewHolder.markBttn.setBackgroundResource(R.drawable.ic_marked);
                 viewHolder.markBttn.setText(String.valueOf(offeredRide.getObservers().size()));
             } else {
                 if (offeredRide.getObservers().contains(userId)) {
-                    viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                    viewHolder.markBttn.setBackgroundResource(R.drawable.ic_marked);
                 } else {
-                    viewHolder.markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                    viewHolder.markBttn.setBackgroundResource(R.drawable.ic_unmarked);
                 }
-                viewHolder.book.setImageResource(android.R.drawable.ic_dialog_email);
+                viewHolder.book.setImageResource(R.drawable.ic_book);
                 viewHolder.book.setContentDescription("book");
             }
             viewHolder.txtDestination.setText(offeredRide.getDestination());

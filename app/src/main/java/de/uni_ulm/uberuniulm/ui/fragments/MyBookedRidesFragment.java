@@ -127,10 +127,10 @@ public class MyBookedRidesFragment extends Fragment {
                     TextView markBttn = (TextView) view;
                     if (!notMarkedYet) {
                         ride.markRide(userId);
-                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer);
+                        markBttn.setBackgroundResource(R.drawable.ic_marked);
                     } else {
                         ride.unmarkRide(userId);
-                        markBttn.setBackgroundResource(R.drawable.ic_mark_offer_deselected);
+                        markBttn.setBackgroundResource(R.drawable.ic_unmarked);
                     }
 
                     myRef.child(bookedRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);

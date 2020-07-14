@@ -4,30 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_weight="0"
     android:layout_marginBottom="10dp"
+    android:id="@+id/rideItemContainer"
     android:background="#2AFFFFFF"
     android:orientation="vertical"
-    android:paddingLeft="15dp"
-    android:paddingTop="15dp"
+    android:paddingLeft="10dp"
+    android:paddingTop="10dp"
     android:paddingEnd="0dp"
     android:paddingRight="0dp">
 
-    <TextView
-        android:id="@+id/textViewDeparture"
-        android:layout_width="90dp"
-        android:layout_height="39dp"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/profileImageContainer"
-        android:layout_toRightOf="@+id/profileImageContainer"
-        android:paddingBottom="10dp"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profileImageContainer"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true">
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/profileImageDrawer"
@@ -61,109 +53,157 @@
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/TextViewArrow"
-        android:layout_width="32dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="131dp"
-        android:layout_toEndOf="@+id/textViewDeparture"
-        android:layout_toRightOf="@+id/profileImageContainer"
-        android:text="&lt;-&gt;"
-        android:textColor="#FFFFFF" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/centralContainer"
+        android:layout_toEndOf="@id/profileImageContainer"
+        android:layout_alignParentEnd="true">
 
-    <TextView
-        android:id="@+id/TextViewDestination"
-        android:layout_width="80dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="3dp"
-        android:layout_toEndOf="@+id/TextViewArrow"
-        android:layout_toRightOf="@+id/profileImageContainer"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        <ImageView
+            android:id="@+id/startGoalIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:src="@drawable/ic_depart_dest" />
+
+        <LinearLayout
+            android:id="@+id/textFieldContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/startGoalIcon"
+            android:layout_alignBottom="@id/startGoalIcon"
+            android:layout_alignTop="@id/startGoalIcon"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewDeparture"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="start|left|center_vertical"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                tools:ignore="RtlHardcoded" />
+
+            <TextView
+                android:id="@+id/TextViewDestination"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="start|left|center_vertical"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                tools:ignore="RtlHardcoded" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rightControlContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/textFieldContainer"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/markBttn"
+                android:adjustViewBounds="true"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_unmarked"
+                android:background="@color/transparent"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:scaleType="fitXY"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TextViewPlaces"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="5dp"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/bookingButton"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="5dp"
+                android:adjustViewBounds="true"
+                android:background="@color/transparent"
+                android:scaleType="fitXY" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/bottomControlContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textViewDeparture"
-        android:layout_alignStart="@+id/textViewDeparture"
-        android:layout_marginTop="40dp"
+        android:layout_below="@id/centralContainer"
+        android:layout_toEndOf="@id/profileImageContainer"
+        android:layout_marginStart="10dp"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="NotSibling">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_calendar_white"/>
 
         <TextView
             android:id="@+id/textViewDate"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="10dp"
             android:layout_height="42dp"
+            android:gravity="start|left|center_vertical"
             android:layout_marginLeft="10dp"
-            android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/TextViewLine"
-            android:layout_width="32dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:text="-"
-            android:textColor="#FFFFFF" />
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_time_white"/>
+
 
         <TextView
             android:id="@+id/TextViewTime"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginEnd="15dp"
+            android:gravity="start|left|center_vertical"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/TextViewPrice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textAlignment="center"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
+            android:gravity="start|left|center_vertical"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
             android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/TextViewDestination"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="0dp"
-        android:layout_toEndOf="@+id/TextViewDestination"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/markBttn"
-            android:layout_width="27dp"
-            android:layout_height="35dp"
-            android:background="@drawable/ic_mark_offer_deselected"
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/TextViewPlaces"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <ImageButton
-            android:id="@+id/bookingButton"
-            android:layout_width="39dp"
-            android:layout_height="35dp"
-            android:layout_marginTop="10dp"
-            android:adjustViewBounds="true"
-            android:background="@color/transparent"
-            android:scaleType="fitXY" />
     </LinearLayout>
 
 
