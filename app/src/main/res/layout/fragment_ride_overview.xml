@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rideOverviewUpperContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,8 +16,8 @@
 
             <ImageButton
                 android:id="@+id/rideOverviewBookingButton"
-                android:layout_width="39dp"
-                android:layout_height="35dp"
+                android:layout_width="33dp"
+                android:layout_height="30dp"
                 android:layout_marginTop="13dp"
                 android:layout_marginEnd="5dp"
                 android:adjustViewBounds="true"
@@ -26,8 +27,8 @@
 
             <ImageButton
                 android:id="@+id/rideOverviewMarkButton"
-                android:layout_width="39dp"
-                android:layout_height="35dp"
+                android:layout_width="35dp"
+                android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="5dp"
                 android:adjustViewBounds="true"
@@ -38,11 +39,11 @@
 
             <ImageView
                 android:id="@+id/rideOverviewCloseBttn"
-                android:layout_width="45dp"
-                android:layout_marginTop="5dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_height="45dp"
                 android:layout_weight="0"
                 app:srcCompat="@drawable/ic_cancel" />
         </LinearLayout>
@@ -108,52 +109,141 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/rideOfferStartGoalText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Staudinger Straße -> Helmholzstraße"
-                android:textColor="@color/black_fully_opaque"
-                android:textSize="18sp" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/ridOfferDateText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Today - 8:10"
-                android:textColor="@color/black_fully_opaque"
-                android:textSize="18sp" />
+                <ImageView
+                    android:id="@+id/startGoalIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/ic_depart_dest" />
+
+                <LinearLayout
+                    android:id="@+id/textFieldContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/startGoalIcon"
+                    android:layout_alignBottom="@id/startGoalIcon"
+                    android:layout_alignTop="@id/startGoalIcon"
+                    android:layout_margin="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/rideOfferStartText"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:gravity="start|left|center_vertical"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        tools:ignore="RtlHardcoded" />
+
+                    <TextView
+                        android:id="@+id/rideOfferGoalText"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:gravity="start|left|center_vertical"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        tools:ignore="RtlHardcoded" />
+                </LinearLayout>
+            </RelativeLayout>
+
+
         </LinearLayout>
+
+
     </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="40dp"
+            android:padding="5dp"
+            android:gravity="center_vertical">
 
             <ImageView
-                android:id="@+id/imageView4"
+                android:id="@+id/carIcon"
+                android:layout_marginStart="10dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 app:srcCompat="@drawable/ic_map_traffic_incident_midgrey_small" />
 
             <TextView
                 android:id="@+id/rideOverviewCarInfoText"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:text="VW Golf - 4 Plätze" />
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/carIcon"
+                android:layout_marginStart="10dp"
+                android:text="VW Golf - 4 Plätze"
+                android:gravity="center_vertical|start"
+                android:textColor="@color/white_fully_opaque"
+                android:textSize="14sp"/>
+
+            <ImageView
+                android:id="@+id/calendarIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="15dp"
+                android:padding="5dp"
+                android:layout_toEndOf="@id/rideOverviewCarInfoText"
+                android:src="@drawable/ic_calendar_white"/>
 
             <TextView
-                android:id="@+id/rideOverviewPriceText"
+                android:id="@+id/rideOfferDateText"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:text="1€"
-                android:textColor="@color/black_fully_opaque" />
-        </LinearLayout>
+                android:layout_marginEnd="5dp"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/calendarIcon"
+                android:gravity="start|left|center_vertical"
+                android:layout_marginStart="10dp"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:ignore="RtlHardcoded" />
+
+            <ImageView
+                android:id="@+id/timeIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@id/rideOfferDateText"
+                android:padding="5dp"
+                android:src="@drawable/ic_time_white"/>
+
+
+            <TextView
+                android:id="@+id/rideOfferTimeText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@id/timeIcon"
+                android:gravity="start|left|center_vertical"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:ignore="RtlHardcoded" />
+
+            <TextView
+                android:id="@+id/rideOfferPriceText"
+                android:layout_toEndOf="@+id/rideOfferTimeText"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:ignore="RtlHardcoded" />
+        </RelativeLayout>
 </LinearLayout>

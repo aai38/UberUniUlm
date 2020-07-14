@@ -49,7 +49,7 @@ import kotlin.Triple;
 public class RideOverviewHeaderFragment extends Fragment {
     public View fragmentView;
     private MapPage mapPage;
-    private TextView userNameText, startGoalText, dateText, carInfoText, priceText;
+    private TextView userNameText, startText, goalText, dateText, timeText, carInfoText, priceText;
     private ImageView closeBttn;
     private ImageButton bookBttn, markBttn;
     private RatingBar ratingBar;
@@ -61,8 +61,10 @@ public class RideOverviewHeaderFragment extends Fragment {
         mapPage = (MapPage) getActivity();
 
         userNameText= fragmentView.findViewById(R.id.rideOverviewUserNameText);
-        startGoalText= fragmentView.findViewById(R.id.rideOfferStartGoalText);
-        dateText= fragmentView.findViewById(R.id.ridOfferDateText);
+        startText= fragmentView.findViewById(R.id.rideOfferStartText);
+        goalText= fragmentView.findViewById(R.id.rideOfferGoalText);
+        dateText= fragmentView.findViewById(R.id.rideOfferDateText);
+        timeText= fragmentView.findViewById(R.id.rideOfferTimeText);
         profilePhoto= fragmentView.findViewById(R.id.offerOverviewProfileImageDrawer);
         carInfoText= fragmentView.findViewById(R.id.rideOverviewCarInfoText);
         closeBttn= fragmentView.findViewById(R.id.rideOverviewCloseBttn);
@@ -278,12 +280,14 @@ public class RideOverviewHeaderFragment extends Fragment {
             });
         }
 
-        dateText.setText(ride.getDate()+ " "+ ride.getTime());
-        startGoalText.setText(ride.getDeparture()+ " <-> "+ ride.getDestination());
+        dateText.setText(ride.getDate());
+        timeText.setText(ride.getTime());
+        startText.setText(ride.getDeparture());
+        goalText.setText(ride.getDestination());
         carInfoText.setText(ride.getPlaces()-ride.getPlaces_open()+"/"+ride.getPlaces());
         Log.d("CARINFO", String.valueOf(ride.getPrice()));
 
-        priceText= fragmentView.findViewById(R.id.rideOverviewPriceText);
+        priceText= fragmentView.findViewById(R.id.rideOfferPriceText);
         priceText.setText(ride.getPrice()+"€");
 
 
