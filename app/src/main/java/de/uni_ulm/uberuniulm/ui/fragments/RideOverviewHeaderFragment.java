@@ -51,7 +51,7 @@ public class RideOverviewHeaderFragment extends Fragment {
     private MapPage mapPage;
     private TextView userNameText, startText, goalText, dateText, timeText, carInfoText, priceText;
     private ImageView closeBttn;
-    private ImageButton bookBttn, markBttn;
+    private ImageButton bookBttn, markBttn, bookersBttn;
     private RatingBar ratingBar;
     private com.mikhaellopez.circularimageview.CircularImageView profilePhoto;
 
@@ -70,6 +70,7 @@ public class RideOverviewHeaderFragment extends Fragment {
         closeBttn= fragmentView.findViewById(R.id.rideOverviewCloseBttn);
         markBttn= fragmentView.findViewById(R.id.rideOverviewMarkButton);
         bookBttn= fragmentView.findViewById(R.id.rideOverviewBookingButton);
+        bookersBttn= fragmentView.findViewById(R.id.rideOverviewBookersButton);
         ratingBar = fragmentView.findViewById(R.id.ratingView);
 
 
@@ -91,7 +92,7 @@ public class RideOverviewHeaderFragment extends Fragment {
         String userId = pref.getString("UserKey", "");
 
         if(userId.equals(userData.get(0))){
-            markBttn.setVisibility(View.INVISIBLE);
+            markBttn.setVisibility(View.GONE);
             bookBttn.setImageResource(R.drawable.ic_edit_gray);
             bookBttn.setContentDescription("edit");
             bookBttn.setOnClickListener(
@@ -107,6 +108,17 @@ public class RideOverviewHeaderFragment extends Fragment {
                         }
                     });
 
+            if(ride.getBookedUsers().size()==0){
+                bookersBttn.setVisibility(View.INVISIBLE);
+            }else {
+                bookersBttn.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mapPage.showBookers();
+                            }
+                        });
+            }
 
         }else {
             if(ride.getObservers().contains(userId)){
@@ -115,6 +127,7 @@ public class RideOverviewHeaderFragment extends Fragment {
                 markBttn.setImageResource(R.drawable.ic_unmarked_primary);
             }
 
+            bookersBttn.setVisibility(View.INVISIBLE);
             bookBttn.setOnClickListener(
                     new View.OnClickListener() {
                         @Override

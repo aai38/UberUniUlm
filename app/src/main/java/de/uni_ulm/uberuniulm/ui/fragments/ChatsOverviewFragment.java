@@ -63,7 +63,6 @@ public class ChatsOverviewFragment extends Fragment {
                 userlist.clear();
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Chat chat= snapshot.getValue(Chat.class);
-                    Log.d("ANOTHER TEST PRINT", chat.getSender().toString()+ "  and  "+ chat.getReceiver().toString()+  "   and   "+ userId.toString());
 
                     if(chat.getSender().equals(userId)){
                         userlist.add(chat.getReceiver());
@@ -99,10 +98,14 @@ public class ChatsOverviewFragment extends Fragment {
                     for(String id: userlist){
                         if(user.first.equals(id)){
                             if(mUsers.size() !=0){
+                                Boolean notInList=true;
                                 for(Pair<String, String> user1: mUsers){
-                                    if(!user.first.equals(user1.first)){
-                                        mUsers.add(user);
+                                    if(user.first.equals(user1.first)){
+                                        notInList=false;
                                     }
+                                }
+                                if(notInList) {
+                                    mUsers.add(user);
                                 }
                             }else{
                                 mUsers.add(user);
@@ -123,7 +126,7 @@ public class ChatsOverviewFragment extends Fragment {
                 });
 
                 recyclerView.setAdapter(userAdapter);
-                }
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {

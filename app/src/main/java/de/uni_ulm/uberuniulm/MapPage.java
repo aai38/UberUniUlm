@@ -29,8 +29,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.base.Optional;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.tomtom.online.sdk.common.location.LatLng;
 import com.tomtom.online.sdk.location.LocationUpdateListener;
 import com.tomtom.online.sdk.map.CameraPosition;
@@ -65,7 +68,12 @@ import java.util.List;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import de.uni_ulm.uberuniulm.model.User;
+import de.uni_ulm.uberuniulm.ui.chat.ChatClickListener;
+import de.uni_ulm.uberuniulm.ui.chat.UserAdapter;
 import de.uni_ulm.uberuniulm.ui.fragments.NewOfferHeaderFragment;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
@@ -82,6 +90,7 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
     private SearchApi searchApi;
     private LatLng latLngCurrentPosition, latLngDeparture, latLngDestination, wayPointPosition;
     private Route route;
+    private UserAdapter userAdapter;
     private float rating;
     private ArrayList userData;
     private OfferedRide ride;
@@ -97,11 +106,14 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
 
     private List<String>  waypoints;
     private List<LatLng> waypointList;
+    private List<Pair<String, String>> bookers;
     private long currrentlySelectedRoute;
     private Boolean waypointsInitiated=false;
     private WaypointArrayAdapter waypointArrayAdapter;
     private AutoCompleteTextView atvWaypointLocation;
     private String viewType, userId;
+
+    private LinearLayout bookersFragment, waypointsFragment, fragmentContainer;
 
     private Icon departureIcon, destinationIcon, waypointIcon;
 
@@ -116,7 +128,20 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
         setContentView(R.layout.activity_new_ride);
 
         LinearLayout mapFragment=(LinearLayout) findViewById(R.id.newOfferActivityMapContainer);
+        bookersFragment= (LinearLayout) findViewById(R.id.newOfferBookersOverviewContainer);
+        waypointsFragment= (LinearLayout) findViewById(R.id.dialogManageWaypoints);
+        fragmentContainer = (LinearLayout) findViewById(R.id.newOfferFragmentContainer);
+        fragmentContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentContainer.setVisibility(View.INVISIBLE);
+                waypointsFragment.setVisibility(View.INVISIBLE);
+                bookersFragment.setVisibility(View.INVISIBLE);
+            }
+        });
 
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference().child("Users");
 
         mapFragment.setVisibility(View.VISIBLE);
         searchApi=OnlineSearchApi.create(this);
@@ -180,9 +205,6 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
             ArrayList<String> observers= new ArrayList<>();
 
             OfferedRide offer=new OfferedRide(route.getCoordinates(), price, date, time, places, places, departure, destination, userId, zIndex, waypointList, observers);
-
-            database = FirebaseDatabase.getInstance();
-            myRef = database.getReference().child("Users");
 
             if(viewType.equals("EDITOFFER")){
                 myRef.child(userId).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(offer);
@@ -461,8 +483,8 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
     }
 
     public void addWaypoint(){
-        LinearLayout fragmentContainer = findViewById(R.id.newOfferFragmentContainer);
         fragmentContainer.setVisibility(View.VISIBLE);
+        waypointsFragment.setVisibility(View.VISIBLE);
         atvWaypointLocation = findViewById(R.id.dialogWaypointSearch);
 
         if (!waypointsInitiated) {
@@ -568,6 +590,47 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
     public Triple<ArrayList,OfferedRide, Float> getRideData(){
         Triple<ArrayList, OfferedRide, Float> rideData= new Triple<>(userData, ride, rating);
         return rideData;
+    }
+
+    public void showBookers(){
+        bookersFragment.setVisibility(View.VISIBLE);
+        fragmentContainer.setVisibility(View.VISIBLE);
+
+        RecyclerView recyclerView= findViewById(R.id.bookerOverViewRecyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+
+        bookers= new ArrayList<>();
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                bookers.clear();
+                for (String userId : ride.getBookedUsers()) {
+                    String username=(String) dataSnapshot.child(userId).child("username").getValue();
+                    Pair<String, String> booker=new Pair<String, String>(userId, username);
+                    bookers.add(booker);
+                }
+
+                userAdapter = new UserAdapter(getBaseContext(), bookers, new ChatClickListener() {
+                    @Override
+                    public void onChatClicked(int position) {
+                        Intent intent= new Intent(getApplicationContext(), ChatPage.class);
+                        intent.putExtra("SENDERID", userId);
+                        intent.putExtra("RECEIVERNAME", bookers.get(position).second);
+                        intent.putExtra("RECEIVERID", bookers.get(position).first);
+                        startActivity(intent);
+                    }
+                });
+
+                recyclerView.setAdapter(userAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public String getViewType(){return viewType;}

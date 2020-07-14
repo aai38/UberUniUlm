@@ -52,6 +52,26 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/newOfferBookersOverviewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_margin="25dp"
+            android:background="@color/colorSemiTransparentBlack"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/bookerOverViewRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/dialogManageWaypoints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +79,8 @@
             android:layout_marginEnd="@dimen/offset_large"
             android:background="@color/colorSemiTransparentBlack"
             android:orientation="vertical"
-            android:padding="@dimen/offset_medium">
+            android:padding="@dimen/offset_medium"
+            android:visibility="gone">
 
             <LinearLayout
                 android:id="@+id/dialogManageWaypointsHeader"

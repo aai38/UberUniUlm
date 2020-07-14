@@ -230,7 +230,6 @@ public class MainPage extends AppCompatActivity
             fragmentTransaction.commit();
 
         } else if (id == R.id.offers) {
-
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.mainPageContentContainer, new MyOffersFragment());
             fragmentTransaction.commit();
