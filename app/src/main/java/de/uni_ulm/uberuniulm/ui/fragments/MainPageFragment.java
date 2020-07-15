@@ -322,6 +322,7 @@ public class MainPageFragment extends Fragment {
                                             intent.putExtra("RECEIVERNAME", clickedRideTriple.getFirst().get(1).toString());
                                             intent.putExtra("RECEIVERID", clickedRideTriple.getFirst().get(0).toString());
                                             startActivity(intent);
+
                                         }
                                     }
                                 });
@@ -336,11 +337,31 @@ public class MainPageFragment extends Fragment {
                                 AlertDialog alert = dialog.create();
                                 alert.show();
                             }else{
-                                Intent intent = new Intent(fragmentView.getContext(), ChatPage.class);
-                                intent.putExtra("SENDERID", userId);
-                                intent.putExtra("RECEIVERNAME", clickedRideTriple.getFirst().get(1).toString());
-                                intent.putExtra("RECEIVERID", clickedRideTriple.getFirst().get(0).toString());
-                                startActivity(intent);
+                                AlertDialog.Builder alert = new AlertDialog.Builder(fragmentView.getContext());
+
+                                alert.setMessage("Ride already booked up. Do you want to send the rider a message?");
+                                alert.setTitle("Booked up!");
+
+
+                                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        Intent intent = new Intent(fragmentView.getContext(), ChatPage.class);
+                                        intent.putExtra("SENDERID", userId);
+                                        intent.putExtra("RECEIVERNAME", clickedRideTriple.getFirst().get(1).toString());
+                                        intent.putExtra("RECEIVERID", clickedRideTriple.getFirst().get(0).toString());
+                                        startActivity(intent);
+                                    }
+
+                                });
+
+                                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        //TODO what ever you want to do with No option.
+                                    }
+                                });
+
+                                alert.show();
+
                             }
 
                         } else {
