@@ -123,7 +123,7 @@ public class NotificationsManager extends FirebaseMessagingService {
             RideLoader rideLoader= new RideLoader(getApplicationContext());
             rideLoader.getSpecificRide(Objects.requireNonNull(data.get("userId")).toString(), Objects.requireNonNull(data.get("rideId")).toString(), this);
             this.title=title;
-            this.body= body;
+            this.body= messageBody;
         }else{
             intent = new Intent(getApplicationContext(), MainPage.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
