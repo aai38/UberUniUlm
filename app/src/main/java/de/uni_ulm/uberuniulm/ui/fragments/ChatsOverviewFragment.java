@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +39,7 @@ public class ChatsOverviewFragment extends Fragment {
     private List<Pair<String, String>> mUsers;
     private List<String> userlist;
     private String userId;
+    private ConstraintLayout noEntriesContainer;
 
     private RecyclerView recyclerView;
     DatabaseReference reference;
@@ -49,6 +51,8 @@ public class ChatsOverviewFragment extends Fragment {
         recyclerView= view.findViewById(R.id.chatFragmentRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        noEntriesContainer= (ConstraintLayout) view.findViewById(R.id.noEntryContainer);
 
         SharedPreferences pref = new ObscuredSharedPreferences(
                 getContext(), getContext().getSharedPreferences("UserKey", Context.MODE_PRIVATE));
@@ -124,6 +128,14 @@ public class ChatsOverviewFragment extends Fragment {
                         startActivity(intent);
                     }
                 });
+
+                if(mUsers.isEmpty()){
+                    noEntriesContainer.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.INVISIBLE);
+                }else{
+                    noEntriesContainer.setVisibility(View.INVISIBLE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
 
                 recyclerView.setAdapter(userAdapter);
             }

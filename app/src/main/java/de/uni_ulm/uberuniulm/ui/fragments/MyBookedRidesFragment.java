@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,6 +50,7 @@ public class MyBookedRidesFragment extends Fragment {
     ArrayList<Triple<ArrayList, OfferedRide, Float>> bookedRides;
     private FragmentTransaction fragmentTransaction;
     ArrayList<BookedRide> bookedRidesData = new ArrayList<>();
+    private ConstraintLayout noEntrysLayout;
     private FirebaseAuth mAuth;
     private long zIndexBooking;
     private String userIdBooking;
@@ -68,8 +70,6 @@ public class MyBookedRidesFragment extends Fragment {
         mybookingsRecyclerView.setHasFixedSize(true);
         mybookingsRecyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
-
-
         database = FirebaseDatabase.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
@@ -81,6 +81,16 @@ public class MyBookedRidesFragment extends Fragment {
 
 
         bookedRides = new ArrayList();
+
+        noEntrysLayout = (ConstraintLayout) fragmentView.findViewById(R.id.noEntryContainer);
+        if (bookedRides.isEmpty()) {
+            mybookingsRecyclerView.setVisibility(View.GONE);
+            noEntrysLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            mybookingsRecyclerView.setVisibility(View.VISIBLE);
+            noEntrysLayout.setVisibility(View.GONE);
+        }
 
 
         rideLoader= new RideLoader(getContext());
@@ -97,6 +107,15 @@ public class MyBookedRidesFragment extends Fragment {
             mybookingsRecyclerView.setAdapter(adapter);
         }else{
             setOfferAdapter();
+        }
+
+        if (bookedRides.isEmpty()) {
+            mybookingsRecyclerView.setVisibility(View.GONE);
+            noEntrysLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            mybookingsRecyclerView.setVisibility(View.VISIBLE);
+            noEntrysLayout.setVisibility(View.GONE);
         }
     }
 

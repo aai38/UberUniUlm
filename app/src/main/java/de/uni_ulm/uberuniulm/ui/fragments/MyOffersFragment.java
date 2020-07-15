@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,17 +50,39 @@ public class MyOffersFragment extends Fragment {
     private static OfferListAdapter adapter;
     private ArrayList<Triple<ArrayList, OfferedRide, Float>> offeredRides;
     private String userId;
+    private ConstraintLayout noEntrysLayout;
+    private Button createRideButton;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_offers, container, false);
 
+        offeredRides = new ArrayList();
+
         myoffersRecyclerView = (RecyclerView) fragmentView.findViewById(R.id.recyclerViewMyOffers);
         myoffersRecyclerView.setHasFixedSize(true);
         myoffersRecyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
-        offeredRides = new ArrayList();
+        noEntrysLayout = (ConstraintLayout) fragmentView.findViewById(R.id.noEntryContainer);
+        createRideButton= (Button) fragmentView.findViewById(R.id.createRideButton);
+        createRideButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(fragmentView.getContext(), MapPage.class);
+                intent.putExtra("VIEWTYPE", "NEWOFFER");
+                startActivity(intent);
+            }
+        });
+
+        if (offeredRides.isEmpty()) {
+            myoffersRecyclerView.setVisibility(View.GONE);
+            noEntrysLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            myoffersRecyclerView.setVisibility(View.VISIBLE);
+            noEntrysLayout.setVisibility(View.GONE);
+        }
 
         SharedPreferences pref = new ObscuredSharedPreferences(
                 fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("UserKey", Context.MODE_PRIVATE));
@@ -76,6 +100,15 @@ public class MyOffersFragment extends Fragment {
             myoffersRecyclerView.setAdapter(adapter);
         }else{
             setOfferAdapter();
+        }
+
+        if (offeredRides.isEmpty()) {
+            myoffersRecyclerView.setVisibility(View.GONE);
+            noEntrysLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            myoffersRecyclerView.setVisibility(View.VISIBLE);
+            noEntrysLayout.setVisibility(View.GONE);
         }
     }
 

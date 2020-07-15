@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,6 +79,7 @@ public class MainPageFragment extends Fragment {
     private OfferedRide offeredRide;
     private String userId;
     private ArrayList<LinearLayout> filterItems;
+    private ConstraintLayout noEntrysLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -217,11 +219,22 @@ public class MainPageFragment extends Fragment {
             }
         });
 
+        offeredRides = new ArrayList();
+
         offerRecyclerView = (RecyclerView) fragmentView.findViewById(R.id.mainPageOfferRecyclerView);
         offerRecyclerView.setHasFixedSize(true);
         offerRecyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
-        offeredRides = new ArrayList();
+        noEntrysLayout = (ConstraintLayout) fragmentView.findViewById(R.id.noEntryContainer);
+
+        if (offeredRides.isEmpty()) {
+            offerRecyclerView.setVisibility(View.GONE);
+            noEntrysLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            offerRecyclerView.setVisibility(View.VISIBLE);
+            noEntrysLayout.setVisibility(View.GONE);
+        }
 
         ParkingSpots parkingSpots = new ParkingSpots();
 
@@ -237,12 +250,22 @@ public class MainPageFragment extends Fragment {
 
     public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
         offeredRides= rides;
+
         if(adapter!=null){
             offerRecyclerView= fragmentView.findViewById(R.id.mainPageOfferRecyclerView);
             offerRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }else{
             setOfferAdapter();
+        }
+
+        if (offeredRides.isEmpty()) {
+            offerRecyclerView.setVisibility(View.GONE);
+            noEntrysLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            offerRecyclerView.setVisibility(View.VISIBLE);
+            noEntrysLayout.setVisibility(View.GONE);
         }
     }
 
@@ -382,8 +405,6 @@ public class MainPageFragment extends Fragment {
                                                 final SharedPreferences pref = new ObscuredSharedPreferences(
                                                         fragmentView.getContext(), fragmentView.getContext().getSharedPreferences("BookedRideId", Context.MODE_PRIVATE));
                                                 int obookedRidesId = pref.getInt("oBookedRidesId", 0);
-
-                                                //TODO hier eigentlich Benachrichtigung an Fahrer
                                                 myRef.child(userId).child("obookedRides").child(String.valueOf(obookedRidesId)).removeValue();
                                                 myRef.child(clickedRide.getUserId()).child("offeredRides").child(String.valueOf(clickedRide.getzIndex())).child("bookedUsers").child(userId).removeValue();
                                                 int places = clickedRide.getPlaces_open() + 1;
@@ -401,7 +422,6 @@ public class MainPageFragment extends Fragment {
 
                                         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int whichButton) {
-                                                //TODO what ever you want to do with No option.
                                             }
                                         });
 
@@ -455,7 +475,7 @@ public class MainPageFragment extends Fragment {
                                 markBttn.setBackgroundResource(R.drawable.ic_marked);
                             }
 
-                            myRef.child(offeredRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).setValue(ride);
+                            myRef.child(offeredRides.get(position).getFirst().get(0).toString()).child("offeredRides").child(String.valueOf(ride.getzIndex())).child("observers").setValue(ride.getObservers());
                             adapter.notifyDataSetChanged();
                         }
                     }
