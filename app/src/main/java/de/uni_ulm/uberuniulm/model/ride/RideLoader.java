@@ -40,6 +40,7 @@ public class RideLoader {
     private ParseType parseType;
     private ArrayList bookings = new ArrayList();
     private NotificationsManager notificationsManager;
+    private ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed;
 
     private String userId;
 
@@ -58,10 +59,10 @@ public class RideLoader {
     public void getOfferedRides(MainPageFragment mainFrag){
         parseType= ParseType.OFFERS;
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed = new ArrayList();
+                ridesParsed = new ArrayList();
                 for(DataSnapshot user: dataSnapshot.getChildren()) {
                     float total = 0;
                     float rating = 0;
@@ -89,6 +90,7 @@ public class RideLoader {
                         ridesParsed.add(parseData(userData, values, rating));
                     }
                 }
+                Log.d("TRIGGERED", "WHATs WRONG?!");
                 mainFrag.updateOffers(ridesParsed);
             }
 
@@ -171,7 +173,7 @@ public class RideLoader {
 
     public void getWatchedRides(WatchListFragment watchFrag){
         parseType= ParseType.WATCHING;
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed = new ArrayList();
@@ -221,7 +223,7 @@ public class RideLoader {
     public void getSpecificRide(String offererId, String zIndex, NotificationsManager notificationManager){
         parseType= ParseType.WATCHING;
         ArrayList<Triple<ArrayList, OfferedRide, Float>> rideResult = new ArrayList<>();
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot user : dataSnapshot.getChildren()) {
@@ -267,7 +269,7 @@ public class RideLoader {
     public void getUsersOfferedRides(MyOffersFragment myOffersFragment){
         parseType=ParseType.USERSOFFERS;
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Triple<ArrayList, OfferedRide, Float>> ridesParsed = new ArrayList();

@@ -238,8 +238,9 @@ public class MainPageFragment extends Fragment {
     public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
         offeredRides= rides;
         if(adapter!=null){
-            adapter.notifyDataSetChanged();
+            offerRecyclerView= fragmentView.findViewById(R.id.mainPageOfferRecyclerView);
             offerRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }else{
             setOfferAdapter();
         }
@@ -301,7 +302,6 @@ public class MainPageFragment extends Fragment {
                                                         NotificationsManager notificationManager = new NotificationsManager();
                                                         notificationManager.setUp(getContext());
                                                         notificationManager.subscribeToTopic(clickedRide.getUserId() + "_" + clickedRide.getzIndex());
-                                                        adapter.notifyDataSetChanged();
                                                     } else {
                                                         Toast.makeText(fragmentView.getContext(), "Oops, looks like somebody was a little faster than you.", Toast.LENGTH_LONG)
                                                                 .show();
@@ -372,7 +372,6 @@ public class MainPageFragment extends Fragment {
                                                 SharedPreferences.Editor editor = pref.edit();
                                                 editor.putInt("BookedRideId", obookedRidesId - 1);
                                                 editor.apply();
-                                                adapter.notifyDataSetChanged();
                                                 NotificationsManager notificationManager=new NotificationsManager();
                                                 notificationManager.setUp(getContext());
                                                 notificationManager.unsubscribeTopic(clickedRide.getUserId()+"_"+clickedRide.getzIndex());
