@@ -90,11 +90,6 @@ public class NotificationsManager extends FirebaseMessagingService {
             String click_action= remoteMessage.getData().get("click_action");
             data= remoteMessage.getData();
 
-            Log.d(TAG, "Message Notification Title: "+ title);
-            Log.d(TAG, "Message Notification Body: "+ message);
-            Log.d(TAG, "Message Notification click_action: "+ click_action);
-            Log.d(TAG, "Message Notification data"+ data);
-
             sendNotification(title, message, click_action);
         }
     }

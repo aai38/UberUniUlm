@@ -2,7 +2,6 @@ package de.uni_ulm.uberuniulm.ui.fragments;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.NotificationManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,14 +11,11 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +33,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.tomtom.online.sdk.common.location.LatLng;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -50,14 +42,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 import de.uni_ulm.uberuniulm.ChatPage;
-import de.uni_ulm.uberuniulm.MainPage;
 import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
-import de.uni_ulm.uberuniulm.StartPage;
 import de.uni_ulm.uberuniulm.model.notifications.NotificationsManager;
 import de.uni_ulm.uberuniulm.model.ride.BookedRide;
 import de.uni_ulm.uberuniulm.model.encryption.ObscuredSharedPreferences;
@@ -80,12 +68,14 @@ public class MainPageFragment extends Fragment {
     private String userId;
     private ArrayList<LinearLayout> filterItems;
     private ConstraintLayout noEntrysLayout;
+    private LinearLayout rootElement;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_main_page, container, false);
-        LinearLayout mapFragment = fragmentView.findViewById(R.id.mainPageFragmentContainer);
-        mapFragment.setVisibility(View.VISIBLE);
+        rootElement = fragmentView.findViewById(R.id.mainPageFragmentContainer);
+        rootElement.setVisibility(View.VISIBLE);
+        rootElement.requestFocus();
         SearchView departure = fragmentView.findViewById(R.id.searchViewDeparture);
         SearchView destination = fragmentView.findViewById(R.id.searchViewDestination);
         ImageButton addFilterBttn = fragmentView.findViewById(R.id.addFilterBttn);
@@ -246,6 +236,12 @@ public class MainPageFragment extends Fragment {
         rideLoader.getOfferedRides(this);
 
         return fragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        rootElement.requestFocus();
     }
 
     public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
