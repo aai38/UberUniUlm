@@ -22,10 +22,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import de.uni_ulm.uberuniulm.ChatPage;
 import de.uni_ulm.uberuniulm.MapPage;
@@ -79,6 +81,25 @@ public class WatchListFragment extends Fragment {
 
     public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
         observedRides = rides;
+        Calendar cal=Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
+        cal.add(Calendar.HOUR_OF_DAY, 2);
+
+        for (int i = 0; i < observedRides.size(); i++) {
+            Date date1 = null;
+            Date time1 = null;
+            try {
+                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(observedRides.get(i).getSecond().getDate());
+                time1 = new SimpleDateFormat("HH:mm").parse(observedRides.get(i).getSecond().getTime());
+                date1.setHours(time1.getHours());
+                date1.setMinutes(time1.getMinutes());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (date1.compareTo(cal.getTime()) < 0) {
+                observedRides.remove(i);
+            }
+        }
+
         if(adapter!=null){
             adapter.notifyDataSetChanged();
             watchListRecyclerView.setAdapter(adapter);
@@ -106,6 +127,22 @@ public class WatchListFragment extends Fragment {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 
                 DatabaseReference myRef= FirebaseDatabase.getInstance().getReference().child("Users");
+
+                for (int i = 0; i < observedRides.size(); i++) {
+                    Date date1 = null;
+                    Date time1 = null;
+                    try {
+                        date1 = new SimpleDateFormat("dd/MM/yyyy").parse(observedRides.get(i).getSecond().getDate());
+                        time1 = new SimpleDateFormat("HH:mm").parse(observedRides.get(i).getSecond().getTime());
+                        date1.setHours(time1.getHours());
+                        date1.setMinutes(time1.getMinutes());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (date1.compareTo(Calendar.getInstance().getTime()) < 0) {
+                        observedRides.remove(i);
+                    }
+                }
 
 
                 if (!clickedRide.getBookedUsers().contains(userId)) {

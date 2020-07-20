@@ -59,7 +59,11 @@ public class OfferListAdapter extends RecyclerView.Adapter<OfferListAdapter.Offe
     @NonNull
     @Override
     public OfferViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        dataSetCopy.addAll(dataSet);
+        for(int i=0; i<dataSet.size();i++){
+            if(!dataSetCopy.contains(dataSet.get(i))){
+                dataSetCopy.add(dataSet.get(i));
+            }
+        }
         View view = LayoutInflater.from(mContext).inflate(R.layout.ride_item_main_page, parent, false);
         return new OfferViewHolder(view);
     }

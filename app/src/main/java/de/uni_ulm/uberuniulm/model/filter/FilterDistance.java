@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import de.uni_ulm.uberuniulm.model.Rating;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import kotlin.Triple;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -88,10 +90,10 @@ public class FilterDistance implements LocationListener {
         }
     }
 
-    public ArrayList filterListByDistanceDeparture(ArrayList<Pair<ArrayList, OfferedRide>> offers, LatLng filterPosition, double filterDistance){
-        ArrayList<Pair<ArrayList, OfferedRide>> offersFiltered= new ArrayList<>();
+    public ArrayList filterListByDistanceDeparture(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers, LatLng filterPosition, double filterDistance){
+        ArrayList<Triple<ArrayList, OfferedRide, Rating>> offersFiltered= new ArrayList<>();
         for(int i=0; i<offers.size(); i++){
-            Boolean isInDistance=distanceTwoPoints(offers.get(i).second.getRoute().get(0), filterPosition, filterDistance);
+            Boolean isInDistance=distanceTwoPoints(offers.get(i).getSecond().getRoute().get(0), filterPosition, filterDistance);
             if(isInDistance){
                 offersFiltered.add(offers.get(i));
             }
@@ -100,10 +102,10 @@ public class FilterDistance implements LocationListener {
         return offersFiltered;
     }
 
-    public ArrayList filterListByDistanceDestination(ArrayList<Pair<ArrayList, OfferedRide>> offers, LatLng filterPosition, double filterDistance){
-        ArrayList<Pair<ArrayList, OfferedRide>> offersFiltered= new ArrayList<>();
+    public ArrayList filterListByDistanceDestination(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers, LatLng filterPosition, double filterDistance){
+        ArrayList<Triple<ArrayList, OfferedRide, Rating>> offersFiltered= new ArrayList<>();
         for(int i=0; i<offers.size(); i++){
-            List<LatLng> routeCoords=offers.get(i).second.getRoute();
+            List<LatLng> routeCoords=offers.get(i).getSecond().getRoute();
             Boolean isInDistance=distanceTwoPoints(routeCoords.get(routeCoords.size()-1), filterPosition, filterDistance);
             if(isInDistance){
                 offersFiltered.add(offers.get(i));
@@ -113,14 +115,14 @@ public class FilterDistance implements LocationListener {
         return offersFiltered;
     }
 
-    public ArrayList FilterListByDistanceTotalRoute(ArrayList<Pair<ArrayList, OfferedRide>> offers, double filterDistance){
+    public ArrayList FilterListByDistanceTotalRoute(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers, double filterDistance){
         Location location=getCurrentLocation();
         LatLng filterPosition= new LatLng(location.getLatitude(), location.getLongitude());
 
-        ArrayList<Pair<ArrayList, OfferedRide>> offersFiltered= new ArrayList<>();
+        ArrayList<Triple<ArrayList, OfferedRide, Rating>> offersFiltered= new ArrayList<>();
 
         for(int i=0; i<offers.size(); i++){
-            List<LatLng> routeCoords=offers.get(i).second.getRoute();
+            List<LatLng> routeCoords=offers.get(i).getSecond().getRoute();
             for(int j=0; j<routeCoords.size(); j++){
                 if(distanceTwoPoints(routeCoords.get(j), filterPosition, filterDistance)){
                     offersFiltered.add(offers.get(i));

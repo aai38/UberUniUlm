@@ -154,7 +154,7 @@ public class MyOffersFragment extends Fragment {
 
             @Override
             public void onEditClicked(int position){
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
                 dialog.setTitle("Edit your offer");
                 dialog.setItems(getResources().getStringArray(R.array.editoptions),new DialogInterface.OnClickListener() {
 

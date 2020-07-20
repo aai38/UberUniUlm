@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import de.uni_ulm.uberuniulm.MapPage;
 import de.uni_ulm.uberuniulm.R;
@@ -103,7 +104,7 @@ public class NewOfferHeaderFragment extends Fragment {
         confirmBttn = fragmentView.findViewById(R.id.newOfferActivityConfirmBttn);
         closeBttn = fragmentView.findViewById(R.id.newOfferActivityCancelBttn);
 
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -186,7 +187,7 @@ public class NewOfferHeaderFragment extends Fragment {
                 String time= timeTextField.getText().toString();
 
                 try {
-                    Date today=Calendar.getInstance().getTime();
+                    Date today=Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin")).getTime();
                     Date dateParsed=(monthFormatter.parse(date));
                     Date timeParsed=(timeFormatter.parse(time));
                     cal.setTime(dateParsed);

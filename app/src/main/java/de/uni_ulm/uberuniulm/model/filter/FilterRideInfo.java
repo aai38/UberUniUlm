@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import de.uni_ulm.uberuniulm.model.Rating;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import kotlin.Triple;
 
 public class FilterRideInfo {
     public FilterRideInfo(){
@@ -45,10 +47,10 @@ public class FilterRideInfo {
         return true;
     }
 
-    public ArrayList filterByTime(ArrayList<Pair<ArrayList, OfferedRide>> offers, String time){
+    public ArrayList filterByTime(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers, String time){
         ArrayList offersFiltered= new ArrayList();
         for(int i=0; i<offers.size();i++){
-            if(filterByTime(offers.get(i).second.getDate(), time)){
+            if(filterByTime(offers.get(i).getSecond().getDate(), time)){
                 offersFiltered.add(offers.get(i));
             }
         }
@@ -73,11 +75,11 @@ public class FilterRideInfo {
         return false;
     }
 
-    public ArrayList filterByDate(ArrayList<Pair<ArrayList, OfferedRide>> offers, String date, String time){
+    public ArrayList filterByDate(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers, String date, String time){
         ArrayList offersFiltered= new ArrayList();
         for(int i=0; i<offers.size();i++){
-            if(filterByDate(offers.get(i).second.getDate(), date)) {
-                if (filterByTime(offers.get(i).second.getTime(), time)) {
+            if(filterByDate(offers.get(i).getSecond().getDate(), date)) {
+                if (filterByTime(offers.get(i).getSecond().getTime(), time)) {
                     offersFiltered.add(offers.get(i));
                 }
             }
@@ -86,10 +88,10 @@ public class FilterRideInfo {
         return offersFiltered;
     }
 
-    public ArrayList filterByPlaces(ArrayList<Pair<ArrayList, OfferedRide>> offers){
+    public ArrayList filterByPlaces(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers){
         ArrayList offersFiltered= new ArrayList();
         for(int i=0; i<offers.size();i++){
-            if(offers.get(i).second.getPlaces_open()>0){
+            if(offers.get(i).getSecond().getPlaces_open()>0){
                 offersFiltered.add(offers.get(i));
             }
         }
@@ -105,10 +107,10 @@ public class FilterRideInfo {
         }
     }
 
-    public ArrayList filterOffersByPrice(ArrayList<Pair<ArrayList, OfferedRide>> offers, Float price) {
+    public ArrayList filterOffersByPrice(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers, Float price) {
         ArrayList offersFiltered= new ArrayList();
         for (int i = 0; i < offers.size(); i++) {
-            if (filterByPrice(offers.get(i).second, price)) {
+            if (filterByPrice(offers.get(i).getSecond(), price)) {
                 offersFiltered.add(offers.get(i));
             }
         }

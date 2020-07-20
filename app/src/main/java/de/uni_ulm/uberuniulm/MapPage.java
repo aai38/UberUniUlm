@@ -484,6 +484,7 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
 
     public void addWaypoint(){
         fragmentContainer.setVisibility(View.VISIBLE);
+        bookersFragment.setVisibility(View.GONE);
         waypointsFragment.setVisibility(View.VISIBLE);
         atvWaypointLocation = findViewById(R.id.dialogWaypointSearch);
 
@@ -594,6 +595,7 @@ public class MapPage extends AppCompatActivity implements LocationUpdateListener
 
     public void showBookers(){
         bookersFragment.setVisibility(View.VISIBLE);
+        waypointsFragment.setVisibility(View.GONE);
         fragmentContainer.setVisibility(View.VISIBLE);
 
         RecyclerView recyclerView= findViewById(R.id.bookerOverViewRecyclerView);

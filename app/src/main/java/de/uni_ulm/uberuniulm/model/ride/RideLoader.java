@@ -379,7 +379,6 @@ public class RideLoader {
             notificationsManager.setRideNotification(new Triple(userData, offeredRide, rating));
         }
         ridesParsed.add(new Triple(userData, offeredRide, rating));
-        Log.d("ADDING RIDE", ridesParsed.toString());
     }
 
     public void getRatings (RatingsFragment fragment) {

@@ -4,7 +4,9 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 
+import de.uni_ulm.uberuniulm.model.Rating;
 import de.uni_ulm.uberuniulm.model.ride.OfferedRide;
+import kotlin.Triple;
 
 public class FilterOfferer {
     public FilterOfferer(){
@@ -24,10 +26,10 @@ public class FilterOfferer {
         return false;
     }
 
-    public ArrayList filterOffersByOfferer(ArrayList<Pair<ArrayList, OfferedRide>> offers, String searchedName){
+    public ArrayList filterOffersByOfferer(ArrayList<Triple<ArrayList, OfferedRide, Rating>> offers, String searchedName){
         ArrayList offersFiltered= new ArrayList();
         for(int i=0; i<offers.size(); i++){
-            if(filterByOffererName((String) offers.get(i).first.get(1),searchedName)){
+            if(filterByOffererName((String) offers.get(i).getFirst().get(1),searchedName)){
                 offersFiltered.add(offers.get(i));
             }
         }

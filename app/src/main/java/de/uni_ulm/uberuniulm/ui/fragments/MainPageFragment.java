@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import de.uni_ulm.uberuniulm.ChatPage;
 import de.uni_ulm.uberuniulm.MapPage;
@@ -246,6 +248,24 @@ public class MainPageFragment extends Fragment {
 
     public void updateOffers(ArrayList<Triple<ArrayList, OfferedRide, Float>> rides){
         offeredRides= rides;
+        Calendar cal=Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
+        cal.add(Calendar.HOUR_OF_DAY, 2);
+        for (int i = 0; i < offeredRides.size(); i++) {
+            Date date1 = null;
+            Date time1 = null;
+            try {
+                date1 = new SimpleDateFormat("dd/MM/yyyy").parse(offeredRides.get(i).getSecond().getDate());
+                time1 = new SimpleDateFormat("HH:mm").parse(offeredRides.get(i).getSecond().getTime());
+                date1.setHours(time1.getHours());
+                date1.setMinutes(time1.getMinutes());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if (date1.compareTo(cal.getTime()) < 0) {
+                offeredRides.remove(i);
+            }
+        }
 
         if(adapter!=null){
             offerRecyclerView= fragmentView.findViewById(R.id.mainPageOfferRecyclerView);
@@ -266,14 +286,20 @@ public class MainPageFragment extends Fragment {
     }
 
     private void setOfferAdapter(){
+        Calendar cal=Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
+        cal.add(Calendar.HOUR_OF_DAY, 2);
         for (int i = 0; i < offeredRides.size(); i++) {
             Date date1 = null;
+            Date time1=null;
             try {
                 date1 = new SimpleDateFormat("dd/MM/yyyy").parse(offeredRides.get(i).getSecond().getDate());
+                time1 = new SimpleDateFormat("HH:mm").parse(offeredRides.get(i).getSecond().getTime());
+                date1.setHours(time1.getHours());
+                date1.setMinutes(time1.getMinutes());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if (date1.compareTo(Calendar.getInstance().getTime()) < 0) {
+            if (date1.compareTo(cal.getTime()) < 0) {
                 offeredRides.remove(i);
             } else {
                 adapter = new OfferListAdapter(fragmentView.getContext(), offeredRides, new ClickListener() {

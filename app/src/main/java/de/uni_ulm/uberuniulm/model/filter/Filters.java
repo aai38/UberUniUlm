@@ -1,6 +1,7 @@
 package de.uni_ulm.uberuniulm.model.filter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.tomtom.online.sdk.common.location.LatLng;
 
@@ -31,7 +32,6 @@ public class Filters {
         if(userNameFilterSet){
             offersFiltered=usernameFilter.filterOffersByOfferer(offersFiltered, userName);
         }
-
         if(priceFilterSet){
             offersFiltered=infoFilter.filterOffersByPrice(offersFiltered, (float) price);
         }
@@ -48,7 +48,6 @@ public class Filters {
         if(dateFilterSet){
             offersFiltered= infoFilter.filterByDate(offersFiltered, date, time);
         }
-
         return offersFiltered;
     }
 
