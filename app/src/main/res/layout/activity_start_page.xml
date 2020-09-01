@@ -11,7 +11,7 @@
         android:id="@+id/startActivityLoginContentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorSemiTransparentBlack"
+        android:background="#AB373737"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible"
